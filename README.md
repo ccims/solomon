@@ -22,6 +22,8 @@ Install Minikube to run a local Kubernetes cluster. Following steps uses Minikub
 
 2. Install kube-prometheus-stack helm chart with prometheus values. This sets up a basic prometheus environment
 
+`helm repo add prometheus-community https://prometheus-community.github.io/helm-charts` then
+
 `helm install prometheus prometheus-community/kube-prometheus-stack  -f ./prometheus-operator-values.yaml`
 
 3. Apply kubernetes resources in `kubernetes-environment` folder. This create sla-manager and nodejs-demo-client deployment & service and set roles.
