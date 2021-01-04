@@ -1,0 +1,14 @@
+name: nodejs-client-app
+labels:
+  app: nodejs-client-app
+image: okteto/node:12
+command: bash
+sync:
+- .:/usr/src/app
+forward:
+- 9229:9229
+- 5000:5000
+resources:
+  limits:
+    cpu: "1"
+    memory: 2Gi

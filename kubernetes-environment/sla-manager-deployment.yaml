@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: sla-manager-deploy
+    labels:
+        app: sla-manager-app
+    annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: /metrics
+        prometheus.io/port: "6400"
+spec:
+    selector:
+        matchLabels:
+            app: sla-manager-app
+    replicas: 1
+    strategy:
+        type: RollingUpdate
+        rollingUpdate:
+            maxSurge: 1
+            maxUnavailable: 0
+    template: # Config for a Pod
+        metadata:
+            labels:
+                app: sla-manager-app
+            annotations:
+                prometheus.io/scrape: "true"
+                prometheus.io/path: /metrics
+                prometheus.io/port: "6400"
+        spec:   # Blueprint for a Pod
+            containers:
+            - name: sla-manager-app
+              image: jxnasw/sla-manager:v14
+              imagePullPolicy: Always
+              ports:
+              - containerPort: 6400   # Match targetPort of Service
+              resources:
+                  requests:
+                      memory: "64Mi"
+                      cpu: "10m"
+                  limits:
+                      memory: "256Mi"
+                      cpu: "500m"

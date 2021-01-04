@@ -1,0 +1,16 @@
+{
+  "name": "nodejs-demo-client",
+  "author": "Jonas Wallmannn",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "4.17.1",
+    "prom-client": "12.0.0"
+  },
+  "license": "ISC"
+}

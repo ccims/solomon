@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodejs-client-service
+  labels:
+    app: nodejs-client-app
+    monitoring: "true"
+  # annotations:
+  #   prometheus.io/scrape: "true"
+  #   prometheus.io/path: /metrics
+  #   prometheus.io/port: "5000"
+spec:
+  type: LoadBalancer
+  selector:
+    app: nodejs-client-app
+  ports:
+    - protocol: TCP
+      name: http
+      port: 80
+      targetPort: 5000

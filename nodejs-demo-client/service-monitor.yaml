@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: nodejs-client-servicemonitor
+  labels:
+    app: nodejs-client-app
+    release: prometheus
+spec:
+  endpoints:
+  - interval: 30s
+    path: /metrics
+    port: http
+    scrapeTimeout: 10s
+  # namespaceSelector:
+  #     matchNames:
+  #     - sla-issue-creation
+  selector:
+    matchLabels:
+      app: nodejs-client-app

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: sla-manager-frontend-deploy
+    labels:
+        app: sla-manager-frontend-app
+    annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: /metrics
+        prometheus.io/port: "3000"
+spec:
+    selector:
+        matchLabels:
+            app: sla-manager-frontend-app
+    replicas: 1
+    strategy:
+        type: RollingUpdate
+        rollingUpdate:
+            maxSurge: 1
+            maxUnavailable: 0
+    template: # Config for a Pod
+        metadata:
+            labels:
+                app: sla-manager-frontend-app
+            # annotations:
+            #     prometheus.io/scrape: "true"
+            #     prometheus.io/path: /metrics
+            #     prometheus.io/port: "6400"
+        spec:   # Blueprint for a Pod
+            containers:
+            - name: sla-manager-app
+              image: jxnasw/sla-manager-frontend:v5
+              imagePullPolicy: Always
+              ports:
+              - containerPort: 3000   # Match targetPort of Service
+              resources:
+                  requests:
+                      memory: "64Mi"
+                      cpu: "10m"
+                  limits:
+                      memory: "512Mi"
+                      cpu: "500m"
