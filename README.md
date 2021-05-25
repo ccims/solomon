@@ -1,3 +1,7 @@
+## Refactoring
+
+This branch will contain the refactored version of the SLO Tool.
+
 ## Foundations/Required Technologies
 
 - Prometheus 
