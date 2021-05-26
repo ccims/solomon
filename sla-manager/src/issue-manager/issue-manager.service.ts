@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger, LoggerService } from '@nestjs/common';
-import { GropiusIssue } from 'src/models/issue.model';
-import { SlaRulesService } from 'src/sla-rules.service';
+import { GropiusIssue } from '../models/issue.model';
+import { K8sConnectorService } from '../connector-kubernetes/k8s.service';
 import { request, gql } from 'graphql-request';
 
 @Injectable()
@@ -10,7 +10,7 @@ export class IssueManagerService {
 
     alerts: any[] = [];
 
-    constructor(private slaService: SlaRulesService, @Inject(Logger) private readonly logger: LoggerService) {}
+    constructor(private slaService: K8sConnectorService, @Inject(Logger) private readonly logger: LoggerService) {}
 
     addAlert(alert) {
       this.alerts.push(alert);
@@ -22,7 +22,7 @@ export class IssueManagerService {
         });
     }
 
-    handleIssue(alert) {
+    async handleIssue(alert) {
         
         const slaId = alert.annotations.slaRuleId;
         const targetService = alert.labels.target;
@@ -32,7 +32,7 @@ export class IssueManagerService {
             return;
         }
 
-        const slaRule = this.slaService.getRule(slaId);
+        const slaRule = await this.slaService.getRule(slaId);
 
         if (!slaRule) {
             this.logger.debug(`dismissing issue, no rule found to id ${slaId}`)

@@ -1,13 +1,20 @@
-FROM node:12.4.0-alpine
+FROM node:14.16.1-alpine
 
-WORKDIR /work/
+ENV http_proxy http://gateway.zscloud.net:10402
+ENV https_proxy http://gateway.zscloud.net:10402
 
-COPY ./package.json /work/package.json
+WORKDIR /app/
+
+COPY ./package.json .
+COPY ./tsconfig.build.json .
+COPY ./tsconfig.json .
 
 RUN npm install
 
-COPY ./ /work/
+COPY ./src ./src
 
 RUN npm run build
 
-CMD ["npm", "run", "start:prod"]
+EXPOSE 80
+
+CMD ["node", "dist/main"]

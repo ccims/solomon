@@ -1,28 +1,37 @@
-import { Body, Controller, Get, HttpServer, HttpService, Param, Post, Res, Response } from '@nestjs/common';
-import SlaRule from './models/sla-rule.model';
-import { SlaRulesService } from './sla-rules.service';
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { ForwarderService } from './forwarder/forwarder.service';
+import SloRule from './models/slo-rule.model';
 
-@Controller("rule")
+@Controller('rules')
 export class AppController {
-  constructor(private slaService: SlaRulesService, private http: HttpService) {}
+  constructor(private forwarder: ForwarderService) {}
+
+  @Post('config')
+  setMonitoringTool(@Body() selectionDto) {
+    this.forwarder.setMonitoringTool(selectionDto.selection)
+  }
 
   @Get()
   getRules() {
-    return this.slaService.getRules();
-  }
-
-  @Get(":id")
-  getRule(@Param() params) {
-    return this.slaService.getRule(params.id);
+    console.log('called getRules()')
+    return this.forwarder.getRules();
   }
 
   @Post()
-  addRule(@Body() rule: SlaRule) {
-    return this.slaService.addRule(rule);
+  addRule(@Body() rule: SloRule) {
+    console.log('called addRule()')
+    return this.forwarder.addRule(rule);
   }
 
-  @Post(":id")
-  setRule(@Body() rule: SlaRule) {
-    return this.slaService.setRule(rule);
+  @Put(':name')
+  updateRule(@Body() rule: SloRule) {
+    console.log('called updateRule(id)')
+    return this.forwarder.updateRule(rule);
+  }
+
+  @Delete(':name')
+  deleteRule(@Param('name') ruleName: string) {
+    console.log('called deleteRule(id)')
+    return this.forwarder.deleteRule(ruleName);
   }
 }

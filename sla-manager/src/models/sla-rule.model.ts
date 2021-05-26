@@ -1,5 +1,5 @@
 // TODO: Share with backend
-
+ 
 export default interface SlaRule {
     id?: string;
     name: string;
