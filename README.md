@@ -3,6 +3,14 @@
 This branch contains the refactored version of the backend of the SLO Tool.
 The frontend was not adapted to this yet and won't work with the backend yet.
 
+**Overview of the architecture with focus on the CloudWatch Connector:**
+
+![Architecture overview](documentation/images/detailed-architecture.png)
+
+**The data-flow for the action of adding a new SLO rule in the backend:**
+
+![Add rule dataflow](documentation/images/add-rule-dataflow.png)
+
 ## Foundations/Required Technologies
 
 - Prometheus 
