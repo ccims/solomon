@@ -1,3 +1,5 @@
+// the SloRule interface replaces the old SlaRule interface
+
 export default interface SloRule {
     id: string; // corresponds to AlarmArn in CW, can be generated id for Prometheus
     name: string; // display name of the rule, provided by user

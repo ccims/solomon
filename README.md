@@ -1,6 +1,7 @@
 ## Refactoring
 
-This branch will contain the refactored version of the SLO Tool.
+This branch contains the refactored version of the backend of the SLO Tool.
+The frontend was not adapted to this yet and won't work with the backend yet.
 
 ## Foundations/Required Technologies
 
