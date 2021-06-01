@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConnectorService } from 'src/models/connector-service';
 import { CwConnectorService } from 'src/connector-cloudwatch/cw.service';
 import { K8sConnectorService } from 'src/connector-kubernetes/k8s.service';
@@ -12,6 +12,7 @@ import { DeploymentEnvironment } from 'src/models/slo-rule.model';
  */
 @Injectable()
 export class ForwarderService implements ConnectorService{
+    private readonly logger = new Logger(ForwarderService.name);
     deploymentEnvironment = DeploymentEnvironment.AWS;
 
     constructor(private cwConnector: CwConnectorService,
@@ -20,8 +21,8 @@ export class ForwarderService implements ConnectorService{
     setSelectedDeploymentEnvironment(selection: DeploymentEnvironment[]) {
         // TODO: allow multiple selections?
         this.deploymentEnvironment = selection[0] as DeploymentEnvironment;
-        console.log('Selected the following deployment environment:');
-        console.log(this.deploymentEnvironment);
+        this.logger.log('Selected the following deployment environment:');
+        this.logger.log(this.deploymentEnvironment);
     }
 
     getRules(): Promise<SloRule[]> {
@@ -29,7 +30,7 @@ export class ForwarderService implements ConnectorService{
             case DeploymentEnvironment.AWS:
                 return this.cwConnector.getRules();
             case DeploymentEnvironment.KUBERNETES:
-                console.log('not yet implemented ...')
+                this.logger.log('not yet implemented ...')
                 // return this.k8sPluginService.getRules();
         }
     }

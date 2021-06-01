@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConnectorService } from 'src/models/connector-service';
 import SloRule from 'src/models/slo-rule.model';
 import { LambdaMetricInfos } from './cw.interface';
@@ -9,6 +9,9 @@ const PROXY = 'http://apt-get:apt-get@www-proxy.vi.vector.int:8080/';
 
 @Injectable()
 export class CwConnectorService implements ConnectorService{
+    private readonly logger = new Logger(CwConnectorService.name);
+
+    
     private AWS = require('aws-sdk');
     private cw;
     private connected = false;
@@ -53,7 +56,7 @@ export class CwConnectorService implements ConnectorService{
                 if (err) {
                     reject(new Error(err));
                 } else {
-                    console.log(data)
+                    this.logger.log(data)
                     resolve(true);
                 }
             })
@@ -69,7 +72,7 @@ export class CwConnectorService implements ConnectorService{
                 if (err) {
                     reject(new Error(err));
                 } else {
-                    console.log(data)
+                    this.logger.log(data)
                     resolve(true);
                 }
             })
@@ -86,7 +89,7 @@ export class CwConnectorService implements ConnectorService{
               if (err) {
                   reject(new Error(err));
               } else {
-                  console.log(data)
+                  this.logger.log(data)
                   resolve(true);
               }
           })

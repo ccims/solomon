@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {request, gql } from 'graphql-request';
 import { GropiusIssue } from 'src/models/issue.model';
 import SloRule from 'src/models/slo-rule.model';
@@ -7,6 +7,7 @@ import { Alert } from './alert.interface';
 
 @Injectable()
 export class AlertHandlerService {
+    private readonly logger = new Logger(AlertHandlerService.name);
 
     private gropiusApiUrl = "http://localhost:8080/api"
 
@@ -50,10 +51,10 @@ export class AlertHandlerService {
         try {
             const data = await request(this.gropiusApiUrl, queryIssue, { input: issue});
             const issueID = data.createIssue.issue.id;
-            console.log("CREATED ISSUE: ", issueID);
+            this.logger.log("CREATED ISSUE: ", issueID);
             return issueID;
         } catch (error) {
-            console.log("ERROR CREATING ISSUE: ", error);
+            this.logger.log("ERROR CREATING ISSUE: ", error);
         }
     }
 
