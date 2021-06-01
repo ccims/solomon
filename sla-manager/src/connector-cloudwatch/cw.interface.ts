@@ -1,4 +1,4 @@
-// Alarm modelled after the following description: 
+// Alarm modelled after the following description (MetricAlarms): 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html#describeAlarms-property
 
 export interface Alarm {

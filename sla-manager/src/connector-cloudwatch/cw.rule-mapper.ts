@@ -1,4 +1,4 @@
-import SloRule, { ComparisonOperator, MonitoringTool, StatisticsOption } from 'src/models/slo-rule.model';
+import SloRule, { ComparisonOperator, DeploymentEnvironment, StatisticsOption } from 'src/models/slo-rule.model';
 import { Alarm, AwsNamespace, DimensionFilter } from './cw.interface';
 
 export class CwRuleMapper {
@@ -7,7 +7,7 @@ export class CwRuleMapper {
             id: alarm.AlarmArn,
             name: alarm.AlarmName,
             description: alarm.AlarmDescription,
-            monitoringTool: MonitoringTool.CLOUDWATCH,
+            deploymentEnvironment: DeploymentEnvironment.AWS,
             targetId: this.getTargetName(alarm.Dimensions),
             gropiusProjectId: this.getGropiusProjectId(), 
             metricType: alarm.MetricName,

@@ -7,8 +7,8 @@ export class AppController {
   constructor(private forwarder: ForwarderService) {}
 
   @Post('config')
-  setMonitoringTool(@Body() selectionDto) {
-    this.forwarder.setMonitoringTool(selectionDto.selection)
+  setSelectedDeploymentEnvironment(@Body() selectionDto) {
+    this.forwarder.setSelectedDeploymentEnvironment(selectionDto.selection)
   }
 
   @Get()

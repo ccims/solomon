@@ -1,4 +1,4 @@
-// the SlaRule interface is deprecated and replaced by the SloRule interface
+// TODO: Share with backend
  
 export default interface SlaRule {
     id?: string;

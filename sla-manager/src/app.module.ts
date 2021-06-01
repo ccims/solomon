@@ -6,6 +6,7 @@ import { ForwarderModule } from './forwarder/forwarder.module';
 import { ConnectorAzureModule } from './connector-azure/connector-azure.module';
 import { ConnectorCloudwatchModule } from './connector-cloudwatch/connector-cloudwatch.module';
 import { ConnectorKubernetesModule } from './connector-kubernetes/connector-kubernetes.module';
+import { AlertHandlerModule } from './alert-handler/alert-handler.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ConnectorKubernetesModule } from './connector-kubernetes/connector-kube
     ConnectorAzureModule,
     ConnectorCloudwatchModule,
     ConnectorKubernetesModule,
+    AlertHandlerModule,
   ],
   controllers: [AppController, IssueManagerController],
   providers: [Logger, IssueManagerService],

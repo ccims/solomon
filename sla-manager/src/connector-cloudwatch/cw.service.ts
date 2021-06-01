@@ -16,9 +16,9 @@ export class CwConnectorService implements ConnectorService{
 
     connectToAws(): string {
         // proxy required only for local development in Vector environment
-        // const proxy = require('proxy-agent');
-        // this.AWS.config.update({ httpOptions: { agent: proxy(PROXY)}})
-        // this.AWS.config.update({region: REGION});
+        const proxy = require('proxy-agent');
+        this.AWS.config.update({ httpOptions: { agent: proxy(PROXY)}})
+        this.AWS.config.update({region: REGION});
     
         this.cw = new this.AWS.CloudWatch();
     

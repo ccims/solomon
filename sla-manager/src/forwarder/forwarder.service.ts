@@ -3,7 +3,7 @@ import { ConnectorService } from 'src/models/connector-service';
 import { CwConnectorService } from 'src/connector-cloudwatch/cw.service';
 import { K8sConnectorService } from 'src/connector-kubernetes/k8s.service';
 import SloRule from 'src/models/slo-rule.model';
-import { MonitoringTool } from 'src/models/slo-rule.model';
+import { DeploymentEnvironment } from 'src/models/slo-rule.model';
 
 /**
  * The forwarder service contains the logic for **forwarding the requests** (e.g. getRules, addRule) 
@@ -12,51 +12,51 @@ import { MonitoringTool } from 'src/models/slo-rule.model';
  */
 @Injectable()
 export class ForwarderService implements ConnectorService{
-    monitoringTool = MonitoringTool.CLOUDWATCH;
+    deploymentEnvironment = DeploymentEnvironment.AWS;
 
     constructor(private cwConnector: CwConnectorService,
                 private promConnector: K8sConnectorService) {}
 
-    setMonitoringTool(selection: MonitoringTool[]) {
+    setSelectedDeploymentEnvironment(selection: DeploymentEnvironment[]) {
         // TODO: allow multiple selections?
-        this.monitoringTool = selection[0] as MonitoringTool;
-        console.log('Selected the following monitoring tool:');
-        console.log(this.monitoringTool);
+        this.deploymentEnvironment = selection[0] as DeploymentEnvironment;
+        console.log('Selected the following deployment environment:');
+        console.log(this.deploymentEnvironment);
     }
 
     getRules(): Promise<SloRule[]> {
-        switch (this.monitoringTool) {
-            case MonitoringTool.CLOUDWATCH:
+        switch (this.deploymentEnvironment) {
+            case DeploymentEnvironment.AWS:
                 return this.cwConnector.getRules();
-            case MonitoringTool.PROMETHEUS:
+            case DeploymentEnvironment.KUBERNETES:
                 console.log('not yet implemented ...')
                 // return this.k8sPluginService.getRules();
         }
     }
 
     addRule(rule: SloRule): Promise<boolean> {
-        switch (this.monitoringTool) {
-            case MonitoringTool.CLOUDWATCH:
+        switch (this.deploymentEnvironment) {
+            case DeploymentEnvironment.AWS:
                 return this.cwConnector.addRule(rule);
-            case MonitoringTool.PROMETHEUS:
+            case DeploymentEnvironment.KUBERNETES:
                 // return this.k8sPluginService.addRule(rule);
         }
     }
 
     updateRule(rule: SloRule): Promise<boolean> {
-        switch (this.monitoringTool) {
-            case MonitoringTool.CLOUDWATCH:
+        switch (this.deploymentEnvironment) {
+            case DeploymentEnvironment.AWS:
                 return this.cwConnector.updateRule(rule);
-            case MonitoringTool.PROMETHEUS:
+            case DeploymentEnvironment.KUBERNETES:
                 // return this.k8sPluginService.updateRule(rule);
         }
     }
 
     deleteRule(name: string): Promise<boolean> {
-        switch (this.monitoringTool) {
-            case MonitoringTool.CLOUDWATCH:
+        switch (this.deploymentEnvironment) {
+            case DeploymentEnvironment.AWS:
                 return this.cwConnector.deleteRule(name);
-            case MonitoringTool.PROMETHEUS:
+            case DeploymentEnvironment.KUBERNETES:
                 // return this.k8sPluginService.deleteRule(rule);
         }
     }

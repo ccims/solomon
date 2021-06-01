@@ -1,11 +1,9 @@
-// the SloRule interface replaces the old SlaRule interface
-
 export default interface SloRule {
     id: string; // corresponds to AlarmArn in CW, can be generated id for Prometheus
     name: string; // display name of the rule, provided by user
     description?: string; // displayed description of the rule, provided by user
 
-    monitoringTool: MonitoringTool; // the monitoring tool that collects the data, e.g. CloudWatch or Prometheus
+    deploymentEnvironment: DeploymentEnvironment; // the environment where the application that is to be monitored is deployed, e.g. AWS, or Kubernetes
     targetId: string; // id used by the monitoringTool to identify the resource for which the rule should apply
     gropiusProjectId?: string; // id of the gropius project for which issues shall be created
 
@@ -18,9 +16,9 @@ export default interface SloRule {
 }
 
 // TODO: allow selection of both? prom+cw?
-export enum MonitoringTool {
-    CLOUDWATCH = 'cw',
-    PROMETHEUS = 'prom',
+export enum DeploymentEnvironment {
+    AWS = 'aws',
+    KUBERNETES = 'kubernetes',
 }
 
 // export enum MetricType {
