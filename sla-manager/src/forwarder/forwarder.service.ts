@@ -4,6 +4,7 @@ import { CwConnectorService } from 'src/connector-cloudwatch/cw.service';
 import { K8sConnectorService } from 'src/connector-kubernetes/k8s.service';
 import SloRule from 'src/models/slo-rule.model';
 import { DeploymentEnvironment } from 'src/models/slo-rule.model';
+import { Target } from 'src/models/target.model';
 
 /**
  * The forwarder service contains the logic for **forwarding the requests** (e.g. getRules, addRule) 
@@ -16,7 +17,7 @@ export class ForwarderService implements ConnectorService{
     deploymentEnvironment = DeploymentEnvironment.AWS;
 
     constructor(private cwConnector: CwConnectorService,
-                private promConnector: K8sConnectorService) {}
+                private k8sConnector: K8sConnectorService) {}
 
     setSelectedDeploymentEnvironment(selection: DeploymentEnvironment[]) {
         // TODO: allow multiple selections?
@@ -32,6 +33,16 @@ export class ForwarderService implements ConnectorService{
             case DeploymentEnvironment.KUBERNETES:
                 this.logger.log('not yet implemented ...')
                 // return this.k8sPluginService.getRules();
+        }
+    }
+
+    getTargets(deploymentEnvironment: DeploymentEnvironment): Promise<Target[]> {
+        switch (deploymentEnvironment) {
+            case DeploymentEnvironment.AWS:
+                return this.cwConnector.getTargets();
+            case DeploymentEnvironment.KUBERNETES:
+                this.logger.log('not yet implemented ...')
+                // return this.k8sConnector.getTargets();
         }
     }
 

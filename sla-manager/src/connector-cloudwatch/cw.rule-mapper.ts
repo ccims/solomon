@@ -1,5 +1,6 @@
 import SloRule, { ComparisonOperator, DeploymentEnvironment, StatisticsOption } from 'src/models/slo-rule.model';
-import { Alarm, AwsNamespace, DimensionFilter } from './cw.interface';
+import { Target } from 'src/models/target.model';
+import { Alarm, AwsNamespace, DimensionFilter, LambdaFunction } from './cw.interface';
 
 export class CwRuleMapper {
     static mapAlarmToRule(alarm: Alarm): SloRule {
@@ -65,5 +66,23 @@ export class CwRuleMapper {
     // TODO: implement getAwsNamespace()
     private static getAwsNamespace(): string {
         return 'AWS/Lambda';
+    }
+
+    // maps a Lambda function from AWS to a generic target
+    static mapLambdaToTarget(lambdaFunction: LambdaFunction) {
+        var target: Target = {
+            targetName: lambdaFunction.FunctionName,
+            targetId: lambdaFunction.FunctionArn,
+            targetDescription: lambdaFunction.Description
+        }
+        return target;
+    }
+
+    static mapLambdasToTargets(lambdaFunctions: LambdaFunction[]): Target[] {
+        var targets: Target[] = [];
+        lambdaFunctions.forEach(lambda => {
+            targets.push(this.mapLambdaToTarget(lambda));
+        })
+        return targets;
     }
 }

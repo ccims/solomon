@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Logger, Param, Post, Put } from '@nestjs/common';
 import { ForwarderService } from './forwarder/forwarder.service';
-import SloRule from './models/slo-rule.model';
+import SloRule, { DeploymentEnvironment } from './models/slo-rule.model';
 
 @Controller('rules')
 export class AppController {
@@ -17,6 +17,12 @@ export class AppController {
   getRules() {
     this.logger.log('called getRules()')
     return this.forwarder.getRules();
+  }
+
+  @Get(':deploymentEnvironment/targets')
+  getTargetList(@Param('deploymentEnvironment') deplyomentEnvironment: DeploymentEnvironment) {
+    this.logger.log('called getTargets()')
+    return this.forwarder.getTargets(deplyomentEnvironment);
   }
 
   @Post()

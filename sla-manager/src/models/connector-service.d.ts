@@ -1,4 +1,5 @@
-import SloRule from "./slo-rule.model";
+import SloRule, { DeploymentEnvironment } from "./slo-rule.model";
+import { Target } from "./target.model";
 
 export interface ConnectorService {
 
@@ -6,6 +7,12 @@ export interface ConnectorService {
      * returns a list of all SLO rules / alarms that are active 
      */
     getRules(): Promise<SloRule[]>;
+
+    /**
+     * returns a list of all possible monitoring targets
+     * @param deploymentEnvironment - the environment for which possible targets should be fetched
+     */
+    getTargets(deploymentEnvironment?: DeploymentEnvironment): Promise<Target[]>;
 
     /**
      * returns true if the new rule / alarm was added successfully and false if not

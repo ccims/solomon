@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConnectorService } from 'src/models/connector-service';
 import SloRule from 'src/models/slo-rule.model';
+import { Target } from 'src/models/target.model';
 import { LambdaMetricInfos } from './cw.interface';
 import { CwRuleMapper } from './cw.rule-mapper';
 
@@ -14,6 +15,7 @@ export class CwConnectorService implements ConnectorService{
     
     private AWS = require('aws-sdk');
     private cw;
+    private lambda;
     private connected = false;
     private lambdaMetricInfos: LambdaMetricInfos;
 
@@ -24,6 +26,7 @@ export class CwConnectorService implements ConnectorService{
         this.AWS.config.update({region: REGION});
     
         this.cw = new this.AWS.CloudWatch();
+        this.lambda = new this.AWS.Lambda();
     
         this.connected = true;
         return ('successfully connected to AWS...') // + this.AWS.config.credentials.accessKeyId)
@@ -41,6 +44,25 @@ export class CwConnectorService implements ConnectorService{
             } else {
               var sloRules = CwRuleMapper.mapAlarmsToRules(data.MetricAlarms)
               resolve(sloRules)
+            }
+          })
+        })
+    }
+
+    // currently fetches only lambda functions TODO: fetch targets of other service types
+    getTargets(): Promise<Target[]> {
+        this.connected ? /*already connected */null : this.connectToAws();
+
+        const params = {};
+
+        return new Promise((resolve, reject) =>{
+          this.lambda.listFunctions(params, (err, data) => {
+            if (err) {
+              reject(new Error(err));
+            } else {
+              this.logger.debug(data);
+              var targets = CwRuleMapper.mapLambdasToTargets(data.Functions)
+              resolve(targets)
             }
           })
         })

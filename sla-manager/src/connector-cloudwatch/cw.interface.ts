@@ -39,5 +39,10 @@ export enum AwsNamespace {
     LOGS = 'AWS/Logs',
     APIGATEWAY = 'AWS/ApiGateway',
     S3 = 'AWS/S3'
+}
 
+export interface LambdaFunction {
+    FunctionName: string; // the name of the function
+    FunctionArn: string; //the Amazon Resource Name (ARN) assigned to the function
+    Description: string; // user-provided description of the lambda function
 }
