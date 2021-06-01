@@ -5,6 +5,7 @@ import { K8sConnectorService } from 'src/connector-kubernetes/k8s.service';
 import SloRule from 'src/models/slo-rule.model';
 import { DeploymentEnvironment } from 'src/models/slo-rule.model';
 import { Target } from 'src/models/target.model';
+import { SolomonInstanceConfig } from 'src/models/config.model';
 
 /**
  * The forwarder service contains the logic for **forwarding the requests** (e.g. getRules, addRule) 
@@ -14,24 +15,35 @@ import { Target } from 'src/models/target.model';
 @Injectable()
 export class ForwarderService implements ConnectorService{
     private readonly logger = new Logger(ForwarderService.name);
-    deploymentEnvironment = DeploymentEnvironment.AWS;
+    private config: SolomonInstanceConfig;
 
     constructor(private cwConnector: CwConnectorService,
                 private k8sConnector: K8sConnectorService) {}
 
-    setSelectedDeploymentEnvironment(selection: DeploymentEnvironment[]) {
-        // TODO: allow multiple selections?
-        this.deploymentEnvironment = selection[0] as DeploymentEnvironment;
-        this.logger.log('Selected the following deployment environment:');
-        this.logger.log(this.deploymentEnvironment);
+    // setSelectedDeploymentEnvironment(selection: DeploymentEnvironment[]) {
+    //     // TODO: allow multiple selections?
+    //     this.config.deploymentEnvironment = selection[0] as DeploymentEnvironment;
+    //     this.logger.log('Selected the following deployment environment:');
+    //     this.logger.log(this.config.deploymentEnvironment);
+    // }
+
+    setConfig(config: SolomonInstanceConfig) {
+        this.config = config;
+        this.logger.log('Set Config');
+        return this.config;
+    }
+
+    getConfig() {
+        return this.config;
     }
 
     getRules(): Promise<SloRule[]> {
-        switch (this.deploymentEnvironment) {
+        switch (this.config.deploymentEnvironment) {
             case DeploymentEnvironment.AWS:
                 return this.cwConnector.getRules();
             case DeploymentEnvironment.KUBERNETES:
                 this.logger.log('not yet implemented ...')
+                return null;
                 // return this.k8sPluginService.getRules();
         }
     }
@@ -47,7 +59,7 @@ export class ForwarderService implements ConnectorService{
     }
 
     addRule(rule: SloRule): Promise<boolean> {
-        switch (this.deploymentEnvironment) {
+        switch (this.config.deploymentEnvironment) {
             case DeploymentEnvironment.AWS:
                 return this.cwConnector.addRule(rule);
             case DeploymentEnvironment.KUBERNETES:
@@ -56,7 +68,7 @@ export class ForwarderService implements ConnectorService{
     }
 
     updateRule(rule: SloRule): Promise<boolean> {
-        switch (this.deploymentEnvironment) {
+        switch (this.config.deploymentEnvironment) {
             case DeploymentEnvironment.AWS:
                 return this.cwConnector.updateRule(rule);
             case DeploymentEnvironment.KUBERNETES:
@@ -65,7 +77,7 @@ export class ForwarderService implements ConnectorService{
     }
 
     deleteRule(name: string): Promise<boolean> {
-        switch (this.deploymentEnvironment) {
+        switch (this.config.deploymentEnvironment) {
             case DeploymentEnvironment.AWS:
                 return this.cwConnector.deleteRule(name);
             case DeploymentEnvironment.KUBERNETES:

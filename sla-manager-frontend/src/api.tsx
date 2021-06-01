@@ -2,11 +2,13 @@ import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 import Axios from "axios"
 import SlaRule from "./models/sla-rule.model";
 import * as k8s from '@kubernetes/client-node';
+import { DeploymentEnvironment, SolomonInstanceConfig } from "./models/config.model";
+import { isConstructorDeclaration } from "typescript";
 
 
 // TODO: use env file
 // TODO: Set production urls as kubernetes services
-const slaManagerApi = "http://localhost:6400/rule/"
+const slaManagerApi = "http://localhost:6400/rules/"
 const prometheusApi = "http://localhost:9090/api/v1/"
 const gropiusApi = "http://localhost:8080/api/"
 
@@ -56,6 +58,16 @@ export const fetchTargets = async (): Promise<string[]> => {
     targets = targets.filter((v, i, a) => a.indexOf(v) === i);
 
     return targets;
+}
+
+export const fetchConfig = async (): Promise<SolomonInstanceConfig> => {
+    const res = await Axios.get<SolomonInstanceConfig>(`${slaManagerApi}config`);
+    return res.data;
+}
+
+export const setConfig = async (config: SolomonInstanceConfig): Promise<boolean> => {
+    const res = await Axios.post(`${slaManagerApi}config`, config);
+    return res.data;
 }
 
 export const fetchGropiusProjects = async (): Promise<any[]> => {

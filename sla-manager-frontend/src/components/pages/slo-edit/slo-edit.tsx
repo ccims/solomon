@@ -1,8 +1,8 @@
 import { useHistory, useParams } from "react-router-dom";
 import { Box, Button, Card, Checkbox, Container, FormControl, InputLabel, List, ListItem, ListItemIcon, ListItemText, ListSubheader, makeStyles, MenuItem, Select, TextField } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
-import { fetchRule, postRule, addRule, fetchTargets, fetchGropiusProjects } from "../api";
-import SlaRule, { FunctionOptions, MetricOptions, OperatorOptions, PresetOptions } from "../models/sla-rule.model";
+import { fetchRule, postRule, addRule, fetchTargets, fetchGropiusProjects } from "../../../api";
+import SlaRule, { FunctionOptions, MetricOptions, OperatorOptions, PresetOptions } from "../../../models/sla-rule.model";
 import { Formik, useField } from "formik";
 
 const useStyles = makeStyles((theme) => ({
@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function RuleEditPage() {
+export default function SloEditPage() {
 
     let { id } = useParams<{ id: string }>();
 
@@ -237,6 +237,11 @@ export default function RuleEditPage() {
                             </Select>
                         </FormControl>
                         { presetInput }
+                        TODO: Select Gropius Component
+                        <br></br>
+                        TODO: Input Service Url
+                        <br></br>
+                        Depricted:
                         { gropiusProjectsInput() }
                         { gropiusComponentInput() }
                         { assignPrometheusTargetInput() }
