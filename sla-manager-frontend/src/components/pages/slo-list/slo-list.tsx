@@ -1,13 +1,11 @@
-import { ApolloClient, gql, InMemoryCache } from "@apollo/client/core";
 import { Button, Container } from "@material-ui/core";
-import Axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchRules } from "../api";
-import SlaItem from "../components/rule-item";
-import SlaRule from "../models/sla-rule.model";
+import { fetchRules } from "../../../api";
+import SlaRule from "../../../models/sla-rule.model";
+import SlaItem from "./slo-list-item";
 
-export default function HomePage() {
+export default function SloListPage() {
 
     const [slas, setSLAs] = useState<SlaRule[]>();
 
@@ -15,8 +13,10 @@ export default function HomePage() {
         fetchRules().then(res => setSLAs(res));
     }, [])
 
+    console.log("SLOs", slas ?? undefined);
+
     return <Container>
-        { slas?.map(sla => <SlaItem key={sla.id} sla={sla}></SlaItem>) ?? [] }
+        {/* { slas?.map(sla => <SlaItem key={sla.id} sla={sla}></SlaItem>) ?? [] } */}
         <Link to="/sla/">
             <Button variant="contained" color="secondary">Add SLA</Button>
         </Link>

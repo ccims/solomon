@@ -1,7 +1,7 @@
 import { Box, Card } from "@material-ui/core";
 import React from "react";
 import { Link } from "react-router-dom";
-import SlaRule from "../models/sla-rule.model";
+import SlaRule from "../../../models/sla-rule.model";
 
 type SlaItemProps = { sla: SlaRule };
 
