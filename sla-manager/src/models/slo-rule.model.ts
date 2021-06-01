@@ -1,11 +1,13 @@
 export default interface SloRule {
-    id: string; // corresponds to AlarmArn in CW, can be generated id for Prometheus
+    id: string; // corresponds to AlarmArn in CW, can be a generated id for Prometheus
     name: string; // display name of the rule, provided by user
     description?: string; // displayed description of the rule, provided by user
 
-    deploymentEnvironment: DeploymentEnvironment; // the environment where the application that is to be monitored is deployed, e.g. AWS, or Kubernetes
-    targetId: string; // id used by the monitoringTool to identify the resource for which the rule should apply
+    deploymentEnvironment: DeploymentEnvironment; // the environment where the component of the application that is to be monitored is deployed, e.g. AWS, or Kubernetes
+    targetId: string; // id used by the monitoring tool in the deployment environment to identify the resource for which the rule should apply
+
     gropiusProjectId?: string; // id of the gropius project for which issues shall be created
+    gropiusComponentId?: string; // id of the component modelled in a gropius project and which is linked in the created issue
 
     metricType?: string; // type of metric, e.g. availability, response time, duration etc.
     metricOption?: MetricOptions; // need for Prometheus? e.g. up, probe_success
@@ -15,7 +17,6 @@ export default interface SloRule {
     threshold: number; // number against which to measure
 }
 
-// TODO: allow selection of both? prom+cw?
 export enum DeploymentEnvironment {
     AWS = 'aws',
     KUBERNETES = 'kubernetes',
