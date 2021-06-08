@@ -15,7 +15,7 @@ import { SolomonInstanceConfig } from 'src/models/config.model';
 @Injectable()
 export class ForwarderService implements ConnectorService{
     private readonly logger = new Logger(ForwarderService.name);
-    private config: SolomonInstanceConfig;
+    // private config: SolomonInstanceConfig;
 
     constructor(private cwConnector: CwConnectorService,
                 private k8sConnector: K8sConnectorService) {}
@@ -27,18 +27,18 @@ export class ForwarderService implements ConnectorService{
     //     this.logger.log(this.config.deploymentEnvironment);
     // }
 
-    setConfig(config: SolomonInstanceConfig) {
-        this.config = config;
-        this.logger.log('Set Config');
-        return this.config;
-    }
+    // setConfig(config: SolomonInstanceConfig) {
+    //     this.config = config;
+    //     this.logger.log('Set Config');
+    //     return this.config;
+    // }
 
-    getConfig() {
-        return this.config;
-    }
+    // getConfig() {
+    //     return this.config;
+    // }
 
-    getRules(): Promise<SloRule[]> {
-        switch (this.config.deploymentEnvironment) {
+    getRules(deploymentEnvironment: DeploymentEnvironment): Promise<SloRule[]> {
+        switch (deploymentEnvironment) {
             case DeploymentEnvironment.AWS:
                 return this.cwConnector.getRules();
             case DeploymentEnvironment.KUBERNETES:
@@ -59,7 +59,7 @@ export class ForwarderService implements ConnectorService{
     }
 
     addRule(rule: SloRule): Promise<boolean> {
-        switch (this.config.deploymentEnvironment) {
+        switch (rule.deploymentEnvironment) {
             case DeploymentEnvironment.AWS:
                 return this.cwConnector.addRule(rule);
             case DeploymentEnvironment.KUBERNETES:
@@ -68,7 +68,7 @@ export class ForwarderService implements ConnectorService{
     }
 
     updateRule(rule: SloRule): Promise<boolean> {
-        switch (this.config.deploymentEnvironment) {
+        switch (rule.deploymentEnvironment) {
             case DeploymentEnvironment.AWS:
                 return this.cwConnector.updateRule(rule);
             case DeploymentEnvironment.KUBERNETES:
@@ -76,8 +76,8 @@ export class ForwarderService implements ConnectorService{
         }
     }
 
-    deleteRule(name: string): Promise<boolean> {
-        switch (this.config.deploymentEnvironment) {
+    deleteRule(name: string, env: DeploymentEnvironment): Promise<boolean> {
+        switch (env) {
             case DeploymentEnvironment.AWS:
                 return this.cwConnector.deleteRule(name);
             case DeploymentEnvironment.KUBERNETES:

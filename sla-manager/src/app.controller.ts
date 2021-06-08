@@ -3,49 +3,49 @@ import { ForwarderService } from './forwarder/forwarder.service';
 import SloRule, { DeploymentEnvironment } from './models/slo-rule.model';
 import { SolomonInstanceConfig } from './models/config.model';
 
-@Controller('rules')
+@Controller('solomon')
 export class AppController {
   private readonly logger = new Logger(AppController.name);
   constructor(private forwarder: ForwarderService) {}
 
 
-  @Get()
-  getRules() {
-    this.logger.log(`called getRules() ${this.forwarder.getRules()}`)
-    return this.forwarder.getRules();
+  @Get('rules/:deploymentEnvironment')
+  getRules(@Param('deploymentEnvironment') env: DeploymentEnvironment) {
+    this.logger.log('called getRules()')
+    return this.forwarder.getRules(env);
   }
 
-  @Get(':deploymentEnvironment/targets')
-  getTargetList(@Param('deploymentEnvironment') deplyomentEnvironment: DeploymentEnvironment) {
+  @Get('targets/:deploymentEnvironment')
+  getTargetList(@Param('deploymentEnvironment') env: DeploymentEnvironment) {
     this.logger.log('called getTargets()')
-    return this.forwarder.getTargets(deplyomentEnvironment);
+    return this.forwarder.getTargets(env);
   }
   
-  @Post('config')
-  setConfig(@Body() config: SolomonInstanceConfig) {
-    return this.forwarder.setConfig(config);
-  }
+  // @Post('config')
+  // setConfig(@Body() config: SolomonInstanceConfig) {
+  //   return this.forwarder.setConfig(config);
+  // }
 
-  @Get('config')
-  getConfig() {
-    return this.forwarder.getConfig();
-  }
+  // @Get('config')
+  // getConfig() {
+  //   return this.forwarder.getConfig();
+  // }
 
-  @Post()
+  @Post('rules')
   addRule(@Body() rule: SloRule) {
     this.logger.log('called addRule()')
     return this.forwarder.addRule(rule);
   }
 
-  @Put(':name')
+  @Put('rules/:name')
   updateRule(@Body() rule: SloRule) {
     this.logger.log('called updateRule(id)')
     return this.forwarder.updateRule(rule);
   }
 
-  @Delete(':name')
-  deleteRule(@Param('name') ruleName: string) {
-    this.logger.log('called deleteRule(id)')
-    return this.forwarder.deleteRule(ruleName);
+  @Delete('rules/:deploymentEnvironment/:name')
+  deleteRule(@Param('deploymentEnvironment') env: DeploymentEnvironment, @Param('name') ruleName: string) {
+    this.logger.log('called deleteRule()')
+    return this.forwarder.deleteRule(ruleName, env);
   }
 }

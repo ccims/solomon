@@ -5,14 +5,15 @@ export interface ConnectorService {
 
     /**
      * returns a list of all SLO rules / alarms that are active 
+     * @param env - (optional) deployment environment for which the rule should be fetched
      */
-    getRules(): Promise<SloRule[]>;
+    getRules(env?: DeploymentEnvironment): Promise<SloRule[]>;
 
     /**
      * returns a list of all possible monitoring targets
-     * @param deploymentEnvironment - the environment for which possible targets should be fetched
+     * @param env - the environment for which possible targets should be fetched
      */
-    getTargets(deploymentEnvironment?: DeploymentEnvironment): Promise<Target[]>;
+    getTargets(env?: DeploymentEnvironment): Promise<Target[]>;
 
     /**
      * returns true if the new rule / alarm was added successfully and false if not
@@ -29,6 +30,7 @@ export interface ConnectorService {
     /**
      * returns true if rule was deleted successfully 
      * @param ruleName - name of the rule that should be deleted
+     * @param env - (optional) deployment environment for which the rule applies
      */
-    deleteRule(ruleName: string): Promise<boolean>;
+    deleteRule(ruleName: string, env?: DeploymentEnvironment): Promise<boolean>;
 }
