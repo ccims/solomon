@@ -1,6 +1,10 @@
 import SloRule, { DeploymentEnvironment } from "./slo-rule.model";
 import { Target } from "./target.model";
 
+/**
+ * The interface to be used by the forwarder as well as all the connectors.
+ * It defines the **basic operations every connector should implement**.
+ */
 export interface ConnectorService {
 
     /**

@@ -5,37 +5,19 @@ import { K8sConnectorService } from 'src/connector-kubernetes/k8s.service';
 import SloRule from 'src/models/slo-rule.model';
 import { DeploymentEnvironment } from 'src/models/slo-rule.model';
 import { Target } from 'src/models/target.model';
-import { SolomonInstanceConfig } from 'src/models/config.model';
 
 /**
  * The forwarder service contains the logic for **forwarding the requests** (e.g. getRules, addRule) 
- * that arrive at the app controller **to the respective plugins** that are used to connect 
- * to **different monitoring tools** (e.g. CloudWatch, Prometheus).
+ * that arrive at the app controller **to the respective connectors** that are used to connect 
+ * to **different monitoring tools** (e.g. AWS: CloudWatch, Kubernetes: Prometheus).
  */
 @Injectable()
 export class ForwarderService implements ConnectorService{
     private readonly logger = new Logger(ForwarderService.name);
-    // private config: SolomonInstanceConfig;
 
     constructor(private cwConnector: CwConnectorService,
                 private k8sConnector: K8sConnectorService) {}
 
-    // setSelectedDeploymentEnvironment(selection: DeploymentEnvironment[]) {
-    //     // TODO: allow multiple selections?
-    //     this.config.deploymentEnvironment = selection[0] as DeploymentEnvironment;
-    //     this.logger.log('Selected the following deployment environment:');
-    //     this.logger.log(this.config.deploymentEnvironment);
-    // }
-
-    // setConfig(config: SolomonInstanceConfig) {
-    //     this.config = config;
-    //     this.logger.log('Set Config');
-    //     return this.config;
-    // }
-
-    // getConfig() {
-    //     return this.config;
-    // }
 
     getRules(deploymentEnvironment: DeploymentEnvironment): Promise<SloRule[]> {
         switch (deploymentEnvironment) {

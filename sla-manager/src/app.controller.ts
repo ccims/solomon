@@ -1,7 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Logger } from '@nestjs/common';
 import { ForwarderService } from './forwarder/forwarder.service';
 import SloRule, { DeploymentEnvironment } from './models/slo-rule.model';
-import { SolomonInstanceConfig } from './models/config.model';
 
 @Controller('solomon')
 export class AppController {
@@ -20,16 +19,6 @@ export class AppController {
     this.logger.log('called getTargets()')
     return this.forwarder.getTargets(env);
   }
-  
-  // @Post('config')
-  // setConfig(@Body() config: SolomonInstanceConfig) {
-  //   return this.forwarder.setConfig(config);
-  // }
-
-  // @Get('config')
-  // getConfig() {
-  //   return this.forwarder.getConfig();
-  // }
 
   @Post('rules')
   addRule(@Body() rule: SloRule) {
