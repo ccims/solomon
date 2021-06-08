@@ -7,10 +7,11 @@ export class CwRuleMapper {
         var rule: SloRule = {
             id: alarm.AlarmArn,
             name: alarm.AlarmName,
-            description: alarm.AlarmDescription,
+            description: this.getAlarmDescription(alarm.AlarmDescription),
             deploymentEnvironment: DeploymentEnvironment.AWS,
             targetId: this.getTargetName(alarm.Dimensions),
-            gropiusProjectId: this.getGropiusProjectId(), 
+            gropiusProjectId: this.getGropiusProjectId(alarm.AlarmDescription), 
+            gropiusComponentId: this.getGropiusComponentId(alarm.AlarmDescription),
             metricType: alarm.MetricName,
             comparisonOperator: alarm.ComparisonOperator as ComparisonOperator,
             statistic: alarm.Statistic as StatisticsOption,
@@ -32,7 +33,7 @@ export class CwRuleMapper {
     static mapRuleToAlarm(rule: SloRule): Alarm {
         var alarm: Alarm = {
             AlarmName: rule.name,
-            AlarmDescription: rule.description,
+            AlarmDescription: this.generateAlarmDescription(rule),
             MetricName: rule.metricType,
             Namespace: this.getAwsNamespace(),
             Statistic: rule.statistic,
@@ -42,9 +43,18 @@ export class CwRuleMapper {
             DatapointsToAlarm: 1,
             Threshold: rule.threshold,
             ComparisonOperator: rule.comparisonOperator,
-            ActionsEnabled: false
+            ActionsEnabled: false // TODO: has to be activated!!
         }
         return alarm;
+    }
+
+    private static generateAlarmDescription(rule: SloRule): string {
+        var description = rule.description;
+        description = description.concat(' //// ');
+        description = description.concat('gropiusProjectId:', rule.gropiusProjectId, ' ');
+        description = description.concat('gropiusComponentId:', rule.gropiusComponentId);
+
+        return description;
     }
 
     // TODO: FunctionName works only for Lambda, other types possible too...
@@ -58,9 +68,25 @@ export class CwRuleMapper {
         return targetName;
     }
 
-    // TODO: implement getGropiusProjectId()
-    private static getGropiusProjectId() {
-        return 'gropius-project-id-mock'
+    private static getGropiusProjectId(alarmDescription: string) {
+        var matchRes = alarmDescription.match(/gropiusProjectId:([^\s])*/);
+        if (matchRes == null) {
+            return 'undefined'
+        }
+        return matchRes[0].replace('gropiusProjectId:','');
+    }
+
+    private static getGropiusComponentId(alarmDescription: string) {
+        var matchRes = alarmDescription.match(/gropiusComponentId:([^\s])*/);
+        if (matchRes == null) {
+            return 'undefined'
+        }
+        return matchRes[0].replace('gropiusComponentId:','');
+    }
+
+    private static getAlarmDescription(alarmDescription: string) {
+        var desc = alarmDescription.split(' ////')[0];
+        return desc;
     }
 
     // TODO: implement getAwsNamespace()
