@@ -2,6 +2,10 @@
 /dist
 /node_modules
 
+# secret stuff
+*/certificate
+*/credentials
+
 # Logs
 logs
 *.log
