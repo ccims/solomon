@@ -84,8 +84,12 @@ export class CwConnectorService implements ConnectorService{
             if (err) {
               reject(new Error(err));
             } else {
-              this.logger.debug(data.Topics);
-              resolve(data.Topics)
+              this.logger.debug(data);
+              var topicArns = [];
+              data.Topics.forEach(topic => {
+                topicArns.push(topic.TopicArn)
+              });
+              resolve(topicArns)
             }
           })
         })
