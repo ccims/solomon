@@ -16,11 +16,11 @@ async function bootstrap() {
   const basicAuthUser = JSON.parse(rawData.toString());
   
   const app = await NestFactory.create(AppModule, {
-    httpsOptions,
+    // httpsOptions,
   });
   app.enableCors();
-  app.use(basicAuth(basicAuthUser));
+  // app.use(basicAuth(basicAuthUser));
 
-  await app.listen(443); // set 80 to directly access from fargate (was 6400)
+  await app.listen(6400); // set 80 to directly access from fargate (was 6400)
 }
 bootstrap();

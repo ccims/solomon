@@ -7,6 +7,7 @@ import { ConnectorAzureModule } from './connector-azure/connector-azure.module';
 import { ConnectorCloudwatchModule } from './connector-cloudwatch/connector-cloudwatch.module';
 import { ConnectorKubernetesModule } from './connector-kubernetes/connector-kubernetes.module';
 import { AlertHandlerModule } from './alert-handler/alert-handler.module';
+import { GropiusModule } from './gropius-manager/gropius-manager.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AlertHandlerModule } from './alert-handler/alert-handler.module';
     ConnectorCloudwatchModule,
     ConnectorKubernetesModule,
     AlertHandlerModule,
+    GropiusModule,
   ],
   controllers: [AppController, IssueManagerController],
   providers: [Logger, IssueManagerService],
