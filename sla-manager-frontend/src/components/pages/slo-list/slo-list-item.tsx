@@ -1,11 +1,11 @@
 import { Box, Card } from "@material-ui/core";
 import React from "react";
 import { Link } from "react-router-dom";
-import SlaRule from "../../../models/sla-rule.model";
+import { SloRule } from "../../../../../solomon-models/dist";
 
-type SlaItemProps = { sla: SlaRule };
+type SloItemProps = { sla: SloRule };
 
-export default function SlaItem({ sla }: SlaItemProps) {
+export default function SloItem({ sla }: SloItemProps) {
 
     return (
         // TODO add edit icon

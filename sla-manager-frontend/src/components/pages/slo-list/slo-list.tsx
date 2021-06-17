@@ -1,23 +1,24 @@
 import { Button, Container } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { SloRule } from "../../../../../solomon-models/dist";
 import { fetchRules } from "../../../api";
-import SlaRule from "../../../models/sla-rule.model";
-import SlaItem from "./slo-list-item";
+import { SELECTED_ENV } from "../../../App";
+import { RoutePaths } from "../../../routes";
+import SloItem from "./slo-list-item";
 
 export default function SloListPage() {
 
-    const [slas, setSLAs] = useState<SlaRule[]>();
+    const [slos, setSLOs] = useState<SloRule[]>();
 
+    // TODO:
     useEffect(() => {
-        fetchRules().then(res => setSLAs(res));
+        fetchRules(SELECTED_ENV).then(res => setSLOs(res));
     }, [])
 
-    console.log("SLOs", slas ?? undefined);
-
     return <Container>
-        {/* { slas?.map(sla => <SlaItem key={sla.id} sla={sla}></SlaItem>) ?? [] } */}
-        <Link to="/sla/">
+        { slos?.map(sla => <SloItem key={sla.id} sla={sla}></SloItem>) ?? [] }
+        <Link to={RoutePaths.SLO_EDIT}>
             <Button variant="contained" color="secondary">Add SLA</Button>
         </Link>
     </Container>

@@ -1,252 +1,249 @@
-import { useHistory, useParams } from "react-router-dom";
-import { Box, Button, Card, Checkbox, Container, FormControl, InputLabel, List, ListItem, ListItemIcon, ListItemText, ListSubheader, makeStyles, MenuItem, Select, TextField } from "@material-ui/core";
+import {
+    Box,
+    Button,
+    Card,
+    Container, ListItem, makeStyles
+} from "@material-ui/core";
+import { Field, Formik } from "formik";
+import { Select, TextField } from "formik-material-ui";
 import React, { useEffect, useState } from "react";
-import { fetchRule, postRule, addRule, fetchTargets, fetchGropiusProjects } from "../../../api";
-import SlaRule, { FunctionOptions, MetricOptions, OperatorOptions, PresetOptions } from "../../../models/sla-rule.model";
-import { Formik, useField } from "formik";
+import {
+    DeploymentEnvironment, FunctionOptions,
+    MetricOptions,
+    OperatorOptions,
+    PresetOptions, SloRule, Target
+} from "solomon-models/";
+import * as Yup from "yup";
+import { fetchGropiusComponents, fetchTargets, postRule } from "../../../api";
+import { SELECTED_ENV, SELECTED_GROPIUS_PROJECT_ID } from "../../../App";
+
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        '& > *': {
+        "& > *": {
             margin: theme.spacing(1),
         },
     },
 }));
 
 export default function SloEditPage() {
-
-    let { id } = useParams<{ id: string }>();
-
-    const [sla, setSla] = useState<SlaRule>();
-    const [targets, setTarget] = useState<string[]>();
-    const [gropiusProjects, setGropiusProjects] = useState<any[]>();
-    const router = useHistory();
     const classes = useStyles();
 
+    const [targets, setTargets] = useState<Target[]>(undefined);
+    const [gropiusComponents, setGropiusComponents] = useState<any[]>(undefined);
+
     useEffect(() => {
-        fetchTargets().then(res => setTarget(res));
-        fetchGropiusProjects().then(res => setGropiusProjects(res));
-        if (id) {
-            fetchRule(id).then(res => setSla(res));
-        } else {
-            setSla({
-                name: "",
-                description: "",
-                duration: "",
-                preset: PresetOptions.AVAILABILITY,
-                gropiusTargets: {},
-                function: FunctionOptions.AVG_OVER_TIME,
-                metric: MetricOptions.PROBE_SUCCESS,
-                operator: OperatorOptions.SMALLER_THEN,
-                value: 1,
-            })
-        }
-    }, [id])
+        fetchTargets(SELECTED_ENV).then((res) => setTargets(res));
+        fetchGropiusComponents(SELECTED_GROPIUS_PROJECT_ID).then((res) => setGropiusComponents(res));
+    }, [])
 
-    function updateRule() {
-        console.log(sla);
-        if (id) {
-            postRule(sla).then(res => console.log("Post", res));
-        } else {
-            addRule(sla).then(res => console.log("Add", res));
-        }
-        router.push("/")
-    }
+    const defaultValues: SloRule = {
+        name: "",
+        description: "",
 
-    function onSelectPreset(preset: string) {
-        switch (preset) {
-            case PresetOptions.AVAILABILITY:
-                setSla(Object.assign({}, sla, {
-                        preset: preset,
-                        metric: MetricOptions.PROBE_SUCCESS,
-                        operator: OperatorOptions.SMALLER_THEN,
-                        function: FunctionOptions.AVG_OVER_TIME
-                    }
-                ));
-                break;
-            case PresetOptions.RESPONSE_TIME:
-                setSla(Object.assign({}, sla, {
-                        preset: preset,
-                        metric: MetricOptions.RESPONSE_TIME,
-                        operator: OperatorOptions.GREATER_THEN,
-                        function: FunctionOptions.AVG_OVER_TIME
-                    }
-                ));
-                break;
-            case PresetOptions.CUSTOM:
-                setSla(Object.assign({}, sla, {
-                        preset: preset,
-                        metric: undefined,
-                        operator: undefined,
-                        function: undefined
-                    }
-                ));
-                break;
-            default:
-                break;
-        } 
-    }
+        deploymentEnvironment: DeploymentEnvironment.KUBERNETES,
+        targetId: "",
+        gropiusProjectId: "",
+        gropiusComponentId: "", 
 
-    function durationInput() {
-        return <TextField onChange={ (event) => setSla(Object.assign({}, sla, { duration: event.target.value })) } value={sla?.duration ?? ""} variant="outlined" fullWidth id="duration" label="duration"></TextField>
-    }
+        preset: PresetOptions.AVAILABILITY,
+        metric: MetricOptions.PROBE_SUCCESS,
+        operator: OperatorOptions.SMALLER_THEN,
+        function: FunctionOptions.AVG_OVER_TIME,
 
-    function valueInput() {
-        return <TextField onChange={ (event) => setSla(Object.assign({}, sla, { value: event.target.value })) } value={sla?.value ?? ""} variant="outlined" fullWidth id="value" label="value" type="number"></TextField>
-
-    }
-
-    function availabilityInputs() {
-        return <React.Fragment>
-            { durationInput() }
-            { valueInput() }
-        </React.Fragment>
-    }
-    
-    function responseTimeInput() {
-        return <React.Fragment>
-            { durationInput() }
-            { valueInput() }
-        </React.Fragment>
-    }
-
-    function customInputs() {
-        return <React.Fragment>
-            <FormControl fullWidth variant="outlined">
-                <InputLabel>Metric</InputLabel>
-                <Select variant="outlined" fullWidth onChange={ (event) => setSla(Object.assign({}, sla, { metric: event.target.value })) } value={sla?.metric ?? ""} id="metric" label="metric">
-                    { Object.values(MetricOptions).map(value => <MenuItem key={value} value={value}>{ value }</MenuItem> ) }
-                </Select>
-            </FormControl>
-            <FormControl fullWidth variant="outlined">
-                <InputLabel>Operator</InputLabel>
-                <Select variant="outlined" fullWidth onChange={ (event) => setSla(Object.assign({}, sla, { operator: event.target.value })) } value={sla?.operator ?? ""} id="operator" label="operator">
-                    { Object.values(OperatorOptions).map(value => <MenuItem key={value} value={value}>{ value }</MenuItem> ) }
-                </Select>
-            </FormControl>
-            <FormControl fullWidth variant="outlined">
-                <InputLabel>Function</InputLabel>
-                <Select variant="outlined" fullWidth onChange={ (event) => setSla(Object.assign({}, sla, { function: event.target.value })) } value={sla?.function ?? ""} id="function" label="function">
-                    { Object.values(FunctionOptions).map(value => <MenuItem key={value} value={value}>{ value }</MenuItem> ) }
-                </Select>
-            </FormControl>
-            { durationInput() }
-            { valueInput() }
-        </React.Fragment>
-    }
-
-    function gropiusProjectsInput() {
-        return <FormControl fullWidth variant="outlined">
-            <InputLabel>Gropius Project</InputLabel>
-            <Select variant="outlined" fullWidth onChange={ (event) => setSla(Object.assign({}, sla, { gropiusProjectId: event.target.value })) } value={sla?.gropiusProjectId ?? ""} id="project" label="project">
-                { gropiusProjects?.map((project: any) => <MenuItem key={project.node.id} value={project.node.id}>{ project.node.name }</MenuItem> ) }
-            </Select>
-        </FormControl>
-    }
-
-    function gropiusComponentInput() {
-        const selectedProject = gropiusProjects?.find(project => project.node.id === sla?.gropiusProjectId);
-
-        function addOrRemoveId(id: string) {
-            if (id in sla?.gropiusTargets) {
-                const targets = sla.gropiusTargets ?? new Map();
-                delete targets[id];
-                setSla(Object.assign({}, sla, { gropiusTargets: targets }));
-            } else {
-                const targets = sla.gropiusTargets ?? new Map();
-                targets[id] = undefined;
-                setSla(Object.assign({}, sla, { gropiusTargets: targets }));
-            }
-        }
-
-        return <List subheader={ <ListSubheader>Targets</ListSubheader> }>
-            { selectedProject?.node.components?.edges?.map((component: any) => <ListItem key={component.node.id}>
-                <ListItemIcon>
-                    <Checkbox onChange={ () => addOrRemoveId(component.node.id) } checked={ component.node.id in sla?.gropiusTargets }></Checkbox>
-                </ListItemIcon>
-                <ListItemText primary={component.node.name}/>
-            </ListItem>) }
-        </List>
-    }
-
-    function assignPrometheusTargetInput() {
-
-        function assignService(target: string, service) {
-            const targets = sla.gropiusTargets;
-            targets[target] = service;
-            setSla(Object.assign({}, sla, { gropiusTargets: targets }))
-        }
-        
-        
-        const selectedProject = gropiusProjects?.find(project => project.node.id === sla?.gropiusProjectId);
-        return Object.keys(sla?.gropiusTargets ?? []).map(id => {
-            const component = selectedProject?.node.components?.edges?.find((component: any) => component.node.id === id);
-            if (component) {
-                return <TextField onChange={ (event) => assignService(id, event.target.value) } value={sla?.gropiusTargets[id] ?? ""} variant="outlined" fullWidth id="service" label={`Assign Service for ${ component.node.name }`}></TextField>
- 
-                // return <FormControl key={id} fullWidth variant="outlined">
-                //     <InputLabel>Assign Service for { component.node.name }</InputLabel>
-                //     <Select variant="outlined" fullWidth onChange={ (event) => assignService(id, event.target.value) } value={ sla.gropiusTargets[id] } id="prometheusTarget" label="prometheusTarget">
-                //         { targets?.map(value => (<MenuItem key={value} value={value}>
-                //             <ListItemText primary={value}></ListItemText>
-                //         </MenuItem>) ) }
-                //     </Select>
-                // </FormControl>
-            } else {
-                <React.Fragment></React.Fragment>
-            }
-        })
-    }
-
-    let presetInput;
-    switch (sla?.preset) {
-        case PresetOptions.AVAILABILITY:
-            presetInput = availabilityInputs();
-            break;
-        case PresetOptions.RESPONSE_TIME:
-            presetInput = responseTimeInput();
-            break;
-        case PresetOptions.CUSTOM:
-            presetInput = customInputs();
-            break;
-        default:
-            break;
+        value: 1,
+        duration: 60
     }
 
     return (
         <Container>
             <Card>
                 <Box p={2}>
-                    <Box p={2}>
-                    <h3>Edit SLA Rule {sla?.name}</h3>
-                    </Box>
-                    <form className={ classes.root }>
-                        {/* TODO: Validation */}
-                        <TextField onChange={ (event) => setSla(Object.assign({}, sla, { name: event.target.value })) } value={sla?.name ?? ""} variant="outlined" fullWidth id="name" label="name"></TextField>
-                        <TextField onChange={ (event) => setSla(Object.assign({}, sla, { description: event.target.value })) } value={sla?.description ?? ""} variant="outlined" fullWidth id="description" label="description" multiline></TextField>
-                        <FormControl fullWidth variant="outlined">
-                            <InputLabel>SLA  Presets</InputLabel>
-                            <Select 
-                                variant="outlined"
-                                fullWidth
-                                onChange={ (event) => onSelectPreset(event.target.value as string) }
-                                value={sla?.preset ?? ""}
-                                id="preset"
-                                label="preset">
-                                { Object.values(PresetOptions).map(value => <MenuItem key={value} value={value}>{ value }</MenuItem> ) }
-                            </Select>
-                        </FormControl>
-                        { presetInput }
-                        TODO: Select Gropius Component
-                        <br></br>
-                        TODO: Input Service Url
-                        <br></br>
-                        Depricted:
-                        { gropiusProjectsInput() }
-                        { gropiusComponentInput() }
-                        { assignPrometheusTargetInput() }
-                        <Button variant="contained" color="secondary" onClick={ updateRule }>Save</Button>
-                    </form>
+                    <Formik
+                        initialValues={defaultValues}
+                        validationSchema={Yup.object({
+                            // TODO: comprehensive validation
+                            name: Yup.string().required("Required"),
+                            value: Yup.string().required("Required"),
+                            duration: Yup.string().required("Required"),
+                          })}
+                        onSubmit={(values) => {
+                            postRule(values);
+                        }}
+                    >
+                        {({ values, handleSubmit, setFieldValue }) => (
+                            <div className={classes.root}>
+                                <p>Meta Data</p>
+                                <Field
+                                    component={TextField}
+                                    fullWidth
+                                    variant="outlined"
+                                    label="Name"
+                                    name="name"
+                                    type="text"
+                                    placeholder="Name"
+                                ></Field>
+                                <Field
+                                    component={TextField}
+                                    fullWidth
+                                    variant="outlined"
+                                    label="Description"
+                                    name="description"
+                                    type="text"
+                                    placeholder="Description"
+                                ></Field>
+
+                                <p>Targets</p>
+                                <Field
+                                    component={Select}
+                                    type="checkbox"
+                                    fullWidth
+                                    variant="outlined"
+                                    label="deploymentEnvironment"
+                                    name="deploymentEnvironment"
+                                >
+                                    {Object.values(DeploymentEnvironment).map((value) => (
+                                        <ListItem key={value} value={value}>
+                                            {value}
+                                        </ListItem>
+                                    ))}
+                                </Field>
+
+                                <Field
+                                    component={Select}
+                                    type="checkbox"
+                                    fullWidth
+                                    variant="outlined"
+                                    label="deploymentEnvironment"
+                                    name="deploymentEnvironment"
+                                >
+                                    {targets?.map((target) => (
+                                        <ListItem key={target.targetId} value={target.targetId}>
+                                            {target.targetName}
+                                        </ListItem>
+                                    ))}
+                                </Field>
+
+                                <Field
+                                    component={TextField}
+                                    fullWidth
+                                    variant="outlined"
+                                    label="gropiusProjectId"
+                                    name="gropiusProjectId"
+                                    type="number"
+                                    placeholder="gropiusProjectId"
+                                ></Field>
+
+                                <Field
+                                    component={TextField}
+                                    fullWidth
+                                    variant="outlined"
+                                    label="gropiusComponentId"
+                                    name="gropiusComponentId"
+                                    type="number"
+                                    placeholder="gropiusComponentId"
+                                ></Field>
+
+                                <p>Properties</p>
+                                <Field
+                                    component={Select}
+                                    type="checkbox"
+                                    fullWidth
+                                    variant="outlined"
+                                    label="Preset"
+                                    name="preset"
+                                    onChange={(e) => {
+                                        if (e.target.value === PresetOptions.AVAILABILITY) {
+                                            setFieldValue("preset", PresetOptions.AVAILABILITY);
+                                            setFieldValue("metric", MetricOptions.PROBE_SUCCESS);
+                                            setFieldValue("operator", OperatorOptions.SMALLER_THEN);
+                                            setFieldValue("function", FunctionOptions.AVG_OVER_TIME);
+                                        } else if (e.target.value === PresetOptions.RESPONSE_TIME) {
+                                            setFieldValue("preset", PresetOptions.RESPONSE_TIME);
+                                            setFieldValue("metric", MetricOptions.RESPONSE_TIME);
+                                            setFieldValue("operator", OperatorOptions.GREATER_THEN);
+                                            setFieldValue("function", FunctionOptions.AVG_OVER_TIME);
+                                        } else {
+                                            setFieldValue("preset", PresetOptions.CUSTOM);
+                                        }
+                                    }}
+                                >
+                                    {Object.values(PresetOptions).map((value) => (
+                                        <ListItem key={value} value={value}>
+                                            {value}
+                                        </ListItem>
+                                    ))}
+                                </Field>
+
+                                { values.preset === PresetOptions.CUSTOM && <Field
+                                    component={Select}
+                                    type="checkbox"
+                                    fullWidth
+                                    variant="outlined"
+                                    label="Metric"
+                                    name="metric"
+                                >
+                                    {Object.values(MetricOptions).map((value) => (
+                                        <ListItem key={value} value={value}>
+                                            {value}
+                                        </ListItem>
+                                    ))}
+                                </Field>}
+
+                                { values.preset === PresetOptions.CUSTOM && <Field
+                                    component={Select}
+                                    type="checkbox"
+                                    fullWidth
+                                    variant="outlined"
+                                    label="Operator"
+                                    name="operator"
+                                >
+                                    {Object.values(OperatorOptions).map((value) => (
+                                        <ListItem key={value} value={value}>
+                                            {value}
+                                        </ListItem>
+                                    ))}
+                                </Field>}
+
+                                <Field
+                                    component={Select}
+                                    type="checkbox"
+                                    fullWidth
+                                    variant="outlined"
+                                    label="Function"
+                                    name="function"
+                                >
+                                    {Object.values(FunctionOptions).map((value) => (
+                                        <ListItem key={value} value={value}>
+                                            {value}
+                                        </ListItem>
+                                    ))}
+                                </Field>
+
+                                <Field
+                                    component={TextField}
+                                    fullWidth
+                                    variant="outlined"
+                                    label="duration"
+                                    name="duration"
+                                    type="number"
+                                    placeholder="duration"
+                                ></Field>
+
+                                <Field
+                                    component={TextField}
+                                    fullWidth
+                                    variant="outlined"
+                                    label="value"
+                                    name="value"
+                                    type="number"
+                                    placeholder="value"
+                                ></Field>
+                                <Button variant="contained" color="secondary" onClick={ () => handleSubmit() }>Save</Button>
+                            </div>
+                        )}
+                    </Formik>
                 </Box>
             </Card>
         </Container>

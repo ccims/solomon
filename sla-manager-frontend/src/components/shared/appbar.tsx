@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function MyAppBar({ openConfig }) {
+export default function MyAppBar() {
     const classes = useStyles();
 
     return (
@@ -20,9 +20,6 @@ export default function MyAppBar({ openConfig }) {
                     <Typography variant="h6" className={ classes.title }>
                         Solomon
                     </Typography>
-                    <IconButton onClick={ openConfig }>
-                        <Icon style={{ color: "white" }}>settings</Icon>
-                    </IconButton>
                 </Toolbar>
             </AppBar>
 
