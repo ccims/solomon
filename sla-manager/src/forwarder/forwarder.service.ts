@@ -40,6 +40,16 @@ export class ForwarderService implements ConnectorService{
         }
     }
 
+    getAlarmActions(deploymentEnvironment: DeploymentEnvironment): Promise<string[]> {
+        switch (deploymentEnvironment) {
+            case DeploymentEnvironment.AWS:
+                return this.cwConnector.getAlarmActions();
+            case DeploymentEnvironment.KUBERNETES:
+                this.logger.log('not implemented ...')
+                // probably does not needed for Kubernetes
+        }
+    }
+
     addRule(rule: SloRule): Promise<boolean> {
         switch (rule.deploymentEnvironment) {
             case DeploymentEnvironment.AWS:

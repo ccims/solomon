@@ -21,6 +21,12 @@ export class AppController {
     return this.forwarder.getTargets(env);
   }
 
+  @Get('alarm-actions/:deploymentEnvironment')
+  getAlarmActionList(@Param('deploymentEnvironment') env: DeploymentEnvironment) {
+    this.logger.log('called getAlarmActions()')
+    return this.forwarder.getAlarmActions(env)
+  }
+
   @Post('rules')
   addRule(@Body() rule: SloRule) {
     this.logger.log('called addRule()')

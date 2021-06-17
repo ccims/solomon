@@ -16,6 +16,7 @@ export class CwConnectorService implements ConnectorService{
     private AWS = require('aws-sdk');
     private cw;
     private lambda;
+    private sns;
     private connected = false;
     private lambdaMetricInfos: LambdaMetricInfos;
 
@@ -29,6 +30,7 @@ export class CwConnectorService implements ConnectorService{
     
         this.cw = new this.AWS.CloudWatch();
         this.lambda = new this.AWS.Lambda();
+        this.sns = new this.AWS.SNS;
     
         this.connected = true;
         return ('successfully connected to AWS...')
@@ -65,6 +67,25 @@ export class CwConnectorService implements ConnectorService{
               this.logger.debug(data);
               var targets = CwRuleMapper.mapLambdasToTargets(data.Functions)
               resolve(targets)
+            }
+          })
+        })
+    }
+
+    // currently return the ARN of the SNS topic to which CloudWatch should send alerts
+    // other actions might be possible too (see AlarmActions: https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_PutMetricAlarm.html )
+    getAlarmActions(): Promise<string[]> {
+        this.connected ? /*already connected */null : this.connectToAws();
+        
+        const params = {};
+
+        return new Promise((resolve, reject) =>{
+          this.sns.listTopics(params, (err, data) => {
+            if (err) {
+              reject(new Error(err));
+            } else {
+              this.logger.debug(data.Topics);
+              resolve(data.Topics)
             }
           })
         })

@@ -11,7 +11,7 @@ export interface Alarm {
     Dimensions: DimensionFilter[]; //e.g. [{"Name":"FunctionName","Value":"handle-canoes"}]
     Period: number; // e.g. 86400
     EvaluationPeriods: number; // e.g. 1
-    DatapointsToAlarm: number; // e.g. 1
+    DatapointsToAlarm: number; // the number of datapoints within the evaluation period that must be breaching threshold to cause the alarm to go to ALARM state. e.g. 1
     Threshold: number; // e.g. 1000
     ComparisonOperator: string; // e.g. 'GreaterThanThreshold'
     ActionsEnabled: boolean; // TODO: setting the actions to be taken
