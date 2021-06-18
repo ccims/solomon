@@ -21,7 +21,8 @@ export class CwRuleMapper {
             comparisonOperator: alarm.ComparisonOperator as ComparisonOperator,
             statistic: alarm.Statistic as StatisticsOption,
             period: alarm.Period,
-            threshold: alarm.Threshold
+            threshold: alarm.Threshold,
+            alertTopicArn: alarm.AlarmActions[0]
         }
         return rule;
     }
@@ -58,7 +59,8 @@ export class CwRuleMapper {
             DatapointsToAlarm: 1,
             Threshold: rule.threshold,
             ComparisonOperator: rule.comparisonOperator,
-            ActionsEnabled: false // TODO: has to be activated!!
+            ActionsEnabled: false,
+            AlarmActions: [rule.alertTopicArn]
         }
         return alarm;
     }

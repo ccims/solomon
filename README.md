@@ -1,3 +1,35 @@
+## Getting the backend running as HTTPS server
+
+### Creating the SSL certificate
+1. Create self-signed SSL certificate, using following commands (in Git Bash):
+   1. `openssl genrsa -out key.pem`
+   2. `openssl req -new -key key.pem -out csr.pem`
+   3. `openssl x509 -req -days 9999 -in csr.pem -signkey key.pem -out cert.pem`
+   4. `rm csr.pem`
+2. After the third command you will be prompted to enter in different information for the certificate. You can just put in random information or even leave most of the fields empty. Don't set a challenge password!
+3. When done you should find two files in the location where you executed the commands:
+   1. `cert.pem`
+   2. `key.pem`
+4. Copy these files into the following location of the SLO backend folder: `/config/certificate/`
+
+Hint: _Git comes with open-ssl, this is why this works in the Git bash but not in PS or CMD. Alternatively you can just generate the certificate in a Linux system and copy the files afterwards, or you could install open-ssl on Windows._
+
+### Creating the user for Basic Authentication
+1. create a new JSON file called `basic-user.json`
+2. it should have the following format, but you can invent your own username and password:
+`{ "users": { "yourusername": "yourpassword"} }`
+3. put this JSON file into the following folder of the SLO backend: `/config/credentials/`
+
+
+### Accessing the HTTPS server
+When accessing the backend now, we have to use the HTTPS protocol in the URL and also add the basic auth user.
+A call to the (locally deployed) backend from the browser might thus look like this:
+
+`https://yourusername:yourpassword@localhost/solomon/rules/aws`
+
+When using tools like Postman, there is an "Authorization" tab where the Basic Auth user can be specified once.
+Postman then takes care of adding the user and password to each request and you don't have to add it to the URL manually.
+
 ## Refactoring
 
 This branch contains the refactored version of the backend of the SLO Tool.

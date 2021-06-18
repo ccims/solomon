@@ -1,5 +1,4 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Logger } from '@nestjs/common';
-import { getegid } from 'process';
 import { ForwarderService } from './forwarder/forwarder.service';
 import { GropiusManager } from './gropius-manager/gropius-manager.service';
 import SloRule, { DeploymentEnvironment } from './models/slo-rule.model';
@@ -19,6 +18,12 @@ export class AppController {
   getTargetList(@Param('deploymentEnvironment') env: DeploymentEnvironment) {
     this.logger.log('called getTargets()')
     return this.forwarder.getTargets(env);
+  }
+
+  @Get('alarm-actions/:deploymentEnvironment')
+  getAlarmActionList(@Param('deploymentEnvironment') env: DeploymentEnvironment) {
+    this.logger.log('called getAlarmActions()')
+    return this.forwarder.getAlarmActions(env)
   }
 
   @Post('rules')

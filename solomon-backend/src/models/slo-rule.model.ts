@@ -15,6 +15,8 @@ export default interface SloRule {
     statistic?: StatisticsOption; // the statistic applied to the data, e.g. average, rate, etc.
     period: number; // evaluation period in seconds, e.g. 86400
     threshold: number; // number against which to measure
+
+    alertTopicArn?: string; // AWS specific: identifier of SNS topic to be used for alerting
 }
 
 export enum DeploymentEnvironment {
