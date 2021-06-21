@@ -59,7 +59,7 @@ export class CwRuleMapper {
             DatapointsToAlarm: 1,
             Threshold: rule.threshold,
             ComparisonOperator: rule.comparisonOperator,
-            ActionsEnabled: false,
+            ActionsEnabled: true,
             AlarmActions: [rule.alertTopicArn]
         }
         return alarm;

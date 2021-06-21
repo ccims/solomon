@@ -13,27 +13,15 @@ export class GropiusManager {
         var projects = [];
 
         const getProjectsQuery = gql`
-            query GetAllProjects($filter: ProjectFilter) {
+           query GetAllProjects($filter: ProjectFilter) {
                 projects(filterBy: $filter) {
-                edges {
-                    node {
-                    id
-                    name
-                    description
-                    owner {
-                        id
-                        username
-                    }
-                    components {
-                        edges {
+                    edges {
                         node {
                             id
                             name
-                        }
+                            description
                         }
                     }
-                    }
-                }
                 }
             }
         `
@@ -47,8 +35,31 @@ export class GropiusManager {
     }
 
     async getGropiusComponents(projectId: string): Promise<any[]> {
+        var components = [];
+
+        const getComponentsQuery = gql`
+            query GetComponentsOfProject($projectId: ID!) {
+                node(id: $projectId) {
+                    ...on Project {
+                        components {
+                            nodes {
+                                id
+                                name
+                                description
+                            }
+                        }
+                    }
+                }
+            }
+        `
 
 
-        return null;
+         try {
+            const response = await request(this.gropiusUrl,getComponentsQuery,{ projectId: projectId});
+            components = GropiusGqlMapper.mapGqlComponents(response);
+        } catch (error){
+            this.logger.error('Could not fetch Gropius components', error)
+        }
+        return components;
     }
 }

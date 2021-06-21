@@ -61,7 +61,7 @@ export class SloToolCdkStack extends cdk.Stack {
     });
 
     const path = require('path');
-    const sloToolBackendImage = ecs.ContainerImage.fromAsset(path.normalize(path.join(__dirname, '../../sla-manager/')));
+    const sloToolBackendImage = ecs.ContainerImage.fromAsset(path.normalize(path.join(__dirname, '../../solomon-backend/')));
 
     const containerDef = taskDefinition.addContainer('slo-tool-backend-container', {
       image: sloToolBackendImage,

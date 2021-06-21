@@ -16,10 +16,10 @@ export interface GropiusProject {
   id: string;
   name: string;
   description: string;
-  ownerId: string;
-  ownerName: string;
 }
 
 export interface GropiusComponent {
-
+  id: string;
+  name: string;
+  description;
 }
