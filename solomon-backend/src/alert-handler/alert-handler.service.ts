@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {request, gql } from 'graphql-request';
-import { GropiusIssue } from 'src/models/issue.model';
+import { GropiusIssue } from 'src/models/gropius.model';
 import SloRule from 'src/models/slo-rule.model';
 import { Alert } from './alert.interface';
 

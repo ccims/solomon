@@ -11,3 +11,15 @@ export interface GropiusIssue {
   estimatedTime?: number; //type will be replaced by TimeSpan
   clientMutationID?: string;
 }
+
+export interface GropiusProject {
+  id: string;
+  name: string;
+  description: string;
+  ownerId: string;
+  ownerName: string;
+}
+
+export interface GropiusComponent {
+
+}

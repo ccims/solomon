@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger, LoggerService } from '@nestjs/common';
-import { GropiusIssue } from '../models/issue.model';
+import { GropiusIssue } from '../models/gropius.model';
 import { K8sConnectorService } from '../connector-kubernetes/k8s.service';
 import { request, gql } from 'graphql-request';
 

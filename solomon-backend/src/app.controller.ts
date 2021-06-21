@@ -14,18 +14,6 @@ export class AppController {
     return this.forwarder.getRules(env);
   }
 
-  @Get('targets/:deploymentEnvironment')
-  getTargetList(@Param('deploymentEnvironment') env: DeploymentEnvironment) {
-    this.logger.log('called getTargets()')
-    return this.forwarder.getTargets(env);
-  }
-
-  @Get('alarm-actions/:deploymentEnvironment')
-  getAlarmActionList(@Param('deploymentEnvironment') env: DeploymentEnvironment) {
-    this.logger.log('called getAlarmActions()')
-    return this.forwarder.getAlarmActions(env)
-  }
-
   @Post('rules')
   addRule(@Body() rule: SloRule) {
     this.logger.log('called addRule()')
@@ -46,10 +34,28 @@ export class AppController {
     return this.forwarder.deleteRule(ruleName, env);
   }
 
-  @Get('components/:projectId')
+  @Get('gropius/projects')
+  getGropiusProjects() {
+    this.logger.log('called getGropiusProjects');
+    return this.gropiusManager.getGropiusProjects();
+  }
+
+  @Get('gropius/components/:projectId')
   getGropiusComponents(@Param('projectId') gropiusProjectId: string) {
-    this.logger.log(`called getGropiusComponents fpr project ${gropiusProjectId}`);
+    this.logger.log('called getGropiusComponents for project ${gropiusProjectId}');
     return this.gropiusManager.getGropiusComponents(gropiusProjectId);
+  }
+
+  @Get('targets/:deploymentEnvironment')
+  getTargetList(@Param('deploymentEnvironment') env: DeploymentEnvironment) {
+    this.logger.log('called getTargets()')
+    return this.forwarder.getTargets(env);
+  }
+
+  @Get('alarm-actions/:deploymentEnvironment')
+  getAlarmActionList(@Param('deploymentEnvironment') env: DeploymentEnvironment) {
+    this.logger.log('called getAlarmActions()')
+    return this.forwarder.getAlarmActions(env)
   }
 
 }
