@@ -64,7 +64,6 @@ export class CwConnectorService implements ConnectorService{
             if (err) {
               reject(new Error(err));
             } else {
-              this.logger.debug(data);
               var targets = CwRuleMapper.mapLambdasToTargets(data.Functions)
               resolve(targets)
             }
@@ -84,7 +83,6 @@ export class CwConnectorService implements ConnectorService{
             if (err) {
               reject(new Error(err));
             } else {
-              this.logger.debug(data);
               var topicArns = [];
               data.Topics.forEach(topic => {
                 topicArns.push(topic.TopicArn)

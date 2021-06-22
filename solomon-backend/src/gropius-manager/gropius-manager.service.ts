@@ -1,6 +1,8 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { request, gql } from 'graphql-request'
-import { GropiusProject } from "src/models/gropius.model";
+import { Alert } from "src/models/alert.interface";
+import { GropiusIssue, GropiusProject } from "src/models/gropius.model";
+import SloRule from "src/models/slo-rule.model";
 import { GropiusGqlMapper } from "./gropius.gql-mapper";
 
 @Injectable()
@@ -61,5 +63,33 @@ export class GropiusManager {
             this.logger.error('Could not fetch Gropius components', error)
         }
         return components;
+    }
+
+
+    async createGropiusIssue(sloRule: SloRule, alert: Alert) {
+        const issue: GropiusIssue = {
+            title: sloRule.name,
+            body: sloRule.description,
+            componentIDs: [ sloRule.targetId ],
+        }
+
+        const queryIssue = gql`
+            mutation createIssue($input: CreateIssueInput!) {
+                createIssue(input: $input) {
+                    issue {
+                        id
+                    }
+                }
+            }
+        `;
+
+        try {
+            const data = await request(this.gropiusUrl, queryIssue, { input: issue});
+            const issueID = data.createIssue.issue.id;
+            this.logger.log("CREATED ISSUE: ", issueID);
+            return issueID;
+        } catch (error) {
+            this.logger.log("ERROR CREATING ISSUE: ", error);
+        }
     }
 }

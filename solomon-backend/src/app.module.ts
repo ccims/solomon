@@ -1,7 +1,5 @@
 import { HttpModule, Logger, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { IssueManagerService } from './issue-manager/issue-manager.service';
-import { IssueManagerController } from './issue-manager/issue-manager.controller';
 import { ForwarderModule } from './forwarder/forwarder.module';
 import { ConnectorAzureModule } from './connector-azure/connector-azure.module';
 import { ConnectorCloudwatchModule } from './connector-cloudwatch/connector-cloudwatch.module';
@@ -19,7 +17,7 @@ import { GropiusModule } from './gropius-manager/gropius-manager.module';
     AlertHandlerModule,
     GropiusModule,
   ],
-  controllers: [AppController, IssueManagerController],
-  providers: [Logger, IssueManagerService],
+  controllers: [AppController],
+  providers: [Logger],
 })
 export class AppModule {}
