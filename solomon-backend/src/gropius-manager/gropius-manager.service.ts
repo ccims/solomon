@@ -1,8 +1,8 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { request, gql } from 'graphql-request'
+import { SloRule } from "solomon-models";
 import { Alert } from "src/models/alert.interface";
 import { GropiusIssue, GropiusProject } from "src/models/gropius.model";
-import SloRule from "src/models/slo-rule.model";
 import { GropiusGqlMapper } from "./gropius.gql-mapper";
 
 @Injectable()

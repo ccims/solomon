@@ -1,5 +1,4 @@
-import SloRule, { ComparisonOperator, DeploymentEnvironment, StatisticsOption } from 'src/models/slo-rule.model';
-import { Target } from 'src/models/target.model';
+import { ComparisonOperator, DeploymentEnvironment, MetricOptions, SloRule, StatisticsOption, Target } from 'solomon-models';
 import { Alarm, AwsNamespace, DimensionFilter, LambdaFunction } from './cw.interface';
 
 export class CwRuleMapper {
@@ -17,7 +16,7 @@ export class CwRuleMapper {
             targetId: this.getTargetName(alarm.Dimensions),
             gropiusProjectId: this.getGropiusProjectId(alarm.AlarmDescription), 
             gropiusComponentId: this.getGropiusComponentId(alarm.AlarmDescription),
-            metricType: alarm.MetricName,
+            metricOption: alarm.MetricName as MetricOptions,
             comparisonOperator: alarm.ComparisonOperator as ComparisonOperator,
             statistic: alarm.Statistic as StatisticsOption,
             period: alarm.Period,
@@ -47,10 +46,11 @@ export class CwRuleMapper {
      * @returns a CloudWatch alarm
      */
     static mapRuleToAlarm(rule: SloRule): Alarm {
+        console.log(rule.metricOption)
         var alarm: Alarm = {
             AlarmName: rule.name,
             AlarmDescription: this.generateAlarmDescription(rule),
-            MetricName: rule.metricType,
+            MetricName: rule.metricOption,
             Namespace: this.getAwsNamespace(),
             Statistic: rule.statistic,
             Dimensions: [{'Name':'FunctionName','Value':rule.targetId}],

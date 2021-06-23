@@ -2,19 +2,19 @@ import { GropiusIssue } from "./issue.model";
 import { Target } from "./target.model";
 import SloRule, {
     DeploymentEnvironment,
-    MetricOptions,
+    MetricOption,
     ComparisonOperator,
     StatisticsOption,
-    PresetOptions
+    PresetOption
 } from "./slo-rule.model";
 
 export {
     GropiusIssue,
     SloRule,
     DeploymentEnvironment,
-    MetricOptions,
+    MetricOption as MetricOptions,
     ComparisonOperator,
     StatisticsOption,
-    PresetOptions,
+    PresetOption as PresetOptions,
     Target
 }

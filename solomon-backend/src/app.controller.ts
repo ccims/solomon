@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Logger } from '@nestjs/common';
+import { DeploymentEnvironment, SloRule } from 'solomon-models';
 import { ForwarderService } from './forwarder/forwarder.service';
 import { GropiusManager } from './gropius-manager/gropius-manager.service';
-import SloRule, { DeploymentEnvironment } from './models/slo-rule.model';
 
 @Controller('solomon')
 export class AppController {

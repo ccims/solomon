@@ -2,9 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConnectorService } from 'src/models/connector-service';
 import { CwConnectorService } from 'src/connector-cloudwatch/cw.service';
 import { K8sConnectorService } from 'src/connector-kubernetes/k8s.service';
-import SloRule from 'src/models/slo-rule.model';
-import { DeploymentEnvironment } from 'src/models/slo-rule.model';
-import { Target } from 'src/models/target.model';
+import { DeploymentEnvironment, SloRule, Target } from 'solomon-models';
 
 /**
  * The forwarder service contains the logic for **forwarding the requests** (e.g. getRules, addRule) 

@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { SloRule, Target } from 'solomon-models';
 import { ConnectorService } from 'src/models/connector-service';
-import SloRule from 'src/models/slo-rule.model';
-import { Target } from 'src/models/target.model';
 import { LambdaMetricInfos } from './cw.interface';
 import { CwRuleMapper } from './cw.rule-mapper';
 

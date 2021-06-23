@@ -1,5 +1,4 @@
-import SloRule, { DeploymentEnvironment } from "./slo-rule.model";
-import { Target } from "./target.model";
+import { DeploymentEnvironment, SloRule, Target } from "solomon-models";
 
 /**
  * The interface to be used by the forwarder as well as all the connectors.

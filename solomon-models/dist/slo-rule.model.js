@@ -1,22 +1,35 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StatisticsOption = exports.ComparisonOperator = exports.MetricOptions = exports.PresetOptions = exports.DeploymentEnvironment = void 0;
+exports.StatisticsOption = exports.ComparisonOperator = exports.MetricOption = exports.PresetOption = exports.DeploymentEnvironment = void 0;
 var DeploymentEnvironment;
 (function (DeploymentEnvironment) {
     DeploymentEnvironment["AWS"] = "aws";
     DeploymentEnvironment["KUBERNETES"] = "kubernetes";
 })(DeploymentEnvironment = exports.DeploymentEnvironment || (exports.DeploymentEnvironment = {}));
-var PresetOptions;
-(function (PresetOptions) {
-    PresetOptions["AVAILABILITY"] = "Availability";
-    PresetOptions["RESPONSE_TIME"] = "Response time";
-    PresetOptions["CUSTOM"] = "Custom";
-})(PresetOptions = exports.PresetOptions || (exports.PresetOptions = {}));
-var MetricOptions;
-(function (MetricOptions) {
-    MetricOptions["PROBE_SUCCESS"] = "probe_success";
-    MetricOptions["RESPONSE_TIME"] = "probe_duration_seconds";
-})(MetricOptions = exports.MetricOptions || (exports.MetricOptions = {}));
+var PresetOption;
+(function (PresetOption) {
+    PresetOption["AVAILABILITY"] = "Availability";
+    PresetOption["RESPONSE_TIME"] = "Response time";
+    PresetOption["CUSTOM"] = "Custom";
+})(PresetOption = exports.PresetOption || (exports.PresetOption = {}));
+var MetricOption;
+(function (MetricOption) {
+    MetricOption["PROBE_SUCCESS"] = "probe_success";
+    MetricOption["RESPONSE_TIME"] = "probe_duration_seconds";
+    MetricOption["DURATION"] = "Duration";
+    MetricOption["INVOCATIONS"] = "Invocations";
+    MetricOption["ERRORS"] = "Errors";
+    MetricOption["THROTTLES"] = "Throttles";
+    MetricOption["CONCURRENT_EXECUTIONS"] = "ConcurrentExecutions";
+    MetricOption["CLIENT_SIDE_ERROR"] = "4XXError";
+    MetricOption["SERVER_SIDE_ERROR"] = "5XXError";
+    MetricOption["COUNT"] = "Count";
+    MetricOption["LATENCY"] = "Latency";
+    MetricOption["HEALTHY_HOST_COUNT"] = "HealthyHostCount";
+    MetricOption["UNHEALTHY_HOST_COUNT"] = "UnHealthyHostCount";
+    MetricOption["CLIENT_TLS_NEGOTIATION_ERROR_COUNT"] = "ClientTLSNegotiationErrorCount";
+    MetricOption["TARGET_TLS_NEGOTIATION_ERROR_COUNT"] = "TargetTLSNegotiationErrorCount";
+})(MetricOption = exports.MetricOption || (exports.MetricOption = {}));
 var ComparisonOperator;
 (function (ComparisonOperator) {
     ComparisonOperator["GREATER"] = "GreaterThanThreshold ";
