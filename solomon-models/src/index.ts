@@ -3,8 +3,8 @@ import { Target } from "./target.model";
 import SloRule, {
     DeploymentEnvironment,
     MetricOptions,
-    FunctionOptions,
-    OperatorOptions,
+    ComparisonOperator,
+    StatisticsOption,
     PresetOptions
 } from "./slo-rule.model";
 
@@ -13,8 +13,8 @@ export {
     SloRule,
     DeploymentEnvironment,
     MetricOptions,
-    FunctionOptions,
-    OperatorOptions,
+    ComparisonOperator,
+    StatisticsOption,
     PresetOptions,
     Target
 }

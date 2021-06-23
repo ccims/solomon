@@ -132,13 +132,18 @@
         "affectsGlobalScope": false
       },
       "../src/slo-rule.model.ts": {
-        "version": "d56b971fa311c3bdd05721bf23b23fffbf0806e6dfd1ada8f5adbb67fa512a86",
-        "signature": "a849a402ba32081d6b554712775b9f25d7ecc1e4694822528f21cfdd3850a64e",
+        "version": "67bc782ffd5ae0b778b1a9c0dd7c412ecd05abdf49db9510a9c9141eed1f2f1f",
+        "signature": "a1147ffa00e2203c10f0ac4c7ab5a76f31439d02c57e21b6fc38c353e129921f",
         "affectsGlobalScope": false
       },
       "../src/index.ts": {
-        "version": "02123f9e78df6606af4695e99bcc86c655e3f6ace36053f70491da432e0f5bdb",
-        "signature": "e50055264774e1ad0790c6bb53c3b3f7b67697b192afee0acb8d9d95ec016a51",
+        "version": "32368099cf2f8fc0badf9de7aaf8fbea95bcc460f628859dcfd6ee50befc1444",
+        "signature": "06b54d527f9a363b951f17b126ebc1c847f566f18d3462668b7528200d7a8121",
+        "affectsGlobalScope": false
+      },
+      "../src/slo-rule_new.model.ts": {
+        "version": "de6a18c9d4a6a8eb6ba697d7b2a575b72e1548b4d747f6d4b215aebbb39d94c7",
+        "signature": "5ffe0648e430bdf8d0e246b59212097ddc93716b0b10a8e4935f9ac88b95acde",
         "affectsGlobalScope": false
       }
     },
@@ -160,9 +165,6 @@
         "../src/issue.model.ts",
         "../src/slo-rule.model.ts",
         "../src/target.model.ts"
-      ],
-      "../src/slo-rule.model.ts": [
-        "../src/target.model.ts"
       ]
     },
     "exportedModulesMap": {
@@ -176,6 +178,7 @@
       "../src/index.ts",
       "../src/issue.model.ts",
       "../src/slo-rule.model.ts",
+      "../src/slo-rule_new.model.ts",
       "../src/target.model.ts",
       "../../../../../../../../usr/local/lib/node_modules/typescript/lib/lib.dom.d.ts",
       "../../../../../../../../usr/local/lib/node_modules/typescript/lib/lib.dom.iterable.d.ts",

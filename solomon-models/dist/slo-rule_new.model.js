@@ -35,4 +35,4 @@ var StatisticsOption;
     StatisticsOption["MINIMUM"] = "Minimum";
     StatisticsOption["MAXIMUM"] = "Maximum";
 })(StatisticsOption = exports.StatisticsOption || (exports.StatisticsOption = {}));
-//# sourceMappingURL=slo-rule.model.js.map
+//# sourceMappingURL=slo-rule_new.model.js.map

@@ -36,6 +36,7 @@ export class ForwarderService implements ConnectorService{
                 return this.cwConnector.getTargets();
             case DeploymentEnvironment.KUBERNETES:
                 this.logger.log('not yet implemented ...')
+                return null;
                 // return this.k8sConnector.getTargets();
         }
     }
@@ -46,6 +47,7 @@ export class ForwarderService implements ConnectorService{
                 return this.cwConnector.getAlarmActions();
             case DeploymentEnvironment.KUBERNETES:
                 this.logger.log('not implemented ...')
+                return null;
                 // probably does not needed for Kubernetes
         }
     }
@@ -55,6 +57,7 @@ export class ForwarderService implements ConnectorService{
             case DeploymentEnvironment.AWS:
                 return this.cwConnector.addRule(rule);
             case DeploymentEnvironment.KUBERNETES:
+                return null;
                 // return this.k8sPluginService.addRule(rule);
         }
     }
@@ -64,6 +67,7 @@ export class ForwarderService implements ConnectorService{
             case DeploymentEnvironment.AWS:
                 return this.cwConnector.updateRule(rule);
             case DeploymentEnvironment.KUBERNETES:
+                return null;
                 // return this.k8sPluginService.updateRule(rule);
         }
     }
@@ -73,6 +77,7 @@ export class ForwarderService implements ConnectorService{
             case DeploymentEnvironment.AWS:
                 return this.cwConnector.deleteRule(name);
             case DeploymentEnvironment.KUBERNETES:
+                return null;
                 // return this.k8sPluginService.deleteRule(rule);
         }
     }

@@ -1,5 +1,5 @@
 export default interface SloRule {
-    id?: string;
+    id: string;
     name: string;
     description?: string;
     deploymentEnvironment: DeploymentEnvironment;

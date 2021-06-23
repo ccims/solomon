@@ -1,5 +1,3 @@
-import { Target } from "./target.model";
-
 export default interface SloRule {
     id?: string; // corresponds to AlarmArn in CW, can be a generated id for Prometheus
     name: string; // display name of the rule, provided by user
@@ -7,26 +5,22 @@ export default interface SloRule {
 
     deploymentEnvironment: DeploymentEnvironment; // the environment where the component of the application that is to be monitored is deployed, e.g. AWS, or Kubernetes
     targetId: string; // id used by the monitoring tool in the deployment environment to identify the resource for which the rule should apply
+
     gropiusProjectId?: string; // id of the gropius project for which issues shall be created
     gropiusComponentId?: string; // id of the component modelled in a gropius project and which is linked in the created issue
 
-    preset?: PresetOptions;
-    metric?: MetricOptions;
-    operator?: OperatorOptions;
-    function?: FunctionOptions;
+    preset?: PresetOptions; // type of metric, e.g. availability, response time, duration etc.
+    metricOption?: MetricOptions; // need for Prometheus? e.g. up, probe_success
+    comparisonOperator?: ComparisonOperator; // mathematical operator to apply to the threshold
+    statistic?: StatisticsOption; // the statistic applied to the data, e.g. average, rate, etc.
 
-    duration: number;  // evaluation period in seconds, e.g. 86400
-    value: number; // number against which to measure
+    period: number; // evaluation period in seconds, e.g. 86400
+    threshold: number; // number against which to measure
 }
 
 export enum DeploymentEnvironment {
     AWS = 'aws',
     KUBERNETES = 'kubernetes',
-}
-
-interface GropiusComponentTarget {
-    gropiusComponentId: string;
-    kubernetesServiceName: string;
 }
 
 export enum PresetOptions {
@@ -35,24 +29,27 @@ export enum PresetOptions {
     CUSTOM = "Custom"
 }
 
+// in CW the allowed metrics depend on the target type and should thus be fetched dynamically, e.g. for Lambda Errors, Invocations, Duration, Throttles, ConcurrentExecutions
 export enum MetricOptions {
-    // UP = "up",
-    PROBE_SUCCESS = "probe_success",
-    RESPONSE_TIME = "probe_duration_seconds"
-    // OTHER = "other",    // TODO: Add other options
+    PROBE_SUCCESS = 'probe_success',
+    RESPONSE_TIME = "probe_duration_seconds",
+    // TODO: Add other options
 }
 
-// https://prometheus.io/docs/prometheus/latest/querying/operators/#comparison-binary-operators
-export enum OperatorOptions {
-    EQUALS = "==",
-    NOT_EQUALS = "!=",
-    GREATER_THEN = ">",
-    SMALLER_THEN = "<",
-    GREATER_OR_EQUAL_THEN = ">=",
-    SMALLER_OR_EQUAL_THEN = "<=",
+export enum ComparisonOperator {
+    GREATER = 'GreaterThanThreshold ',
+    LESS = 'LessThanThreshold ',
+    GREATER_OR_EQUAL = 'GreaterThanOrEqualToThreshold ',
+    LESS_OR_EQUAL = 'LessThanOrEqualToThreshold ',
+    EQUAL = "Equal",
+    NOT_EQUAL = "NotEqual",
 }
 
-export enum FunctionOptions {
-    AVG_OVER_TIME = "avg_over_time",
-    RATE = "rate"
+export enum StatisticsOption {
+    AVG = 'Average',
+    RATE = "Rate",
+    SAMPLE_COUNT = 'SampleCount',
+    SUM = 'Sum',
+    MINIMUM = 'Minimum',
+    MAXIMUM = 'Maximum'
 }
