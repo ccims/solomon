@@ -121,24 +121,19 @@
         "signature": "d2f31f19e1ba6ed59be9259d660a239d9a3fcbbc8e038c6b2009bde34b175fed",
         "affectsGlobalScope": false
       },
-      "../src/issue.model.ts": {
-        "version": "1bbfebe86f579f13b194dbab5ba5e98c0cbb8fe4e817461482cf75fc26a6ad17",
-        "signature": "992ce105c1dba22f74fad385d8e886553e1e2a1fad1033ad5902ef1a6f0e313c",
-        "affectsGlobalScope": false
-      },
       "../src/target.model.ts": {
         "version": "ceea5ed3235916e05f6d679e55dc89f1914a4fd9642e223d46295b301f2fdb51",
         "signature": "6955a3585a777e07e93d4b44c1d5a9e926f6a5ee52a8732ce5e764373fb2486c",
         "affectsGlobalScope": false
       },
       "../src/slo-rule.model.ts": {
-        "version": "4bd97f080364bfc06b86c1b52130a58723cab169d4d7a92b319f5d7c75d37580",
-        "signature": "fef42f4c8a81d7d144774a9b985cabac8024f802c7c83a6049f0d19bca7b7084",
+        "version": "fe886d52264965608e26e745d10d62da888e1ef8dce7f30ac93aedae4de91fee",
+        "signature": "9ae87deac721d987f4cf185d85558edc2be64cefca72426e21a652fe19af3c02",
         "affectsGlobalScope": false
       },
       "../src/index.ts": {
-        "version": "05c321bd1f5664c64c67be297d9be01c3bf9461a2380c0000b9e2911b6ff23ec",
-        "signature": "16b34bab58bef6bf7b3003ef71646d9727fa920284cefb4d328cc256925fffdd",
+        "version": "1ce0fe3f61e527a5a967c7172d8a75d771855d2fc13a7f5c0a1d00f6debb7f7b",
+        "signature": "ceb0774745e2588f2b237fcc0c56a5189eefedd7b22cc6f99b0e4daaa97e48f7",
         "affectsGlobalScope": false
       }
     },
@@ -157,14 +152,12 @@
     },
     "referencedMap": {
       "../src/index.ts": [
-        "../src/issue.model.ts",
         "../src/slo-rule.model.ts",
         "../src/target.model.ts"
       ]
     },
     "exportedModulesMap": {
       "../src/index.ts": [
-        "../src/issue.model.ts",
         "../src/slo-rule.model.ts",
         "../src/target.model.ts"
       ]
@@ -195,7 +188,6 @@
       "../../../../../appdata/roaming/npm/node_modules/typescript/lib/lib.scripthost.d.ts",
       "../../../../../appdata/roaming/npm/node_modules/typescript/lib/lib.webworker.importscripts.d.ts",
       "../src/index.ts",
-      "../src/issue.model.ts",
       "../src/slo-rule.model.ts",
       "../src/target.model.ts"
     ]

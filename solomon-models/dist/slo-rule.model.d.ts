@@ -26,19 +26,19 @@ export declare enum PresetOption {
 export declare enum MetricOption {
     PROBE_SUCCESS = "probe_success",
     RESPONSE_TIME = "probe_duration_seconds",
-    DURATION = "Duration",
-    INVOCATIONS = "Invocations",
-    ERRORS = "Errors",
-    THROTTLES = "Throttles",
-    CONCURRENT_EXECUTIONS = "ConcurrentExecutions",
-    CLIENT_SIDE_ERROR = "4XXError",
-    SERVER_SIDE_ERROR = "5XXError",
-    COUNT = "Count",
-    LATENCY = "Latency",
-    HEALTHY_HOST_COUNT = "HealthyHostCount",
-    UNHEALTHY_HOST_COUNT = "UnHealthyHostCount",
-    CLIENT_TLS_NEGOTIATION_ERROR_COUNT = "ClientTLSNegotiationErrorCount",
-    TARGET_TLS_NEGOTIATION_ERROR_COUNT = "TargetTLSNegotiationErrorCount"
+    LAMBDA_DURATION = "Duration",
+    LAMBDA_INVOCATIONS = "Invocations",
+    LAMBDA_ERRORS = "Errors",
+    LAMBDA_THROTTLES = "Throttles",
+    LAMBDA_CONCURRENT_EXECUTIONS = "ConcurrentExecutions",
+    APIGATEWAY_4XX_ERROR = "4XXError",
+    APIGATEWAY_5XX_ERROR = "5XXError",
+    APIGATEWAY_COUNT = "Count",
+    APIGATEWAY_LATENCY = "Latency",
+    NLB_HEALTHY_HOST_COUNT = "HealthyHostCount",
+    NLB_UNHEALTHY_HOST_COUNT = "UnHealthyHostCount",
+    NLB_CLIENT_TLS_NEGOTIATION_ERROR_COUNT = "ClientTLSNegotiationErrorCount",
+    NLB_TARGET_TLS_NEGOTIATION_ERROR_COUNT = "TargetTLSNegotiationErrorCount"
 }
 export declare enum ComparisonOperator {
     GREATER = "GreaterThanThreshold ",

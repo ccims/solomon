@@ -9,8 +9,8 @@ export default interface SloRule {
     gropiusProjectId?: string; // id of the gropius project for which issues shall be created
     gropiusComponentId?: string; // id of the component modelled in a gropius project and which is linked in the created issue
 
-    preset?: PresetOption; // type of metric, e.g. availability, response time, duration etc.
-    metricOption?: MetricOption; // need for Prometheus? e.g. up, probe_success
+    preset?: PresetOption; // currently only used for Kubernetes environment  e.g. availability, response time
+    metricOption?: MetricOption; // concrete metric that is used (metric name)
     comparisonOperator?: ComparisonOperator; // mathematical operator to apply to the threshold
     statistic?: StatisticsOption; // the statistic applied to the data, e.g. average, rate, etc.
 
@@ -38,23 +38,23 @@ export enum MetricOption {
     RESPONSE_TIME = "probe_duration_seconds",
 
     // AWS Lambda (https://docs.aws.amazon.com/lambda/latest/dg/monitoring-metrics.html):
-    DURATION = "Duration",
-    INVOCATIONS = "Invocations",
-    ERRORS = "Errors",
-    THROTTLES = "Throttles",
-    CONCURRENT_EXECUTIONS = "ConcurrentExecutions",
+    LAMBDA_DURATION = "Duration",
+    LAMBDA_INVOCATIONS = "Invocations",
+    LAMBDA_ERRORS = "Errors",
+    LAMBDA_THROTTLES = "Throttles",
+    LAMBDA_CONCURRENT_EXECUTIONS = "ConcurrentExecutions",
 
     // AWS API Gateway (https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-metrics-and-dimensions.html):
-    CLIENT_SIDE_ERROR = "4XXError",
-    SERVER_SIDE_ERROR = "5XXError",
-    COUNT = "Count",
-    LATENCY = "Latency",
+    APIGATEWAY_4XX_ERROR = "4XXError",
+    APIGATEWAY_5XX_ERROR = "5XXError",
+    APIGATEWAY_COUNT = "Count",
+    APIGATEWAY_LATENCY = "Latency",
 
     // AWS Network Load Balancer (https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-cloudwatch-metrics.html):
-    HEALTHY_HOST_COUNT = "HealthyHostCount",
-    UNHEALTHY_HOST_COUNT = "UnHealthyHostCount",
-    CLIENT_TLS_NEGOTIATION_ERROR_COUNT = "ClientTLSNegotiationErrorCount",
-    TARGET_TLS_NEGOTIATION_ERROR_COUNT = "TargetTLSNegotiationErrorCount"
+    NLB_HEALTHY_HOST_COUNT = "HealthyHostCount",
+    NLB_UNHEALTHY_HOST_COUNT = "UnHealthyHostCount",
+    NLB_CLIENT_TLS_NEGOTIATION_ERROR_COUNT = "ClientTLSNegotiationErrorCount",
+    NLB_TARGET_TLS_NEGOTIATION_ERROR_COUNT = "TargetTLSNegotiationErrorCount"
 }
 
 export enum ComparisonOperator {

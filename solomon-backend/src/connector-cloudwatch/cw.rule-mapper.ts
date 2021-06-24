@@ -1,4 +1,4 @@
-import { ComparisonOperator, DeploymentEnvironment, MetricOptions, SloRule, StatisticsOption, Target } from 'solomon-models';
+import { ComparisonOperator, DeploymentEnvironment, MetricOption, SloRule, StatisticsOption, Target } from 'solomon-models';
 import { Alarm, AwsNamespace, DimensionFilter, LambdaFunction } from './cw.interface';
 
 export class CwRuleMapper {
@@ -16,7 +16,7 @@ export class CwRuleMapper {
             targetId: this.getTargetName(alarm.Dimensions),
             gropiusProjectId: this.getGropiusProjectId(alarm.AlarmDescription), 
             gropiusComponentId: this.getGropiusComponentId(alarm.AlarmDescription),
-            metricOption: alarm.MetricName as MetricOptions,
+            metricOption: alarm.MetricName as MetricOption,
             comparisonOperator: alarm.ComparisonOperator as ComparisonOperator,
             statistic: alarm.Statistic as StatisticsOption,
             period: alarm.Period,

@@ -21,7 +21,10 @@ RUN update-ca-certificates
 # git is needed to install solomon-models from git repository
 RUN apk add git
 
-# install dependencies 
+# needed to make sure the latest models are used
+RUN npm install https://github.com/ccims/solomon-models
+
+# install all other dependencies
 RUN npm install
 
 COPY ./src ./src
