@@ -1,5 +1,6 @@
 import Axios from "axios";
-import { DeploymentEnvironment, SloRule, Target } from "solomon-models/";
+import { DeploymentEnvironment, SloRule, Target } from "solomon-models";
+
 
 
 const BACKEND_URL = "https://localhost:443/solomon";
@@ -7,11 +8,17 @@ const RULES_API = `${BACKEND_URL}/rules`; // :deploymentEnvironment
 const TARGET_API = `${BACKEND_URL}/targets`; // :deploymentEnvironment
 const GROPIUS_COMPONENTS_API = `${BACKEND_URL}/gropius-projects`; // :gropiusProjectId
 
+const https = require('https');
+const agent = new https.Agent({ 
+    rejectUnauthorized: false
+  });
+
 const axiosConfig = {
     auth: {
-        username: "yourusername",
-        password: "yourpassword",
-    }
+        username: "sillystudent",
+        password: "privatepassword",
+    },
+    httpsAgent: agent
 }
 
 export const fetchRules = async (env: DeploymentEnvironment): Promise<SloRule[]> => {

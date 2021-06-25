@@ -1,7 +1,7 @@
 import { Box, Card } from "@material-ui/core";
 import React from "react";
 import { Link } from "react-router-dom";
-import { SloRule } from "../../../../../solomon-models/dist";
+import { SloRule } from "solomon-models";
 
 type SloItemProps = { sla: SloRule };
 

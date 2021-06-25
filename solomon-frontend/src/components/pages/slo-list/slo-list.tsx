@@ -1,7 +1,7 @@
 import { Button, Container } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { SloRule } from "../../../../../solomon-models/dist";
+import { SloRule } from "solomon-models";
 import { fetchRules } from "../../../api";
 import { SELECTED_ENV } from "../../../App";
 import { RoutePaths } from "../../../routes";

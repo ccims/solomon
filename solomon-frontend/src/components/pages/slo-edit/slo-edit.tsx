@@ -10,18 +10,10 @@ import { Field, Formik } from "formik";
 import { Select, TextField } from "formik-material-ui";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import {
-    ComparisonOperator,
-  DeploymentEnvironment,
-  MetricOption,
-  PresetOption,
-  SloRule,
-  StatisticsOption,
-  Target,
-} from "solomon-models/";
-import * as Yup from "yup";
+import { SloRule, Target, DeploymentEnvironment, MetricOption, PresetOption, StatisticsOption, ComparisonOperator } from "solomon-models";
 import { fetchGropiusComponents, fetchTargets, postRule } from "../../../api";
 import { SELECTED_ENV, SELECTED_GROPIUS_PROJECT_ID } from "../../../App";
+import * as Yup from "yup";
 
 const useStyles = makeStyles((theme) => ({
   root: {
