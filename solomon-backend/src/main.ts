@@ -24,3 +24,5 @@ async function bootstrap() {
   await app.listen(443); // set 80 to directly access from fargate (was 6400)
 }
 bootstrap();
+
+

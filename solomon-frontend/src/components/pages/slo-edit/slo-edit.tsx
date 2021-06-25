@@ -13,8 +13,8 @@ import { useHistory } from "react-router-dom";
 import {
     ComparisonOperator,
   DeploymentEnvironment,
-  MetricOptions,
-  PresetOptions,
+  MetricOption,
+  PresetOption,
   SloRule,
   StatisticsOption,
   Target,
@@ -54,8 +54,8 @@ export default function SloEditPage() {
     gropiusProjectId: "",
     gropiusComponentId: "",
 
-    preset: PresetOptions.AVAILABILITY,
-    metricOption: MetricOptions.PROBE_SUCCESS,
+    preset: PresetOption.AVAILABILITY,
+    metricOption: MetricOption.PROBE_SUCCESS,
     comparisonOperator: ComparisonOperator.LESS,
     statistic: StatisticsOption.AVG,
 
@@ -163,29 +163,29 @@ export default function SloEditPage() {
                   label="Preset"
                   name="preset"
                   onChange={(e) => {
-                    if (e.target.value === PresetOptions.AVAILABILITY) {
-                      setFieldValue("preset", PresetOptions.AVAILABILITY);
-                      setFieldValue("metricOption", MetricOptions.PROBE_SUCCESS);
+                    if (e.target.value === PresetOption.AVAILABILITY) {
+                      setFieldValue("preset", PresetOption.AVAILABILITY);
+                      setFieldValue("metricOption", MetricOption.PROBE_SUCCESS);
                       setFieldValue("operator", ComparisonOperator.LESS);
                       setFieldValue("function", StatisticsOption.AVG);
-                    } else if (e.target.value === PresetOptions.RESPONSE_TIME) {
-                      setFieldValue("preset", PresetOptions.RESPONSE_TIME);
-                      setFieldValue("metricOption", MetricOptions.RESPONSE_TIME);
+                    } else if (e.target.value === PresetOption.RESPONSE_TIME) {
+                      setFieldValue("preset", PresetOption.RESPONSE_TIME);
+                      setFieldValue("metricOption", MetricOption.RESPONSE_TIME);
                       setFieldValue("operator", ComparisonOperator.GREATER);
                       setFieldValue("function", StatisticsOption.AVG);
                     } else {
-                      setFieldValue("preset", PresetOptions.CUSTOM);
+                      setFieldValue("preset", PresetOption.CUSTOM);
                     }
                   }}
                 >
-                  {Object.values(PresetOptions).map((value) => (
+                  {Object.values(PresetOption).map((value) => (
                     <ListItem key={value} value={value}>
                       {value}
                     </ListItem>
                   ))}
                 </Field>
 
-                {values.preset === PresetOptions.CUSTOM && (
+                {values.preset === PresetOption.CUSTOM && (
                   <Field
                     component={Select}
                     type="checkbox"
@@ -194,7 +194,7 @@ export default function SloEditPage() {
                     label="Metric"
                     name="metricOption"
                   >
-                    {Object.values(MetricOptions).map((value) => (
+                    {Object.values(MetricOption).map((value) => (
                       <ListItem key={value} value={value}>
                         {value}
                       </ListItem>
@@ -202,7 +202,7 @@ export default function SloEditPage() {
                   </Field>
                 )}
 
-                {values.preset === PresetOptions.CUSTOM && (
+                {values.preset === PresetOption.CUSTOM && (
                   <Field
                     component={Select}
                     type="checkbox"
@@ -219,7 +219,7 @@ export default function SloEditPage() {
                   </Field>
                 )}
 
-                {values.preset === PresetOptions.CUSTOM && <Field
+                {values.preset === PresetOption.CUSTOM && <Field
                   component={Select}
                   type="checkbox"
                   fullWidth
