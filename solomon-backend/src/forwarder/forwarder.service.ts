@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConnectorService } from 'src/models/connector-service';
 import { CwConnectorService } from 'src/connector-cloudwatch/cw.service';
 import { K8sConnectorService } from 'src/connector-kubernetes/k8s.service';
+import { XmlConverterService } from 'src/xml-converter/xml-converter.service';
 import { DeploymentEnvironment, SloRule, Target } from 'solomon-models';
 
 /**
@@ -78,6 +79,10 @@ export class ForwarderService implements ConnectorService{
                 return null;
                 // return this.k8sPluginService.deleteRule(rule);
         }
+    }
+
+    convertXmlToRule(xml: string): Promise<boolean> {
+        return 
     }
 
 

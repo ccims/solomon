@@ -52,3 +52,4 @@ export const fetchGropiusComponents = async (gropiusProjectId: string): Promise<
     const res = await Axios.get(`${GROPIUS_COMPONENTS_API}/${gropiusProjectId}`, axiosConfig);
     return res.data;
 }
+
