@@ -13,9 +13,9 @@ export class AlertController {
     }
 
     @Post('aws')
-    receiveCwAlert(@Body() alert) {
+    receiveCwAlert(@Body() cwAlert) {
         this.logger.log('called receiveCwAlert')
-        return this.alertService.handleCwAlert(alert);
+        return this.alertService.handleCwAlert(cwAlert);
     }
 
     @Post('kubernetes')

@@ -1,7 +1,7 @@
 export interface GropiusIssue {
   title: string;
   body?: string;
-  componentIDs: string[]; //type will be replaced by ID[] where ID is the ID of the components later on
+  components: string[]; //type will be replaced by ID[] where ID is the ID of the components later on
   category?: any; //type will be replaced by IssueCategory later on
   labels?: string[]; //type will be replaced by ID[] where ID is the ID of the components later on
   assignees?: string[]; //type will be replaced by ID[] where ID is the ID of the components later on

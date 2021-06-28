@@ -1,8 +1,8 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { request, gql } from 'graphql-request'
 import { SloRule } from "solomon-models";
-import { Alert } from "src/models/alert.interface";
-import { GropiusIssue, GropiusProject } from "src/models/gropius.model";
+import { SloAlert } from "src/models/alert.interface";
+import { GropiusComponent, GropiusIssue, GropiusProject } from "src/models/gropius.model";
 import { GropiusGqlMapper } from "./gropius.gql-mapper";
 
 @Injectable()
@@ -36,7 +36,7 @@ export class GropiusManager {
         return projects;
     }
 
-    async getGropiusComponents(projectId: string): Promise<any[]> {
+    async getGropiusComponents(projectId: string): Promise<GropiusComponent[]> {
         var components = [];
 
         const getComponentsQuery = gql`
@@ -66,11 +66,11 @@ export class GropiusManager {
     }
 
 
-    async createGropiusIssue(sloRule: SloRule, alert: Alert) {
+    async createGropiusIssue(alert: SloAlert) {
         const issue: GropiusIssue = {
-            title: sloRule.name,
-            body: sloRule.description,
-            componentIDs: [ sloRule.targetId ],
+            title: alert.alertName,
+            body: alert.alertDescription,
+            components: [ alert.gropiusComponentId ],
         }
 
         const queryIssue = gql`

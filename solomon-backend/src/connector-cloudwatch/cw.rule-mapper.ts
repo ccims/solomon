@@ -1,5 +1,6 @@
 import { ComparisonOperator, DeploymentEnvironment, MetricOption, SloRule, StatisticsOption, Target } from 'solomon-models';
-import { Alarm, AwsNamespace, DimensionFilter, LambdaFunction } from './cw.interface';
+import { SloAlert } from 'src/models/alert.interface';
+import { CwAlarm, AwsNamespace, DimensionFilter, CwLambdaFunction, CwMetricName, CwAlert } from './cw.interface';
 
 export class CwRuleMapper {
     /**
@@ -7,7 +8,7 @@ export class CwRuleMapper {
      * @param alarm AWS CloudWatch alarm
      * @returns SLO rule object corresponding to the CloudWatch alarm
      */
-    static mapAlarmToRule(alarm: Alarm): SloRule {
+    static mapCwAlarmToSloRule(alarm: CwAlarm): SloRule {
         var rule: SloRule = {
             id: alarm.AlarmArn,
             name: alarm.AlarmName,
@@ -16,7 +17,7 @@ export class CwRuleMapper {
             targetId: this.getTargetName(alarm.Dimensions),
             gropiusProjectId: this.getGropiusProjectId(alarm.AlarmDescription), 
             gropiusComponentId: this.getGropiusComponentId(alarm.AlarmDescription),
-            metricOption: alarm.MetricName as MetricOption,
+            metricOption: alarm.MetricName as string as MetricOption,
             comparisonOperator: alarm.ComparisonOperator as ComparisonOperator,
             statistic: alarm.Statistic as StatisticsOption,
             period: alarm.Period,
@@ -31,10 +32,10 @@ export class CwRuleMapper {
      * @param alarms list containing AWS CloudWatch alarm definitions
      * @returns list containing SLO rule objects
      */
-    static mapAlarmsToRules(alarms: Alarm[]): SloRule[] {
+    static mapAlarmsToRules(alarms: CwAlarm[]): SloRule[] {
         var rules: SloRule[] = [];
         alarms.forEach(alarm => {
-            rules.push(this.mapAlarmToRule(alarm));
+            rules.push(this.mapCwAlarmToSloRule(alarm));
         })
         return rules;
     }
@@ -45,12 +46,12 @@ export class CwRuleMapper {
      * @param rule an SLO rule object
      * @returns a CloudWatch alarm
      */
-    static mapRuleToAlarm(rule: SloRule): Alarm {
+    static mapRuleToAlarm(rule: SloRule): CwAlarm {
         console.log(rule.metricOption)
-        var alarm: Alarm = {
+        var alarm: CwAlarm = {
             AlarmName: rule.name,
             AlarmDescription: this.generateAlarmDescription(rule),
-            MetricName: rule.metricOption,
+            MetricName: rule.metricOption as string as CwMetricName,
             Namespace: this.getAwsNamespace(),
             Statistic: rule.statistic,
             Dimensions: [{'Name':'FunctionName','Value':rule.targetId}],
@@ -132,8 +133,8 @@ export class CwRuleMapper {
     }
 
     // TODO: implement getAwsNamespace()
-    private static getAwsNamespace(): string {
-        return 'AWS/Lambda';
+    private static getAwsNamespace(): AwsNamespace {
+        return AwsNamespace.LAMBDA;
     }
 
 
@@ -143,7 +144,7 @@ export class CwRuleMapper {
      * @param lambdaFunction description of AWS Lambda function service
      * @returns a generic Target representing the AWS Lambda function
      */
-    static mapLambdaToTarget(lambdaFunction: LambdaFunction) {
+    static mapLambdaToTarget(lambdaFunction: CwLambdaFunction) {
         var target: Target = {
             targetName: lambdaFunction.FunctionName,
             targetId: lambdaFunction.FunctionArn,
@@ -157,11 +158,28 @@ export class CwRuleMapper {
      * @param lambdaFunctions list of AWS Lambda service functions
      * @returns list of targets representing the Lambda services
      */
-    static mapLambdasToTargets(lambdaFunctions: LambdaFunction[]): Target[] {
+    static mapLambdasToTargets(lambdaFunctions: CwLambdaFunction[]): Target[] {
         var targets: Target[] = [];
         lambdaFunctions.forEach(lambda => {
             targets.push(this.mapLambdaToTarget(lambda));
         })
         return targets;
+    }
+
+    static mapCwAlertToSloAlert(cwAlert: CwAlert): SloAlert {
+        const sloAlert = {
+            alertName: cwAlert.AlarmName + '-' 
+                        + new Date(cwAlert.StateChangeTime).toLocaleTimeString('en-GB',) + '-'
+                        + new Date(cwAlert.StateChangeTime).toLocaleDateString('en-GB'),
+            alertDescription: cwAlert.NewStateReason,
+            alertTime: Date.parse(cwAlert.StateChangeTime),
+            sloId: cwAlert.AlarmArn,
+            sloName: cwAlert.AlarmName,
+            triggeringTargetName: cwAlert.Trigger.Dimensions[0].Value,
+            gropiusProjectId: this.getGropiusProjectId(cwAlert.AlarmDescription),
+            gropiusComponentId: this.getGropiusComponentId(cwAlert.AlarmDescription)
+        }
+
+        return sloAlert;
     }
 }
