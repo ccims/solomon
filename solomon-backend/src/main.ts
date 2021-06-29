@@ -28,11 +28,13 @@ async function bootstrap() {
   if (httpsEnabled === 'true'){
     app.use(basicAuth(basicAuthUser));
     app.enableCors();
+    console.log('Solomon backend running using HTTPS (Port 443)...')
     await app.listen(443); 
   } else {
     // a bit hacky solution: create new app instance without the httpsOptions
     app = await NestFactory.create(AppModule)
     app.enableCors();
+    console.log('Solomon backend running using HTTP (Port 6400)...')
     await app.listen(6400);
   }
 

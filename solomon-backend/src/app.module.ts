@@ -8,7 +8,7 @@ import { AlertHandlerModule } from './alert-handler/alert-handler.module';
 import { GropiusModule } from './gropius-manager/gropius-manager.module';
 import { ConfigModule } from '@nestjs/config';
 
-// this env var is set in the start script of package.json
+// this env var is set in the start script of package.json (either 'local' or 'aws')
 const ENV = process.env.NODE_ENV;
 
 @Module({
