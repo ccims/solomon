@@ -86,10 +86,10 @@ export class GropiusManager {
         try {
             const data = await request(this.gropiusUrl, queryIssue, { input: issue});
             const issueID = data.createIssue.issue.id;
-            this.logger.log("CREATED ISSUE: ", issueID);
+            this.logger.log("CREATED ISSUE: " + issueID);
             return issueID;
         } catch (error) {
-            this.logger.log("ERROR CREATING ISSUE: ", error);
+            this.logger.log("ERROR CREATING ISSUE: " + error);
         }
     }
 }
