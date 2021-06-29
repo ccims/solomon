@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Header, Logger, Post } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Post } from '@nestjs/common';
 import { AlertHandlerService } from './alert-handler.service';
 
 @Controller('alert')

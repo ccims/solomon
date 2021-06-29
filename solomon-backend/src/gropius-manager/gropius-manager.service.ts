@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { request, gql } from 'graphql-request'
-import { SloRule } from "solomon-models";
 import { SloAlert } from "src/models/alert.interface";
 import { GropiusComponent, GropiusIssue, GropiusProject } from "src/models/gropius.model";
 import { GropiusGqlMapper } from "./gropius.gql-mapper";
@@ -8,8 +8,9 @@ import { GropiusGqlMapper } from "./gropius.gql-mapper";
 @Injectable()
 export class GropiusManager {
     private readonly logger = new Logger(GropiusManager.name);
+    private readonly configService = new ConfigService();
 
-    gropiusUrl = 'http://localhost:8080/api';
+    private gropiusUrl = this.configService.get('GROPIUS_URL');
 
     async getGropiusProjects(): Promise<GropiusProject[]> {
         var projects = [];
