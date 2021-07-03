@@ -22,8 +22,7 @@ export class ForwarderService implements ConnectorService{
             case DeploymentEnvironment.AWS:
                 return this.cwConnector.getRules();
             case DeploymentEnvironment.KUBERNETES:
-                this.logger.log('not yet implemented ...')
-                return null;
+                return this.k8sConnector.getRules();
                 // return this.k8sPluginService.getRules();
         }
     }
@@ -55,8 +54,7 @@ export class ForwarderService implements ConnectorService{
             case DeploymentEnvironment.AWS:
                 return this.cwConnector.addRule(rule);
             case DeploymentEnvironment.KUBERNETES:
-                return null;
-                // return this.k8sPluginService.addRule(rule);
+                return this.k8sConnector.addRule(rule);
         }
     }
 
@@ -79,6 +77,4 @@ export class ForwarderService implements ConnectorService{
                 // return this.k8sPluginService.deleteRule(rule);
         }
     }
-
-
 }

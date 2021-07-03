@@ -1,67 +1,52 @@
 import { HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
-import SlaRule, { FunctionOptions, MetricOptions, OperatorOptions, PresetOptions } from '../models/sla-rule.model';
 import * as k8s from '@kubernetes/client-node';
 import { v4 as uuidv4 } from 'uuid';
 import { LoggerService } from '@nestjs/common/services/logger.service';
-
-const testRules: SlaRule[] = [
-  {
-    id: "RandomlyGeneratedId",
-    name: "BadAvailability",
-    description: "SLA for bad availability",
-    gropiusProjectId: "5d6a157f9985a001",
-    gropiusTargets: {
-      "5d6a15af6a05a003": "nodejs-client-service"
-    },
-    preset: PresetOptions.AVAILABILITY,
-    metric: MetricOptions.PROBE_SUCCESS,
-    operator: OperatorOptions.SMALLER_THEN,
-    function: FunctionOptions.AVG_OVER_TIME,
-    duration: "1m",
-    value: 0.8,
-  }
-]
+import { SloRule, StatisticsOption } from 'solomon-models';
+import { FunctionOptions } from 'src/models/sla-rule.model';
 
 @Injectable()
 export class K8sConnectorService { //implements ConnectorPluginService
   private rulesFilePath = '../rules.yaml';
 
-  private rules: Map<string, SlaRule> = new Map()
+  private rules: Map<string, SloRule> = new Map()
 
   private kc = new k8s.KubeConfig();
-  private k8Client;
+  private k8Client: k8s.KubernetesObjectApi;
+  private k8sCustomApi: k8s.CustomObjectsApi;
 
   private readonly logger = new Logger(K8sConnectorService.name);
-    
+
   constructor() {
     // Initialize Kubernetes Client
     this.kc.loadFromDefault();
-    this.k8Client = k8s.KubernetesObjectApi.makeApiClient(this.kc);
 
-    // Initialize rules with dummy test rules
-    testRules.forEach(rule => this.rules.set(rule.id, rule));
+    const k8sApi = this.kc.makeApiClient(k8s.CoreV1Api);
+    this.k8sCustomApi = this.kc.makeApiClient(k8s.CustomObjectsApi);
+    this.k8Client = k8s.KubernetesObjectApi.makeApiClient(this.kc);
   }
 
-  getRules(): Promise<SlaRule[]> {
-    return new Promise((resolve,reject)=> {
+  getRules(): Promise<SloRule[]> {
+    return new Promise((resolve, reject) => {
       resolve(Array.from(this.rules.values()))
     })
-    
+
   }
 
-  getRule(id: string): Promise<SlaRule> {
-    return new Promise((resolve,reject) => {
+  getRule(id: string): Promise<SloRule> {
+    return new Promise((resolve, reject) => {
       resolve(this.rules.get(id))
     })
   }
 
-  addRule(rule: SlaRule): Promise<boolean> {
+  addRule(rule: SloRule): Promise<boolean> {
     rule.id = uuidv4();
     this.rules.set(rule.id, rule);
+    this.logger.debug("added prometheus rule");
     return this.applyToPrometheusRuleCRD();
   }
 
-  updateRule(rule: SlaRule): Promise<boolean> {
+  updateRule(rule: SloRule): Promise<boolean> {
     if (!(rule?.id)) throw new HttpException("No Rule or Rule without Id", HttpStatus.PRECONDITION_FAILED);
 
     this.rules.set(rule.id, rule);
@@ -69,7 +54,7 @@ export class K8sConnectorService { //implements ConnectorPluginService
   }
 
   // TODO: implement delete rule
-  deleteRule(rule: SlaRule): Promise<boolean> {
+  deleteRule(rule: SloRule): Promise<boolean> {
     throw new Error('Method not implemented.');
   }
 
@@ -79,50 +64,96 @@ export class K8sConnectorService { //implements ConnectorPluginService
     return obj;
   }
 
-  async applyToPrometheusRuleCRD(): Promise<boolean> {
-    const obj = this.rulesToPrometheusRuleCRD();
-    this.logger.debug(`Applying CRL with ${obj.spec.groups[0].rules.length} Rules`)
-    try {
-      await this.k8Client.delete(obj);
-    } catch (e) {
-      this.logger.error("Error Deleting Sla Rules");
-    }
-
-    try {
-      await this.k8Client.create(obj);
-      this.logger.debug("Apply Successful");
-    } catch (e) {
-      this.logger.error("Error Creating Sla Rules", e.body);
-      return false;
-    }
-
-    return true;
-  }
-
-  protected ruleToPrometheusRule(rule: SlaRule) {
-    return               {
+  private ruleToPrometheusRule(rule: SloRule) {
+    return {
       alert: rule.name,
       annotations: {
         description: rule.description,
         slaRuleId: rule.id
       },
       expr: this.ruleToExpression(rule),
-      for: rule.duration,
+      for: "1m",  //TODO: replace with perid (convert to string 60s, 1m, ...)
       labels: {
         severity: "critical",
       }
     }
   }
 
-  private ruleToExpression(rule: SlaRule): string {
-    if (rule.function) {
-      return `${rule.function}(${rule.metric}[${rule.duration}]) ${rule.operator} ${rule.value}`
-    } else {
-        return `${rule.metric} ${rule.operator} ${rule.value}`
+  getPrometheusRules() {
+    this.k8sCustomApi
+      .getNamespacedCustomObject(
+        "monitoring.coreos.com",
+        "v1",
+        "default",
+        "prometheusrules",
+        "sla-rules"
+      )
+      .then((res: any) => {
+        res.body.spec.groups[0].rules.forEach(rule => console.log(rule.alert));
+      });
+  }
+
+  private prometheusRuleToSloRule() {
+
+  }
+
+  async applyToPrometheusRuleCRD(): Promise<boolean> {
+    const obj = this.rulesToPrometheusRuleCRD();
+    this.logger.debug(`Applying CRL with ${obj.spec.groups[0].rules.length} Rules`)
+    try {
+      await this.k8Client.delete(obj);
+    } catch (e) {
+      this.logger.error("Error Deleting Rule");
     }
+
+    try {
+      await this.k8Client.create(obj);
+      this.logger.debug("Apply Successful");
+    } catch (e) {
+      this.logger.debug(JSON.stringify(e));
+      this.logger.error("Error Creating Rule", JSON.stringify(e.body));
+      return false;
+    }
+
+    return true;
+  }
+
+  private ruleToExpression(rule: SloRule): string {
+    return 'avg_over_time(up[1m]) < 0.8';
+    // TODO
+    // if (rule.statistic) {
+    //   return `${statisticOperatorToPrometheusFunction(rule.statistic)}(${rule.metric}[${rule.duration}]) ${rule.operator} ${rule.value}`
+    // } else {
+    //   return `${rule.metric} ${rule.operator} ${rule.value}`
+    // }
+  }
+
+  private expressionToRule() {
+
   }
 }
 
+function statisticOperatorToPrometheusFunction(statistic: StatisticsOption): FunctionOptions {
+  switch (statistic) {
+    case StatisticsOption.AVG:
+      return FunctionOptions.AVG_OVER_TIME;
+    case StatisticsOption.RATE:
+      return FunctionOptions.RATE;
+    default:
+      throw "statistic option not supported for Kubernetes Environment";
+  }
+}
+
+function prometheusFunctionToStatisticOperator(_function: FunctionOptions): StatisticsOption {
+  switch (_function) {
+    case FunctionOptions.AVG_OVER_TIME:
+      return StatisticsOption.AVG;
+    case FunctionOptions.RATE:
+      return StatisticsOption.RATE;
+    default:
+      throw "not supported";
+  }
+}
 
 
 const emptyPrometheusRuleCrd = {
@@ -167,4 +198,6 @@ const emptyPrometheusRuleCrd = {
     ]
   }
 }
-  
+
+
+
