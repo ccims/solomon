@@ -17,7 +17,7 @@ export default function Routes() {
         <Route path={RoutePaths.SLO_EDIT}>
             <SloEditPage></SloEditPage>
         </Route>
-        <Route path={RoutePaths.SLO_LIST}>
+        <Route path={RoutePaths.SLO_LIST} exact>
             <SloListPage></SloListPage>
         </Route>
     </Switch>
