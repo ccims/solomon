@@ -69,7 +69,7 @@ export default function SloEditPage() {
     gropiusProjectId: SELECTED_GROPIUS_PROJECT_ID,
     gropiusComponentId: undefined,
 
-    preset: PresetOption.AVAILABILITY,
+    preset: PresetOption.CUSTOM,
     metricOption: MetricOption.PROBE_SUCCESS,
     comparisonOperator: ComparisonOperator.LESS,
     statistic: StatisticsOption.AVG,
@@ -140,7 +140,9 @@ export default function SloEditPage() {
                       fetchTargets(e.target.value).then((res) =>
                         setTargets(res)
                       );
-                      fetchAlarmActionList(e.target.value).then((res) => setAlarmActions(res));
+                      fetchAlarmActionList(e.target.value).then((res) =>
+                        setAlarmActions(res)
+                      );
                     }}
                   >
                     {Object.values(DeploymentEnvironment).map((value) => (
@@ -175,7 +177,10 @@ export default function SloEditPage() {
 
                 {values.deploymentEnvironment === DeploymentEnvironment.AWS && (
                   <FormControl fullWidth>
-                    <InputLabel style={{ marginLeft: "16px" }} id="alertTopicArn">
+                    <InputLabel
+                      style={{ marginLeft: "16px" }}
+                      id="alertTopicArn"
+                    >
                       Alarm Action
                     </InputLabel>
                     <Field
@@ -250,7 +255,7 @@ export default function SloEditPage() {
                 )}
 
                 <p>Properties</p>
-                <Field
+                {/* <Field
                   component={Select}
                   type="checkbox"
                   fullWidth
@@ -278,57 +283,75 @@ export default function SloEditPage() {
                       {value}
                     </ListItem>
                   ))}
-                </Field>
+                </Field> */}
 
                 {values.preset === PresetOption.CUSTOM && (
-                  <Field
-                    component={Select}
-                    type="checkbox"
-                    fullWidth
-                    variant="outlined"
-                    label="Metric"
-                    name="metricOption"
-                  >
-                    {Object.values(MetricOption).map((value) => (
-                      <ListItem key={value} value={value}>
-                        {value}
-                      </ListItem>
-                    ))}
-                  </Field>
+                  <FormControl fullWidth>
+                    <InputLabel
+                      style={{ marginLeft: "16px" }}
+                      id="metricOption"
+                    >
+                      Metric Option
+                    </InputLabel>
+                    <Field
+                      component={Select}
+                      type="checkbox"
+                      fullWidth
+                      variant="outlined"
+                      label="Metric"
+                      name="metricOption"
+                    >
+                      {Object.values(MetricOption).map((value) => (
+                        <ListItem key={value} value={value}>
+                          {value}
+                        </ListItem>
+                      ))}
+                    </Field>
+                  </FormControl>
                 )}
 
                 {values.preset === PresetOption.CUSTOM && (
-                  <Field
-                    component={Select}
-                    type="checkbox"
-                    fullWidth
-                    variant="outlined"
-                    label="Operator"
-                    name="operator"
-                  >
-                    {Object.values(ComparisonOperator).map((value) => (
-                      <ListItem key={value} value={value}>
-                        {value}
-                      </ListItem>
-                    ))}
-                  </Field>
+                  <FormControl fullWidth>
+                    <InputLabel style={{ marginLeft: "16px" }} id="operator">
+                      Operator
+                    </InputLabel>
+                    <Field
+                      component={Select}
+                      type="checkbox"
+                      fullWidth
+                      variant="outlined"
+                      label="Operator"
+                      name="operator"
+                    >
+                      {Object.values(ComparisonOperator).map((value) => (
+                        <ListItem key={value} value={value}>
+                          {value}
+                        </ListItem>
+                      ))}
+                    </Field>
+                  </FormControl>
                 )}
 
                 {values.preset === PresetOption.CUSTOM && (
-                  <Field
-                    component={Select}
-                    type="checkbox"
-                    fullWidth
-                    variant="outlined"
-                    label="Function"
-                    name="function"
-                  >
-                    {Object.values(StatisticsOption).map((value) => (
-                      <ListItem key={value} value={value}>
-                        {value}
-                      </ListItem>
-                    ))}
-                  </Field>
+                  <FormControl fullWidth>
+                    <InputLabel style={{ marginLeft: "16px" }} id="function">
+                      Function
+                    </InputLabel>
+                    <Field
+                      component={Select}
+                      type="checkbox"
+                      fullWidth
+                      variant="outlined"
+                      label="Function"
+                      name="function"
+                    >
+                      {Object.values(StatisticsOption).map((value) => (
+                        <ListItem key={value} value={value}>
+                          {value}
+                        </ListItem>
+                      ))}
+                    </Field>
+                  </FormControl>
                 )}
 
                 <Field
