@@ -14,6 +14,12 @@ export class AppController {
     return this.forwarder.getRules(env);
   }
 
+  @Get('rules/:deploymentEnvironment/:id')
+  getRule(@Param('deploymentEnvironment') env: DeploymentEnvironment, @Param('id') ruleId: string) {
+    this.logger.log('called getRule()')
+    return this.forwarder.getRule(ruleId, env);
+  }
+
   @Post('rules')
   addRule(@Body() rule: SloRule) {
     this.logger.log('called addRule()')
@@ -21,17 +27,16 @@ export class AppController {
     return this.forwarder.addRule(rule);
   }
 
-  // TODO: why name paramter? combine with addRule function
-  @Put('rules/:name')
+  @Put('rules')
   updateRule(@Body() rule: SloRule) {
     this.logger.log('called updateRule(id)')
     return this.forwarder.updateRule(rule);
   }
 
-  @Delete('rules/:deploymentEnvironment/:name')
-  deleteRule(@Param('deploymentEnvironment') env: DeploymentEnvironment, @Param('name') ruleName: string) {
+  @Delete('rules/:deploymentEnvironment/:id')
+  deleteRule(@Param('deploymentEnvironment') env: DeploymentEnvironment, @Param('id') ruleId: string) {
     this.logger.log('called deleteRule()')
-    return this.forwarder.deleteRule(ruleName, env);
+    return this.forwarder.deleteRule(ruleId, env);
   }
 
   @Get('gropius/projects')

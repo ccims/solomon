@@ -53,6 +53,72 @@ export class CwConnectorService implements ConnectorService{
       })
     }
 
+    async getRule(ruleId: string): Promise<SloRule> {
+      this.connected ? /*already connected */null : this.connectToAws();
+
+      const rules = await this.getRules();
+
+      return new Promise((resolve,reject) => {
+        try {
+          const rule = rules.find(rule => rule.id === ruleId);
+          return resolve(rule);
+        } catch (err) {
+          reject(new Error(err));
+        }
+      })
+    }
+    
+    addRule(rule: SloRule): Promise<boolean> {
+      this.connected ? /*already connected */null : this.connectToAws();
+      var alarm = CwRuleMapper.mapRuleToAlarm(rule);
+
+      return new Promise((resolve,reject) => {
+          this.cw.putMetricAlarm(alarm, (err, data) => {
+              if (err) {
+                  reject(new Error(err));
+              } else {
+                  this.logger.log(data)
+                  resolve(true);
+              }
+          })
+      })
+    }
+
+    updateRule(rule: SloRule): Promise<boolean> {
+      this.connected ? /*already connected */null : this.connectToAws();
+      var alarm = CwRuleMapper.mapRuleToAlarm(rule);
+
+      return new Promise((resolve,reject) => {
+          this.cw.putMetricAlarm(alarm, (err, data) => {
+              if (err) {
+                  reject(new Error(err));
+              } else {
+                  this.logger.log(data)
+                  resolve(true);
+              }
+          })
+      })
+    }
+
+    async deleteRule(ruleId: string): Promise<boolean> {
+      this.connected ? /*already connected */null : this.connectToAws();
+
+      const rule = await this.getRule(ruleId);
+      
+      const params = { AlarmNames: [rule.name]};
+
+      return new Promise((resolve,reject) => {
+        this.cw.deleteAlarms(params, (err, data) => {
+            if (err) {
+                reject(new Error(err));
+            } else {
+                this.logger.log(data)
+                resolve(true);
+            }
+        })
+      })
+    }
+
     // currently fetches only lambda functions TODO: fetch targets of other service types
     getTargets(): Promise<Target[]> {
       this.connected ? /*already connected */null : this.connectToAws();
@@ -94,53 +160,6 @@ export class CwConnectorService implements ConnectorService{
     }
 
 
-    addRule(rule: SloRule): Promise<boolean> {
-      this.connected ? /*already connected */null : this.connectToAws();
-      var alarm = CwRuleMapper.mapRuleToAlarm(rule);
 
-      return new Promise((resolve,reject) => {
-          this.cw.putMetricAlarm(alarm, (err, data) => {
-              if (err) {
-                  reject(new Error(err));
-              } else {
-                  this.logger.log(data)
-                  resolve(true);
-              }
-          })
-      })
-    }
-
-    updateRule(rule: SloRule): Promise<boolean> {
-      this.connected ? /*already connected */null : this.connectToAws();
-      var alarm = CwRuleMapper.mapRuleToAlarm(rule);
-
-      return new Promise((resolve,reject) => {
-          this.cw.putMetricAlarm(alarm, (err, data) => {
-              if (err) {
-                  reject(new Error(err));
-              } else {
-                  this.logger.log(data)
-                  resolve(true);
-              }
-          })
-      })
-    }
-
-    deleteRule(name: string): Promise<boolean> {
-      this.connected ? /*already connected */null : this.connectToAws();
-
-      const params = { AlarmNames: [name]};
-
-      return new Promise((resolve,reject) => {
-        this.cw.deleteAlarms(params, (err, data) => {
-            if (err) {
-                reject(new Error(err));
-            } else {
-                this.logger.log(data)
-                resolve(true);
-            }
-        })
-      })
-    }
 
 }

@@ -27,6 +27,15 @@ export class ForwarderService implements ConnectorService{
         }
     }
 
+    getRule(ruleId: string, deploymentEnvironment: DeploymentEnvironment) {
+        switch (deploymentEnvironment) {
+            case DeploymentEnvironment.AWS:
+                return this.cwConnector.getRule(ruleId);
+            case DeploymentEnvironment.KUBERNETES:
+                return this.k8sConnector.getRule(ruleId);
+        }
+    }
+
     getTargets(deploymentEnvironment: DeploymentEnvironment): Promise<Target[]> {
         switch (deploymentEnvironment) {
             case DeploymentEnvironment.AWS:
@@ -68,10 +77,10 @@ export class ForwarderService implements ConnectorService{
         }
     }
 
-    deleteRule(name: string, env: DeploymentEnvironment): Promise<boolean> {
+    deleteRule(id: string, env: DeploymentEnvironment): Promise<boolean> {
         switch (env) {
             case DeploymentEnvironment.AWS:
-                return this.cwConnector.deleteRule(name);
+                return this.cwConnector.deleteRule(id);
             case DeploymentEnvironment.KUBERNETES:
                 return null;
                 // return this.k8sPluginService.deleteRule(rule);

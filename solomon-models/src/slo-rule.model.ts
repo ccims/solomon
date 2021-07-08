@@ -54,7 +54,14 @@ export enum MetricOption {
     NLB_HEALTHY_HOST_COUNT = "HealthyHostCount",
     NLB_UNHEALTHY_HOST_COUNT = "UnHealthyHostCount",
     NLB_CLIENT_TLS_NEGOTIATION_ERROR_COUNT = "ClientTLSNegotiationErrorCount",
-    NLB_TARGET_TLS_NEGOTIATION_ERROR_COUNT = "TargetTLSNegotiationErrorCount"
+    NLB_TARGET_TLS_NEGOTIATION_ERROR_COUNT = "TargetTLSNegotiationErrorCount",
+
+    // AWS Relational Database Service (https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/monitoring-cloudwatch.html)
+    RDS_CPU_UTILIZATION = "CPUUtilization",
+    RDS_DATABASE_CONNECTIONS = "DatabaseConnections",
+    RDS_FREE_STORAGE_SPACE = "FreeStorageSpace",
+    RDS_READ_LATENCY = "ReadLatency",
+    RDS_WRITE_LATENCY = "WriteLatency",
 }
 
 export enum ComparisonOperator {
