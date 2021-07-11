@@ -33,11 +33,10 @@ export const fetchRules = async (env: DeploymentEnvironment): Promise<SloRule[]>
     return res.data;
 }
 
-// TODO: 
-// export const fetchRule = async (id: string): Promise<SlaRule> => {
-//     const res = await Axios.get<SlaRule>(`${slaManagerApi}${id}`);
-//     return res.data;
-// }
+export const fetchRule = async (id: string, env: DeploymentEnvironment): Promise<SloRule> => {
+    const res = await Axios.get<SloRule>(`${RULES_API}/${env}/${id}`);
+    return res.data;
+}
 
 export const postRule = async (rule: SloRule) => {
     const res = await Axios.post(`${RULES_API}`, rule, axiosConfig);
