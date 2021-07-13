@@ -89,9 +89,20 @@ export class K8sConnectorService implements ConnectorService {
         }
     }
 
-    deleteRule(ruleId: string): Promise<boolean> {
-        throw new Error("Method not implemented.");
+    async deleteRule(ruleId: string): Promise<boolean> {
+        const res = await this.getRuleResource();
+        const index = res.spec.groups[0].rules.findIndex(e => e.annotations.ruleId === ruleId);
+        res.spec.groups[0].rules.splice(index, 1);
+        try {
+            await this.k8ClientApi.replace(res);
+            this.logger.debug("Delete Prometheus Rule CRD successfully")
+            return true;
+        } catch (e) {
+            this.logger.error("Error deleting Prometheus Rule CRD", JSON.stringify(e));
+            return false;
+        }
     }
+
     getTargets(): Promise<Target[]> {
         throw new Error("Method not implemented.");
     }

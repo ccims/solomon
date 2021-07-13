@@ -26,6 +26,7 @@ import {
 import * as Yup from "yup";
 import {
   addRule,
+  deleteRule,
   fetchAlarmActionList,
   fetchGropiusComponents,
   fetchGropiusProjects,
@@ -93,6 +94,13 @@ export default function SloEditPage() {
       fetchAlarmActionList(SELECTED_ENV).then((res) => setAlarmActions(res));
     }
   }, [rule]);
+
+  async function onDeleteRule() {
+    if (rule?.id) {
+      await deleteRule(rule.id, rule.deploymentEnvironment);
+      router.push("/");
+    }
+  }
 
   return (
     <Container>
@@ -401,11 +409,18 @@ export default function SloEditPage() {
                   ></Field>
                   <Button
                     variant="contained"
-                    color="secondary"
+                    color="primary"
                     onClick={() => handleSubmit()}
                   >
                     Save
                   </Button>
+                  { rule?.id && <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => onDeleteRule()}
+                  >
+                    Delete
+                  </Button>}
                 </div>
               )}
             </Formik>

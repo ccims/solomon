@@ -48,6 +48,11 @@ export const updateRule = async (rule: SloRule) => {
     return res.data;
 }
 
+export const deleteRule = async (ruleId: string, env: DeploymentEnvironment) => {
+    const res = await Axios.delete(`${RULES_API}/${env}/${ruleId}`, axiosConfig);
+    return res.data;
+}
+
 export const fetchTargets = async (env: DeploymentEnvironment): Promise<Target[]> => {
     const res = await Axios.get(`${TARGET_API}/${env}`, axiosConfig);
     if (res.data as any === "") {   // why does api return ""?
