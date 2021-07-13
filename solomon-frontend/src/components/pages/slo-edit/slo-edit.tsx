@@ -76,13 +76,12 @@ export default function SloEditPage() {
   };
 
   useEffect(() => {
-    fetchRule(ruleId, SELECTED_ENV).then((res) => {
-      if (res) {
-        setRule(res);
-      } else {
-        setRule(defaultValues);
-      }
-    });
+    console.log("?????", ruleId);
+    if (ruleId) {
+      fetchRule(ruleId, SELECTED_ENV).then((res) => setRule(res));
+    } else {
+      setRule(defaultValues);
+    }
   }, [ruleId]);
 
   useEffect(() => {

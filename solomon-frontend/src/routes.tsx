@@ -11,7 +11,7 @@ export enum RoutePaths {
 
 export default function Routes() {
     return <Switch>
-        <Route path={`${RoutePaths.SLO_EDIT}/:id`}>
+        <Route path={`${RoutePaths.SLO_EDIT}/:ruleId`}>
             <SloEditPage></SloEditPage>
         </Route>
         <Route path={RoutePaths.SLO_EDIT}>

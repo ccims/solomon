@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConnectorService } from 'src/models/connector-service';
 import { CwConnectorService } from 'src/connector-cloudwatch/cw.service';
-import { K8sConnectorService } from 'src/connector-kubernetes/k8s.service';
 import { DeploymentEnvironment, SloRule, Target } from 'solomon-models';
+import { K8sConnectorService } from 'src/connector-kubernetes/k8s.service';
 
 /**
  * The forwarder service contains the logic for **forwarding the requests** (e.g. getRules, addRule) 
@@ -10,11 +10,11 @@ import { DeploymentEnvironment, SloRule, Target } from 'solomon-models';
  * to **different monitoring tools** (e.g. AWS: CloudWatch, Kubernetes: Prometheus).
  */
 @Injectable()
-export class ForwarderService implements ConnectorService{
+export class ForwarderService implements ConnectorService {
     private readonly logger = new Logger(ForwarderService.name);
 
     constructor(private cwConnector: CwConnectorService,
-                private k8sConnector: K8sConnectorService) {}
+        private k8sConnector: K8sConnectorService) { }
 
 
     getRules(deploymentEnvironment: DeploymentEnvironment): Promise<SloRule[]> {
@@ -23,7 +23,7 @@ export class ForwarderService implements ConnectorService{
                 return this.cwConnector.getRules();
             case DeploymentEnvironment.KUBERNETES:
                 return this.k8sConnector.getRules();
-                // return this.k8sPluginService.getRules();
+            // return this.k8sPluginService.getRules();
         }
     }
 
@@ -43,7 +43,7 @@ export class ForwarderService implements ConnectorService{
             case DeploymentEnvironment.KUBERNETES:
                 this.logger.log('not yet implemented ...')
                 return null;
-                // return this.k8sConnector.getTargets();
+            // return this.k8sConnector.getTargets();
         }
     }
 
@@ -54,7 +54,7 @@ export class ForwarderService implements ConnectorService{
             case DeploymentEnvironment.KUBERNETES:
                 this.logger.log('not implemented ...')
                 return null;
-                // probably does not needed for Kubernetes
+            // probably does not needed for Kubernetes
         }
     }
 
@@ -73,7 +73,7 @@ export class ForwarderService implements ConnectorService{
                 return this.cwConnector.updateRule(rule);
             case DeploymentEnvironment.KUBERNETES:
                 return null;
-                // return this.k8sPluginService.updateRule(rule);
+            // return this.k8sPluginService.updateRule(rule);
         }
     }
 
@@ -83,7 +83,7 @@ export class ForwarderService implements ConnectorService{
                 return this.cwConnector.deleteRule(id);
             case DeploymentEnvironment.KUBERNETES:
                 return null;
-                // return this.k8sPluginService.deleteRule(rule);
+            // return this.k8sPluginService.deleteRule(rule);
         }
     }
 }

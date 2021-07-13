@@ -16,7 +16,7 @@ export default function SloListPage() {
     }, [])
 
     return <Container>
-        { rules?.map(rule => <RuleItem key={rule.id} rule={rule}></RuleItem>) ?? [] }
+        { rules?.map((rule, index) => <RuleItem key={rule.id ?? index} rule={rule}></RuleItem>) ?? [] }
         <Link to={RoutePaths.SLO_EDIT}>
             <Button variant="contained" color="secondary">Add SLO</Button>
         </Link>
