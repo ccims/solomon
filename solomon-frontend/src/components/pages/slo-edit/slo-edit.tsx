@@ -76,7 +76,6 @@ export default function SloEditPage() {
   };
 
   useEffect(() => {
-    console.log("?????", ruleId);
     if (ruleId) {
       fetchRule(ruleId, SELECTED_ENV).then((res) => setRule(res));
     } else {

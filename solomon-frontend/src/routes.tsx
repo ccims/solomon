@@ -1,8 +1,7 @@
-import { Route, Switch } from "react-router-dom"
-import SloListPage from './components/pages/slo-list/slo-list';
-import SloEditPage from './components/pages/slo-edit/slo-edit';
-import LandingPage from './components/pages/landing/landing';
 import React from "react";
+import { Route, Switch } from "react-router-dom";
+import SloEditPage from './components/pages/slo-edit/slo-edit';
+import SloListPage from './components/pages/slo-list/slo-list';
 
 export enum RoutePaths {
     SLO_EDIT = "/slo",

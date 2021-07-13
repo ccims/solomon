@@ -15,7 +15,7 @@ const RuleItem: React.FunctionComponent<RuleItemProps> = ({ rule }) => {
         <Card>
           <Box p={2}>
             <h1>{rule.name}</h1>
-            <p>{rule.id ?? "null"} {rule.description}</p>
+            <p>{rule.description}</p>
           </Box>
         </Card>
       </Link>
