@@ -48,12 +48,10 @@ export class K8sConnectorService implements ConnectorService {
         try {
             const res = await this.getRuleResource();
             if (res) {
-                console.log("Has Rules");
                 return this.addRuleAndApply(rule, res, true);
             }
         } catch (error) {
             if (error.body.code === 404) {
-                console.log("No Rules");
                 return this.addRuleAndApply(rule, K8RuleMapper.createPrometheusRuleCrd(), false);
             }
         }
@@ -77,9 +75,20 @@ export class K8sConnectorService implements ConnectorService {
     }
 
 
-    updateRule(rule: SloRule): Promise<boolean> {
-        throw new Error("Method not implemented.");
+    async updateRule(rule: SloRule): Promise<boolean> {
+        const res = await this.getRuleResource();
+        const index = res.spec.groups[0].rules.findIndex(e => e.annotations.ruleId === rule.id);
+        res.spec.groups[0].rules[index] = K8RuleMapper.sloRuleToPromRule(rule);
+        try {
+            await this.k8ClientApi.replace(res);
+            this.logger.debug("Updated Prometheus Rule CRD successfully")
+            return true;
+        } catch (e) {
+            this.logger.error("Error updating Prometheus Rule CRD", JSON.stringify(e));
+            return false;
+        }
     }
+
     deleteRule(ruleId: string): Promise<boolean> {
         throw new Error("Method not implemented.");
     }

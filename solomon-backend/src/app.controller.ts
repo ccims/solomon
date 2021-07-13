@@ -22,8 +22,7 @@ export class AppController {
 
   @Post('rules')
   addRule(@Body() rule: SloRule) {
-    this.logger.log('called addRule()')
-    // TODO: add or update based on id of rule object
+    this.logger.log('called addRule()');
     return this.forwarder.addRule(rule);
   }
 

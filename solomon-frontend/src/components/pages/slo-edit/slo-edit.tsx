@@ -25,12 +25,13 @@ import {
 } from "solomon-models";
 import * as Yup from "yup";
 import {
+  addRule,
   fetchAlarmActionList,
   fetchGropiusComponents,
   fetchGropiusProjects,
   fetchRule,
   fetchTargets,
-  postRule,
+  updateRule,
 } from "../../../api";
 import { SELECTED_ENV, SELECTED_GROPIUS_PROJECT_ID } from "../../../App";
 
@@ -109,7 +110,11 @@ export default function SloEditPage() {
               })}
               onSubmit={async (values) => {
                 console.log("Submitting", values);
-                await postRule(values);
+                if (values.id) {
+                  await updateRule(values);
+                } else {
+                  await addRule(values);
+                }
                 router.push("/");
               }}
             >

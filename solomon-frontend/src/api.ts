@@ -38,8 +38,13 @@ export const fetchRule = async (id: string, env: DeploymentEnvironment): Promise
     return res.data;
 }
 
-export const postRule = async (rule: SloRule) => {
+export const addRule = async (rule: SloRule) => {
     const res = await Axios.post(`${RULES_API}`, rule, axiosConfig);
+    return res.data;
+}
+
+export const updateRule = async (rule: SloRule) => {
+    const res = await Axios.put(`${RULES_API}`, rule, axiosConfig);
     return res.data;
 }
 
