@@ -13,13 +13,14 @@ export class K8sConnectorService implements ConnectorService {
     private readonly logger = new Logger(K8sConnectorService.name);
     private k8ClientApi: k8s.KubernetesObjectApi;
     private k8CustomApi: k8s.CustomObjectsApi;
+    private k8CoreApi: k8s.CoreV1Api;
 
     constructor() {
         const kc = new k8s.KubeConfig();
         kc.loadFromDefault();
         this.k8ClientApi = k8s.KubernetesObjectApi.makeApiClient(kc);
         this.k8CustomApi = kc.makeApiClient(k8s.CustomObjectsApi);
-
+        this.k8CoreApi = kc.makeApiClient(k8s.CoreV1Api);
     }
 
     async getRules(): Promise<SloRule[]> {
@@ -55,6 +56,7 @@ export class K8sConnectorService implements ConnectorService {
                 return this.addRuleAndApply(rule, K8RuleMapper.createPrometheusRuleCrd(), false);
             }
         }
+        // TODO: configer Blackbox exporter to probe url
     }
 
     private async addRuleAndApply(sloRule: SloRule, promRuleCrd: PrometheusRuleCRD, isReplacing: boolean): Promise<boolean> {
@@ -103,8 +105,18 @@ export class K8sConnectorService implements ConnectorService {
         }
     }
 
-    getTargets(): Promise<Target[]> {
-        throw new Error("Method not implemented.");
+    async getTargets(): Promise<Target[]> {
+        try {
+            const res = await this.k8CoreApi.listNamespacedService("default")
+            const list: Target[] = res.body.items.filter(service => service.metadata.labels.solomonTarget === "true").map((service) => {
+                return {
+                    targetName: service.metadata.name,
+                    targetId: service.metadata.uid,
+                };
+            });
+            return list;
+        } catch (e) {
+            console.log(e);
+        }
     }
-
 }

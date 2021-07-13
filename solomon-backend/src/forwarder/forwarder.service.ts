@@ -42,8 +42,7 @@ export class ForwarderService implements ConnectorService {
                 return this.cwConnector.getTargets();
             case DeploymentEnvironment.KUBERNETES:
                 this.logger.log('not yet implemented ...')
-                return null;
-            // return this.k8sConnector.getTargets();
+                return this.k8sConnector.getTargets();
         }
     }
 

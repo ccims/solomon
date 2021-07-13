@@ -5,6 +5,7 @@ metadata:
   labels:
     app: nodejs-client-app
     monitoring: "true"
+    solomonTarget: "true"
   # annotations:
   #   prometheus.io/scrape: "true"
   #   prometheus.io/path: /metrics

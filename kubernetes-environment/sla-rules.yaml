@@ -1,39 +1,39 @@
-# Example PrometheusRule file, commented out because it is not needed but can be helpful in understanding how SlaRules are being applied
+# # Example PrometheusRule file, commented out because it is not needed but can be helpful in understanding how SlaRules are being applied
 
-apiVersion: monitoring.coreos.com/v1
-kind: PrometheusRule
-metadata:
-  annotations:
-    meta.helm.sh/release-name: promethues
-    meta.helm.sh/release-namespace: default
-  labels:
-    app: kube-prometheus-stack
-    app.kubernetes.io/managed-by: Helm
-    chart: kube-prometheus-stack-10.1.0
-    heritage: Helm
-    release: prometheus
-  name: sla-rules2
-spec:
-  groups:
-    - name: RuleFile
-      rules:
-        - alert: InstanceDown
-          annotations:
-            description: >-
-              {{ $labels.instance }} of job {{ $labels.job }} has been down for
-              more than 30 sec.
-            summary: 'Instance {{ $labels.instance }} down'
-          expr: up == 0
-          for: 30s
-          labels:
-            severity: warning
-        - alert: BadAvailability
-          annotations:
-            description: >-
-              {{ $labels.instance }} of job {{ $labels.job }} has a availability
-              less then 0.8 over the last minute
-            summary: 'Instance {{ $labels.instance }} has bad availability'
-          expr: 'avg_over_time(up[1m]) < 0.8'
-          for: 1m
-          labels:
-            severity: critical
+# apiVersion: monitoring.coreos.com/v1
+# kind: PrometheusRule
+# metadata:
+#   annotations:
+#     meta.helm.sh/release-name: promethues
+#     meta.helm.sh/release-namespace: default
+#   labels:
+#     app: kube-prometheus-stack
+#     app.kubernetes.io/managed-by: Helm
+#     chart: kube-prometheus-stack-10.1.0
+#     heritage: Helm
+#     release: prometheus
+#   name: sla-rules2
+# spec:
+#   groups:
+#     - name: RuleFile
+#       rules:
+#         - alert: InstanceDown
+#           annotations:
+#             description: >-
+#               {{ $labels.instance }} of job {{ $labels.job }} has been down for
+#               more than 30 sec.
+#             summary: 'Instance {{ $labels.instance }} down'
+#           expr: up == 0
+#           for: 30s
+#           labels:
+#             severity: warning
+#         - alert: BadAvailability
+#           annotations:
+#             description: >-
+#               {{ $labels.instance }} of job {{ $labels.job }} has a availability
+#               less then 0.8 over the last minute
+#             summary: 'Instance {{ $labels.instance }} has bad availability'
+#           expr: 'avg_over_time(up[1m]) < 0.8'
+#           for: 1m
+#           labels:
+#             severity: critical
