@@ -1,5 +1,6 @@
 import { ComparisonOperator, DeploymentEnvironment, MetricOption, PresetOption, SloRule, StatisticsOption } from "solomon-models";
 import { PrometheusRule, PrometheusRuleCRD } from "./k8.interface";
+import { FunctionOptions } from "./prometheus-rules-options";
 
 export class K8RuleMapper {
     static promRuleToSloRule(promRule: PrometheusRule): SloRule {
@@ -46,6 +47,26 @@ export class K8RuleMapper {
 
     private static promForToSeconds(forString: string): number {
         return +forString.split("s")[0];
+    }
+
+    private ruleToPromExpression(rule: SloRule): string {
+        
+        if (rule.statistic) {
+            return `${K8RuleMapper.statisticOperatorToPrometheusFunction(rule.statistic)}(${rule.metricOption}[${K8RuleMapper.secondsToPromString(rule.period)}]) ${rule.comparisonOperator} ${rule.threshold}`
+        } else {
+            return `${rule.metricOption} ${rule.comparisonOperator} ${rule.period}`
+        }
+    }
+
+    static statisticOperatorToPrometheusFunction(statistic: StatisticsOption) {
+        switch (statistic) {
+            case StatisticsOption.AVG:
+                return FunctionOptions.AVG_OVER_TIME;
+            case StatisticsOption.RATE:
+                return FunctionOptions.RATE;
+            default:
+                throw "statistic option not supported for Kubernetes Environment";
+        }
     }
 
     static createPrometheusRuleCrd(): PrometheusRuleCRD {

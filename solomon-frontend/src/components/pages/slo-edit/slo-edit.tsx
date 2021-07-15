@@ -65,7 +65,7 @@ export default function SloEditPage() {
 
     deploymentEnvironment: SELECTED_ENV,
     targetId: undefined,
-    gropiusProjectId: SELECTED_GROPIUS_PROJECT_ID,
+    gropiusProjectId: undefined,
     gropiusComponentId: undefined,
 
     preset: PresetOption.CUSTOM,
@@ -322,7 +322,7 @@ export default function SloEditPage() {
                   ))}
                 </Field> */}
 
-                  {values.preset === PresetOption.CUSTOM && (
+                  {  (!values.preset || values.preset === PresetOption.CUSTOM) && (
                     <FormControl fullWidth>
                       <InputLabel
                         style={{ marginLeft: "16px" }}
@@ -347,7 +347,7 @@ export default function SloEditPage() {
                     </FormControl>
                   )}
 
-                  {values.preset === PresetOption.CUSTOM && (
+                  { (!values.preset || values.preset === PresetOption.CUSTOM) && (
                     <FormControl fullWidth>
                       <InputLabel style={{ marginLeft: "16px" }} id="operator">
                         Operator
@@ -369,7 +369,7 @@ export default function SloEditPage() {
                     </FormControl>
                   )}
 
-                  {values.preset === PresetOption.CUSTOM && (
+                  { (!values.preset || values.preset === PresetOption.CUSTOM) && (
                     <FormControl fullWidth>
                       <InputLabel style={{ marginLeft: "16px" }} id="function">
                         Function
