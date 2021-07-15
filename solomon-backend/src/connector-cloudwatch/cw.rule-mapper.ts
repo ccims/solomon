@@ -20,7 +20,7 @@ export class CwRuleMapper {
             gropiusProjectId: this.getGropiusProjectId(alarm.AlarmDescription), 
             gropiusComponentId: this.getGropiusComponentId(alarm.AlarmDescription),
             metricOption: alarm.MetricName as string as MetricOption,
-            comparisonOperator: alarm.ComparisonOperator as ComparisonOperator,
+            comparisonOperator: this.invertOperator(alarm.ComparisonOperator as ComparisonOperator),
             statistic: alarm.Statistic as StatisticsOption,
             period: alarm.Period,
             threshold: alarm.Threshold,
@@ -60,7 +60,7 @@ export class CwRuleMapper {
             EvaluationPeriods: 1,
             DatapointsToAlarm: 1,
             Threshold: rule.threshold,
-            ComparisonOperator: rule.comparisonOperator,
+            ComparisonOperator: this.invertOperator(rule.comparisonOperator),
             ActionsEnabled: true,
             AlarmActions: [rule.alertTopicArn]
         }
@@ -133,16 +133,36 @@ export class CwRuleMapper {
         return targetName;
     }
 
-    static mapTargetTypeToAwsNamespace(targetType: TargetType) {
+    private static mapTargetTypeToAwsNamespace(targetType: TargetType) {
         var string = targetType as string;
         string = string.replace('-','/');
         return string as AwsNamespace;
     }
 
-    static mapAwsNamespaceToTagetType(awsNamespace: AwsNamespace) {
+    private static mapAwsNamespaceToTagetType(awsNamespace: AwsNamespace) {
         var string = awsNamespace as string;
         string = string.replace('/','-');
         return string as TargetType;
+    }
+
+    private static invertOperator(operator: ComparisonOperator): ComparisonOperator {
+        switch (operator) {
+            case ComparisonOperator.GREATER:
+                return ComparisonOperator.LESS_OR_EQUAL;
+            case ComparisonOperator.GREATER_OR_EQUAL:
+                return ComparisonOperator.LESS;
+            case ComparisonOperator.LESS:
+                return ComparisonOperator.GREATER_OR_EQUAL;
+            case ComparisonOperator.LESS_OR_EQUAL:
+                return ComparisonOperator.GREATER;
+            case ComparisonOperator.EQUAL:
+                return ComparisonOperator.NOT_EQUAL;
+            case ComparisonOperator.NOT_EQUAL:
+                return ComparisonOperator.EQUAL;
+            default:
+                console.log('Undefined case for inversion of comparison operator!')
+                break;
+        }
     }
 
     static mapCwAlertToSloAlert(cwAlert: CwAlert): SloAlert {
