@@ -91,6 +91,9 @@ export default function SloEditPage() {
       fetchGropiusProjects().then((res) => {
         setGropiusProjects(res);
       });
+      if (rule.gropiusProjectId) {
+        fetchGropiusComponents(rule.gropiusProjectId).then(res => setGropiusComponents(res));
+      }
       fetchAlarmActionList(SELECTED_ENV).then((res) => setAlarmActions(res));
     }
   }, [rule]);
