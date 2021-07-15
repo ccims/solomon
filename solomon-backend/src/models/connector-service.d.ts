@@ -1,4 +1,5 @@
 import { DeploymentEnvironment, SloRule, Target } from "solomon-models";
+import { TargetType } from "solomon-models/dist/target.model";
 
 /**
  * The interface to be used by the forwarder as well as all the connectors.
@@ -42,5 +43,5 @@ export interface ConnectorService {
      * returns a list of all possible monitoring targets
      * @param env - the environment for which possible targets should be fetched
      */
-    getTargets(env?: DeploymentEnvironment): Promise<Target[]>;
+    getTargets(env?: DeploymentEnvironment, targetType?: TargetType): Promise<Target[]>;
 }

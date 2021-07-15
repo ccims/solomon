@@ -37,9 +37,10 @@ export interface LambdaMetricInfos {
 
 export enum AwsNamespace {
     LAMBDA = 'AWS/Lambda',
-    LOGS = 'AWS/Logs',
+    ECS = 'AWS/ECS',
     APIGATEWAY = 'AWS/ApiGateway',
-    S3 = 'AWS/S3'
+    ELB = 'AWS/NetworkELB',
+    RDS = 'AWS/RDS',
 }
 
 export enum CwMetricName {
@@ -67,6 +68,30 @@ export interface CwLambdaFunction {
     FunctionName: string; // the name of the function
     FunctionArn: string; //the Amazon Resource Name (ARN) assigned to the function
     Description: string; // user-provided description of the lambda function
+}
+
+export interface CwRdsCluster {
+    DBClusterIdentifier: string; 
+    DBClusterArn: string;
+    DatabaseName: string;
+}
+
+export interface CwApiGateway {
+    Name: string; 
+    ApiId: string; // seems to not be the ARN in this case...
+    Description : string;
+}
+
+export interface CwElb {
+    LoadBalancerName: string;
+    CanonicalHostedZoneName: string;
+    CreatedTime: string;
+}
+
+export interface CwEcsCluster {
+    clusterName : string;
+    clusterArn: string;
+    status: string;
 }
 
 export interface CwAlert {

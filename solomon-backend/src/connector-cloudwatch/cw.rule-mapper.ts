@@ -1,6 +1,7 @@
 import { ComparisonOperator, DeploymentEnvironment, MetricOption, SloRule, StatisticsOption, Target } from 'solomon-models';
+import { TargetType } from 'solomon-models/dist/target.model';
 import { SloAlert } from 'src/models/alert.interface';
-import { CwAlarm, AwsNamespace, DimensionFilter, CwLambdaFunction, CwMetricName, CwAlert } from './cw.interface';
+import { CwAlarm, AwsNamespace, DimensionFilter, CwLambdaFunction, CwMetricName, CwAlert, CwRdsCluster, CwApiGateway, CwElb, CwEcsCluster } from './cw.interface';
 
 export class CwRuleMapper {
     /**
@@ -15,6 +16,7 @@ export class CwRuleMapper {
             description: this.getAlarmDescription(alarm.AlarmDescription),
             deploymentEnvironment: DeploymentEnvironment.AWS,
             targetId: this.getTargetName(alarm.Dimensions),
+            targetType: this.mapAwsNamespaceToTagetType(alarm.Namespace),
             gropiusProjectId: this.getGropiusProjectId(alarm.AlarmDescription), 
             gropiusComponentId: this.getGropiusComponentId(alarm.AlarmDescription),
             metricOption: alarm.MetricName as string as MetricOption,
@@ -47,12 +49,11 @@ export class CwRuleMapper {
      * @returns a CloudWatch alarm
      */
     static mapRuleToAlarm(rule: SloRule): CwAlarm {
-        console.log(rule.metricOption)
         var alarm: CwAlarm = {
             AlarmName: rule.name,
             AlarmDescription: this.generateAlarmDescription(rule),
             MetricName: rule.metricOption as string as CwMetricName,
-            Namespace: this.getAwsNamespace(),
+            Namespace: this.mapTargetTypeToAwsNamespace(rule.targetType),
             Statistic: rule.statistic,
             Dimensions: [{'Name':'FunctionName','Value':rule.targetId}],
             Period: rule.period,
@@ -132,38 +133,16 @@ export class CwRuleMapper {
         return targetName;
     }
 
-    // TODO: implement getAwsNamespace()
-    private static getAwsNamespace(): AwsNamespace {
-        return AwsNamespace.LAMBDA;
+    static mapTargetTypeToAwsNamespace(targetType: TargetType) {
+        var string = targetType as string;
+        string = string.replace('-','/');
+        return string as AwsNamespace;
     }
 
-
-
-    /**
-     * map an AWS Lambda function to the generic Target type
-     * @param lambdaFunction description of AWS Lambda function service
-     * @returns a generic Target representing the AWS Lambda function
-     */
-    static mapLambdaToTarget(lambdaFunction: CwLambdaFunction) {
-        var target: Target = {
-            targetName: lambdaFunction.FunctionName,
-            targetId: lambdaFunction.FunctionArn,
-            targetDescription: lambdaFunction.Description
-        }
-        return target;
-    }
-
-    /**
-     * map multiple AWS Lambda functions to the generic Target type
-     * @param lambdaFunctions list of AWS Lambda service functions
-     * @returns list of targets representing the Lambda services
-     */
-    static mapLambdasToTargets(lambdaFunctions: CwLambdaFunction[]): Target[] {
-        var targets: Target[] = [];
-        lambdaFunctions.forEach(lambda => {
-            targets.push(this.mapLambdaToTarget(lambda));
-        })
-        return targets;
+    static mapAwsNamespaceToTagetType(awsNamespace: AwsNamespace) {
+        var string = awsNamespace as string;
+        string = string.replace('/','-');
+        return string as TargetType;
     }
 
     static mapCwAlertToSloAlert(cwAlert: CwAlert): SloAlert {
@@ -182,4 +161,149 @@ export class CwRuleMapper {
 
         return sloAlert;
     }
+
+
+
+    /**
+     * map an AWS Lambda function to the generic Target type
+     * @param lambdaFunction description of AWS Lambda function service
+     * @returns a generic Target representing the AWS Lambda function
+     */
+    static mapLambdaToTarget(lambdaFunction: CwLambdaFunction) {
+        var target: Target = {
+            targetName: lambdaFunction.FunctionName,
+            targetId: lambdaFunction.FunctionArn,
+            targetDescription: lambdaFunction.Description,
+            targetType: TargetType.AWS_LAMBDA
+        }
+        return target;
+    }
+
+    /**
+     * map multiple AWS Lambda functions to the generic Target type
+     * @param lambdaFunctions list of AWS Lambda service functions
+     * @returns list of targets representing the Lambda services
+     */
+    static mapLambdasToTargets(lambdaFunctions: CwLambdaFunction[]): Target[] {
+        var targets: Target[] = [];
+        lambdaFunctions.forEach(lambda => {
+            targets.push(this.mapLambdaToTarget(lambda));
+        })
+        return targets;
+    }
+
+
+    /**
+     * map an AWS RDS cluster to the generic Target type
+     * @param rdsCluster description of AWS RDS cluster
+     * @returns a generic Target representing the AWS RDS cluster
+     */
+    static mapRdsToTarget(rdsCluster: CwRdsCluster) {
+        var target: Target = {
+            targetName: rdsCluster.DBClusterIdentifier,
+            targetId: rdsCluster.DBClusterArn,
+            targetDescription: rdsCluster.DatabaseName,
+            targetType: TargetType.AWS_RDS
+        }
+        return target;
+    }
+    
+    /**
+     * map multiple AWS RDS clusters to the generic Target type
+     * @param rdsClusters list of AWS RDS clusters
+     * @returns list of targets representing the RDS clusters
+     */
+    static mapRdsToTargets(rdsClusters: CwRdsCluster[]): Target[] {
+        var targets: Target[] = [];
+        rdsClusters.forEach(cluster => {
+            targets.push(this.mapRdsToTarget(cluster));
+        })
+        return targets;
+    }
+
+    /**
+     * map an AWS API to the generic Target type
+     * @param api description of AWS API
+     * @returns a generic Target representing the AWS API
+     */
+     static mapApiToTarget(api: CwApiGateway) {
+        var target: Target = {
+            targetName: api.Name,
+            targetId: api.ApiId,
+            targetDescription: api.Description,
+            targetType: TargetType.AWS_APIGATEWAY
+        }
+        return target;
+    }
+
+    /**
+     * map multiple AWS APIs to the generic Target type
+     * @param apiGateways list of AWS APIs 
+     * @returns list of targets representing the APIs
+     */
+    static mapApisToTargets(apiGateways: CwApiGateway[]): Target[] {
+        var targets: Target[] = [];
+        apiGateways.forEach(api => {
+            targets.push(this.mapApiToTarget(api));
+        })
+        return targets;
+    }
+
+    /**
+     * map an AWS ELB to the generic Target type
+     * @param elb description of AWS ELB
+     * @returns a generic Target representing the AWS ELB
+     */
+    static mapElbToTarget(elb: CwElb) {
+        var target: Target = {
+            targetName: elb.LoadBalancerName,
+            targetId: elb.CanonicalHostedZoneName,
+            targetDescription: elb.CreatedTime,
+            targetType: TargetType.AWS_ELB
+        }
+        return target;
+    }   
+    
+    /**
+     * map multiple AWS ELBs to the generic Target type
+     * @param elbs list of AWS ELBs 
+     * @returns list of targets representing the ELBs
+     */
+    static mapElbsToTargets(elbs: CwElb[]): Target[] {
+        var targets: Target[] = [];
+        elbs.forEach(elb => {
+            targets.push(this.mapElbToTarget(elb));
+        })
+        return targets;
+    }
+
+    /**
+     * map an AWS ECS cluster to the generic Target type
+     * @param clusterArn description of AWS ECS cluster
+     * @returns a generic Target representing the AWS ECS cluster
+     */
+    static mapEcsClusterToTarget(clusterArn: string) {
+        var target: Target = {
+            targetName: clusterArn, // cluster attributes such as name have to be fetched with extra call
+            targetId: clusterArn,
+            targetDescription: '',
+            targetType: TargetType.AWS_ECS
+        }
+        return target;
+    }   
+    
+    /**
+     * map multiple AWS ECS clusters to the generic Target type
+     * @param ecsClusters list of AWS ECS clusters
+     * @returns list of targets representing the ECS clusters
+     */
+    static mapEcsClustersToTargets(ecsClusters: string[]): Target[] {
+        var targets: Target[] = [];
+        ecsClusters.forEach(cluster => {
+            targets.push(this.mapEcsClusterToTarget(cluster));
+        })
+        return targets;
+    }
+
 }
+

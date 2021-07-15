@@ -3,6 +3,7 @@ import { ConnectorService } from 'src/models/connector-service';
 import { CwConnectorService } from 'src/connector-cloudwatch/cw.service';
 import { DeploymentEnvironment, SloRule, Target } from 'solomon-models';
 import { K8sConnectorService } from 'src/connector-kubernetes/k8s.service';
+import { TargetType } from 'solomon-models/dist/target.model';
 
 /**
  * The forwarder service contains the logic for **forwarding the requests** (e.g. getRules, addRule) 
@@ -36,10 +37,10 @@ export class ForwarderService implements ConnectorService {
         }
     }
 
-    getTargets(deploymentEnvironment: DeploymentEnvironment): Promise<Target[]> {
+    getTargets(deploymentEnvironment: DeploymentEnvironment, targetType?: TargetType): Promise<Target[]> {
         switch (deploymentEnvironment) {
             case DeploymentEnvironment.AWS:
-                return this.cwConnector.getTargets();
+                return this.cwConnector.getTargets(null, targetType);
             case DeploymentEnvironment.KUBERNETES:
                 this.logger.log('not yet implemented ...')
                 return this.k8sConnector.getTargets();

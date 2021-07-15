@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Logger } from '@nestjs/common';
-import { DeploymentEnvironment, SloRule } from 'solomon-models';
+import { DeploymentEnvironment, SloRule, TargetType } from 'solomon-models';
 import { ForwarderService } from './forwarder/forwarder.service';
 import { GropiusManager } from './gropius-manager/gropius-manager.service';
 
@@ -50,10 +50,10 @@ export class AppController {
     return this.gropiusManager.getGropiusComponents(gropiusProjectId);
   }
 
-  @Get('targets/:deploymentEnvironment')
-  getTargetList(@Param('deploymentEnvironment') env: DeploymentEnvironment) {
+  @Get('targets/:deploymentEnvironment/:targetType?')
+  getTargetList(@Param('deploymentEnvironment') env: DeploymentEnvironment, @Param('targetType') targetType: TargetType) {
     this.logger.log('called getTargets()')
-    return this.forwarder.getTargets(env);
+    return this.forwarder.getTargets(env, targetType);
   }
 
   @Get('alarm-actions/:deploymentEnvironment')
