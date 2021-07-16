@@ -1,3 +1,5 @@
+import { ComparisonOperator, MetricOption, PresetOption, StatisticsOption } from "solomon-models";
+
 export interface PrometheusRuleCRD {
     apiVersion: string;
     kind: string;
@@ -24,6 +26,13 @@ export interface PrometheusRule {
         targetId: string;
         gropiusProjectId?: string;
         gropiusComponentId?: string;
+        // used for remapping a prometheus rule to an slo rule because it would be more difficult to infer these based of a PromQL expression
+        preset?: PresetOption;
+        metricOption?: MetricOption;
+        comparisonOperator?: ComparisonOperator;
+        statistic?: StatisticsOption;
+        period: number;
+        threshold: number;
     }
     expr: string;
     for: string;

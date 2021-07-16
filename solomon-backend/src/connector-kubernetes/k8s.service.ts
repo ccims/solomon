@@ -60,6 +60,8 @@ export class K8sConnectorService implements ConnectorService {
     }
 
     private async addRuleAndApply(sloRule: SloRule, promRuleCrd: PrometheusRuleCRD, isReplacing: boolean): Promise<boolean> {
+        const promRule = K8RuleMapper.sloRuleToPromRule(sloRule);
+        this.logger.debug(`Applying PrometheusRule with expression ${promRule.expr}`)
         promRuleCrd.spec.groups[0].rules.push(K8RuleMapper.sloRuleToPromRule(sloRule));
 
         try {

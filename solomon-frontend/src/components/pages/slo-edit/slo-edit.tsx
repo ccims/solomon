@@ -35,7 +35,7 @@ import {
   fetchTargets,
   updateRule,
 } from "../../../api";
-import { SELECTED_ENV, SELECTED_GROPIUS_PROJECT_ID } from "../../../App";
+import { SELECTED_ENV } from "../../../App";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -200,7 +200,7 @@ export default function SloEditPage() {
                         style={{ marginLeft: "16px" }}
                         id="targetType"
                       >
-                        Alarm Action
+                        Target Type
                       </InputLabel>
                       <Field
                         component={Select}

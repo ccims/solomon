@@ -1,6 +1,6 @@
 import { ComparisonOperator, DeploymentEnvironment, MetricOption, PresetOption, SloRule, StatisticsOption } from "solomon-models";
 import { PrometheusRule, PrometheusRuleCRD } from "./k8.interface";
-import { FunctionOptions } from "./prometheus-rules-options";
+import { FunctionOptions, OperatorOptions } from "./prometheus-rules-options";
 
 export class K8RuleMapper {
     static promRuleToSloRule(promRule: PrometheusRule): SloRule {
@@ -12,14 +12,12 @@ export class K8RuleMapper {
             targetId: promRule.annotations.targetId,
             gropiusProjectId: promRule.annotations.gropiusProjectId,
             gropiusComponentId: promRule.annotations.gropiusComponentId,
-
-            // TODO: infer from rule expression
-            preset: PresetOption.CUSTOM,
-            metricOption: MetricOption.PROBE_SUCCESS,
-            comparisonOperator: ComparisonOperator.EQUAL,
-            statistic: StatisticsOption.AVG,
-            period: this.promForToSeconds(promRule.for),
-            threshold: 1,   // TODO: convert
+            preset: promRule.annotations.preset,
+            metricOption: promRule.annotations.metricOption,
+            comparisonOperator: promRule.annotations.comparisonOperator,
+            statistic: promRule.annotations.statistic,
+            period: promRule.annotations.period,
+            threshold: promRule.annotations.threshold,
         }
     }
 
@@ -31,10 +29,16 @@ export class K8RuleMapper {
                 description: rule.description,
                 targetId: rule.targetId,
                 gropiusComponentId: rule.gropiusComponentId,
-                gropiusProjectId: rule.gropiusProjectId
+                gropiusProjectId: rule.gropiusProjectId,
+                comparisonOperator: rule.comparisonOperator,
+                metricOption: rule.metricOption,
+                preset: rule.preset,
+                statistic: rule.statistic,
+                period: rule.period,
+                threshold: rule.threshold
             },
-            expr: "up == 0",    // TODO: convert
-            for: this.secondsToPromString(rule.period),
+            expr: K8RuleMapper.ruleToPromExpression(rule),
+            for: K8RuleMapper.secondsToPromString(rule.period),
             labels: {
                 severity: "warning",
             },
@@ -49,12 +53,11 @@ export class K8RuleMapper {
         return +forString.split("s")[0];
     }
 
-    private ruleToPromExpression(rule: SloRule): string {
-        
+    private static ruleToPromExpression(rule: SloRule): string {
         if (rule.statistic) {
-            return `${K8RuleMapper.statisticOperatorToPrometheusFunction(rule.statistic)}(${rule.metricOption}[${K8RuleMapper.secondsToPromString(rule.period)}]) ${rule.comparisonOperator} ${rule.threshold}`
+            return `${K8RuleMapper.statisticOperatorToPrometheusFunction(rule.statistic)}(${rule.metricOption}[${K8RuleMapper.secondsToPromString(rule.period)}]) ${K8RuleMapper.comparisonOperatorToPrometheusFunction(rule.comparisonOperator)} ${rule.threshold}`
         } else {
-            return `${rule.metricOption} ${rule.comparisonOperator} ${rule.period}`
+            return `${rule.metricOption} ${K8RuleMapper.comparisonOperatorToPrometheusFunction(rule.comparisonOperator)} ${rule.threshold}`
         }
     }
 
@@ -66,6 +69,25 @@ export class K8RuleMapper {
                 return FunctionOptions.RATE;
             default:
                 throw "statistic option not supported for Kubernetes Environment";
+        }
+    }
+
+    static comparisonOperatorToPrometheusFunction(comparison: ComparisonOperator) {
+        switch (comparison) {
+            case ComparisonOperator.EQUAL:
+                return OperatorOptions.EQUALS;
+            case ComparisonOperator.NOT_EQUAL:
+                return OperatorOptions.NOT_EQUALS;
+            case ComparisonOperator.GREATER:
+                return OperatorOptions.GREATER_THEN;
+            case ComparisonOperator.GREATER_OR_EQUAL:
+                return OperatorOptions.GREATER_OR_EQUAL_THEN;
+            case ComparisonOperator.LESS:
+                return OperatorOptions.SMALLER_THEN;
+            case ComparisonOperator.LESS_OR_EQUAL:
+                return OperatorOptions.SMALLER_OR_EQUAL_THEN;
+            default:
+                throw "comparison option not supported for Kubernetes Environment";
         }
     }
 
