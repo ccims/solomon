@@ -22,6 +22,7 @@ import {
   SloRule,
   StatisticsOption,
   Target,
+  TargetType,
 } from "solomon-models";
 import * as Yup from "yup";
 import {
@@ -87,14 +88,20 @@ export default function SloEditPage() {
 
   useEffect(() => {
     if (rule) {
-      fetchTargets(SELECTED_ENV).then((res) => setTargets(res));
+      fetchTargets(rule.deploymentEnvironment, rule.targetType).then((res) =>
+        setTargets(res)
+      );
       fetchGropiusProjects().then((res) => {
         setGropiusProjects(res);
       });
       if (rule.gropiusProjectId) {
-        fetchGropiusComponents(rule.gropiusProjectId).then(res => setGropiusComponents(res));
+        fetchGropiusComponents(rule.gropiusProjectId).then((res) =>
+          setGropiusComponents(res)
+        );
       }
-      fetchAlarmActionList(SELECTED_ENV).then((res) => setAlarmActions(res));
+      fetchAlarmActionList(rule.deploymentEnvironment).then((res) =>
+        setAlarmActions(res)
+      );
     }
   }, [rule]);
 
@@ -170,8 +177,8 @@ export default function SloEditPage() {
                       // defaultValue=""
                       onChange={(e) => {
                         setFieldValue("deploymentEnvironment", e.target.value);
-                        fetchTargets(e.target.value).then((res) =>
-                          setTargets(res)
+                        fetchTargets(e.target.value, values.targetType).then(
+                          (res) => setTargets(res)
                         );
                         fetchAlarmActionList(e.target.value).then((res) =>
                           setAlarmActions(res)
@@ -185,6 +192,39 @@ export default function SloEditPage() {
                       ))}
                     </Field>
                   </FormControl>
+
+                  {values.deploymentEnvironment ===
+                    DeploymentEnvironment.AWS && (
+                    <FormControl fullWidth>
+                      <InputLabel
+                        style={{ marginLeft: "16px" }}
+                        id="targetType"
+                      >
+                        Alarm Action
+                      </InputLabel>
+                      <Field
+                        component={Select}
+                        type="checkbox"
+                        fullWidth
+                        variant="outlined"
+                        label="Target Type"
+                        name="targetType"
+                        onChange={(e) => {
+                          setFieldValue("targetType", e.target.value);
+                          fetchTargets(
+                            values.deploymentEnvironment,
+                            e.target.value
+                          ).then((res) => setTargets(res));
+                        }}
+                      >
+                        {Object.values(TargetType).map((value) => (
+                          <ListItem key={value} value={value}>
+                            {value}
+                          </ListItem>
+                        ))}
+                      </Field>
+                    </FormControl>
+                  )}
 
                   {targets && (
                     <FormControl fullWidth>
@@ -322,7 +362,8 @@ export default function SloEditPage() {
                   ))}
                 </Field> */}
 
-                  {  (!values.preset || values.preset === PresetOption.CUSTOM) && (
+                  {(!values.preset ||
+                    values.preset === PresetOption.CUSTOM) && (
                     <FormControl fullWidth>
                       <InputLabel
                         style={{ marginLeft: "16px" }}
@@ -347,7 +388,31 @@ export default function SloEditPage() {
                     </FormControl>
                   )}
 
-                  { (!values.preset || values.preset === PresetOption.CUSTOM) && (
+                  {(!values.preset ||
+                    values.preset === PresetOption.CUSTOM) && (
+                    <FormControl fullWidth>
+                      <InputLabel style={{ marginLeft: "16px" }} id="function">
+                        Statistic
+                      </InputLabel>
+                      <Field
+                        component={Select}
+                        type="checkbox"
+                        fullWidth
+                        variant="outlined"
+                        label="Statistic"
+                        name="statistic"
+                      >
+                        {Object.values(StatisticsOption).map((value) => (
+                          <ListItem key={value} value={value}>
+                            {value}
+                          </ListItem>
+                        ))}
+                      </Field>
+                    </FormControl>
+                  )}
+
+                  {(!values.preset ||
+                    values.preset === PresetOption.CUSTOM) && (
                     <FormControl fullWidth>
                       <InputLabel style={{ marginLeft: "16px" }} id="operator">
                         Operator
@@ -358,7 +423,7 @@ export default function SloEditPage() {
                         fullWidth
                         variant="outlined"
                         label="Operator"
-                        name="operator"
+                        name="comparisonOperator"
                       >
                         {Object.values(ComparisonOperator).map((value) => (
                           <ListItem key={value} value={value}>
@@ -369,27 +434,15 @@ export default function SloEditPage() {
                     </FormControl>
                   )}
 
-                  { (!values.preset || values.preset === PresetOption.CUSTOM) && (
-                    <FormControl fullWidth>
-                      <InputLabel style={{ marginLeft: "16px" }} id="function">
-                        Function
-                      </InputLabel>
-                      <Field
-                        component={Select}
-                        type="checkbox"
-                        fullWidth
-                        variant="outlined"
-                        label="Function"
-                        name="function"
-                      >
-                        {Object.values(StatisticsOption).map((value) => (
-                          <ListItem key={value} value={value}>
-                            {value}
-                          </ListItem>
-                        ))}
-                      </Field>
-                    </FormControl>
-                  )}
+                  <Field
+                    component={TextField}
+                    fullWidth
+                    variant="outlined"
+                    label="threshold"
+                    name="threshold"
+                    type="number"
+                    placeholder="Threshold"
+                  ></Field>
 
                   <Field
                     component={TextField}
@@ -401,15 +454,6 @@ export default function SloEditPage() {
                     placeholder="period"
                   ></Field>
 
-                  <Field
-                    component={TextField}
-                    fullWidth
-                    variant="outlined"
-                    label="threshold"
-                    name="threshold"
-                    type="number"
-                    placeholder="Threshold"
-                  ></Field>
                   <Button
                     variant="contained"
                     color="primary"
@@ -417,13 +461,15 @@ export default function SloEditPage() {
                   >
                     Save
                   </Button>
-                  { rule?.id && <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={() => onDeleteRule()}
-                  >
-                    Delete
-                  </Button>}
+                  {rule?.id && (
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => onDeleteRule()}
+                    >
+                      Delete
+                    </Button>
+                  )}
                 </div>
               )}
             </Formik>

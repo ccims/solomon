@@ -53,8 +53,8 @@ export const deleteRule = async (ruleId: string, env: DeploymentEnvironment) => 
     return res.data;
 }
 
-export const fetchTargets = async (env: DeploymentEnvironment): Promise<Target[]> => {
-    const res = await Axios.get(`${TARGET_API}/${env}`, axiosConfig);
+export const fetchTargets = async (env: DeploymentEnvironment, targetType: string): Promise<Target[]> => {
+    const res = await Axios.get(targetType ? `${TARGET_API}/${env}/${targetType}` : `${TARGET_API}/${env}`, axiosConfig);
     if (res.data as any === "") {   // why does api return ""?
         return null;
     }
@@ -73,7 +73,6 @@ export const fetchGropiusComponents = async (gropiusProjectId: string): Promise<
 
 export const fetchAlarmActionList = async (env: DeploymentEnvironment): Promise<string[]> => {
     const res = await Axios.get(`${ALARM_ACTION}/${env}`, axiosConfig);
-    console.log("ALARM", res.data);
     if (res.data as any === "") {   // why does api return ""?
         return null;
     }
