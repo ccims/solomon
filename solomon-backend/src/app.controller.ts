@@ -52,7 +52,7 @@ export class AppController {
 
   @Get('targets/:deploymentEnvironment/:targetType?')
   getTargetList(@Param('deploymentEnvironment') env: DeploymentEnvironment, @Param('targetType') targetType: TargetType) {
-    this.logger.log('called getTargets()')
+    this.logger.log(`called getTargets() for Env: ${env} and targetType: ${targetType}`)
     return this.forwarder.getTargets(env, targetType);
   }
 
