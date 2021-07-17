@@ -45,23 +45,32 @@ export enum AwsNamespace {
 
 export enum CwMetricName {
     // AWS Lambda (https://docs.aws.amazon.com/lambda/latest/dg/monitoring-metrics.html):
-    LAMBDA_DURATION = "Duration",
-    LAMBDA_INVOCATIONS = "Invocations",
-    LAMBDA_ERRORS = "Errors",
-    LAMBDA_THROTTLES = "Throttles",
-    LAMBDA_CONCURRENT_EXECUTIONS = "ConcurrentExecutions",
+    LAMBDA_DURATION = 'Duration',
+    LAMBDA_INVOCATIONS = 'Invocations',
+    LAMBDA_ERRORS = 'Errors',
+    LAMBDA_THROTTLES = 'Throttles',
+    LAMBDA_CONCURRENT_EXECUTIONS = 'ConcurrentExecutions',
 
     // AWS API Gateway (https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-metrics-and-dimensions.html):
-    APIGATEWAY_4XX_ERROR = "4XXError",
-    APIGATEWAY_5XX_ERROR = "5XXError",
-    APIGATEWAY_COUNT = "Count",
-    APIGATEWAY_LATENCY = "Latency",
+    APIGATEWAY_4XX_ERROR = '4XXError',
+    APIGATEWAY_5XX_ERROR = '5XXError',
+    APIGATEWAY_COUNT = 'Count',
+    APIGATEWAY_LATENCY = 'Latency',
 
     // AWS Network Load Balancer (https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-cloudwatch-metrics.html):
-    NLB_HEALTHY_HOST_COUNT = "HealthyHostCount",
-    NLB_UNHEALTHY_HOST_COUNT = "UnHealthyHostCount",
-    NLB_CLIENT_TLS_NEGOTIATION_ERROR_COUNT = "ClientTLSNegotiationErrorCount",
-    NLB_TARGET_TLS_NEGOTIATION_ERROR_COUNT = "TargetTLSNegotiationErrorCount"
+    NLB_HEALTHY_HOST_COUNT = 'HealthyHostCount',
+    NLB_UNHEALTHY_HOST_COUNT = 'UnHealthyHostCount',
+    NLB_ACTIVE_FLOW_COUNT = 'ActiveFlowCount',
+    NLB_CONSUMED_LCUS = 'ConsumedLCUs',
+
+    // AWS RDS (https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/monitoring-cloudwatch.html):
+    RDS_CPU_UTILIZATION = 'CPUUtilization',
+    RDS_DATABASE_CONNECTIONS = 'DatabaseConnections',
+    RDS_FREE_STORAGE_SPACE = 'FreeStorageSpace',
+
+    // AWS ECS (https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-metrics.html):
+    ECS_CPU_UTILIZATION = 'CPUUtilization',
+    ECS_MEMORY_UTILIZATION = 'MemoryUtilization'
 }
 
 export interface CwLambdaFunction {
@@ -77,9 +86,9 @@ export interface CwRdsCluster {
 }
 
 export interface CwApiGateway {
-    Name: string; 
-    ApiId: string; // seems to not be the ARN in this case...
-    Description : string;
+    name: string; 
+    id: string; // seems to not be the ARN in this case...
+    createdDate : string;
 }
 
 export interface CwElb {

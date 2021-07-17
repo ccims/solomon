@@ -39,7 +39,7 @@ export class CwConnectorService implements ConnectorService{
       this.cw = new this.AWS.CloudWatch();
       this.lambda = new this.AWS.Lambda();
       this.sns = new this.AWS.SNS();
-      this.apiGateway = new this.AWS.ApiGatewayV2();
+      this.apiGateway = new this.AWS.APIGateway();
       this.ecs = new this.AWS.ECS();
       this.elb = new this.AWS.ELB();
       this.rds = new this.AWS.RDS();
@@ -58,6 +58,7 @@ export class CwConnectorService implements ConnectorService{
           if (err) {
             reject(new Error(err));
           } else {
+            this.logger.debug(data)
             var sloRules = CwRuleMapper.mapAlarmsToRules(data.MetricAlarms)
             resolve(sloRules)
           }
@@ -218,15 +219,14 @@ export class CwConnectorService implements ConnectorService{
       }) 
     }
 
-    // TODO: function does currently not seem to return the existing API..
     private getApiGateways(): Promise<Target[]> {    
       const params = {};
       return new Promise((resolve, reject) =>{
-        this.apiGateway.getApis(params, (err, data) => {
+        this.apiGateway.getRestApis(params, (err, data) => {
           if (err) {
             reject(new Error(err));
           } else {
-            resolve(CwRuleMapper.mapApisToTargets(data.Items));
+            resolve(CwRuleMapper.mapApisToTargets(data.items));
           }
         })
       }) 

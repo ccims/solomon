@@ -15,7 +15,7 @@ export class CwRuleMapper {
             name: alarm.AlarmName,
             description: this.getAlarmDescription(alarm.AlarmDescription),
             deploymentEnvironment: DeploymentEnvironment.AWS,
-            targetId: this.getTargetName(alarm.Dimensions),
+            targetId: this.getTargetName(alarm.Dimensions, alarm.Namespace),
             targetType: this.mapAwsNamespaceToTagetType(alarm.Namespace),
             gropiusProjectId: this.getGropiusProjectId(alarm.AlarmDescription), 
             gropiusComponentId: this.getGropiusComponentId(alarm.AlarmDescription),
@@ -55,7 +55,7 @@ export class CwRuleMapper {
             MetricName: rule.metricOption as string as CwMetricName,
             Namespace: this.mapTargetTypeToAwsNamespace(rule.targetType),
             Statistic: rule.statistic,
-            Dimensions: [{'Name':'FunctionName','Value':rule.targetId}],
+            Dimensions: [{'Name': this.getDimensionName(this.mapTargetTypeToAwsNamespace(rule.targetType)),'Value':rule.targetId}],
             Period: rule.period,
             EvaluationPeriods: 1,
             DatapointsToAlarm: 1,
@@ -86,7 +86,10 @@ export class CwRuleMapper {
      * @param alarmDescription Alarm description field of the CloudWatch alarm
      * @returns Gropius project ID of the rule
      */
-    private static getGropiusProjectId(alarmDescription: string) {
+    private static getGropiusProjectId(alarmDescription: string): string {
+        if (!alarmDescription) {
+            return 'undefined';
+        }
         var matchRes = alarmDescription.match(/gropiusProjectId:([^\s])*/);
         if (matchRes == null) {
             return 'undefined'
@@ -99,7 +102,10 @@ export class CwRuleMapper {
      * @param alarmDescription Alarm description field of the CloudWatch alarm
      * @returns Gropius component ID of the rule
      */
-    private static getGropiusComponentId(alarmDescription: string) {
+    private static getGropiusComponentId(alarmDescription: string): string {
+        if (!alarmDescription) {
+            return 'undefined';
+        }
         var matchRes = alarmDescription.match(/gropiusComponentId:([^\s])*/);
         if (matchRes == null) {
             return 'undefined'
@@ -112,25 +118,50 @@ export class CwRuleMapper {
      * @param alarmDescription Alarm description field of the CloudWatch alarm
      * @returns the alarm / rule description
      */
-    private static getAlarmDescription(alarmDescription: string) {
-        var desc = alarmDescription.split(' ////')[0];
-        return desc;
+    private static getAlarmDescription(alarmDescription: string): string {
+        if (alarmDescription && alarmDescription.includes('////')){
+            return alarmDescription.split(' ////')[0];
+        } else {
+            return 'Warning! This was not created as an SLO with SoLOMON but is an Alarm created directly in AWS. Update to add relevant attributes!';
+        }
     }
 
-    // TODO: FunctionName works only for Lambda, other types possible too...
     /**
      * get target for which a CloudWatch alarm is defined
      * @param dimensions dimensions field in the AWS alarm
      * @returns target name
      */
-    private static getTargetName(dimensions: DimensionFilter[]): string{
+    private static getTargetName(dimensions: DimensionFilter[], namespace: AwsNamespace): string{
         var targetName = 'unknown';
+        const dimensionName = this.getDimensionName(namespace);
         dimensions.forEach(dimension => {
-            if (dimension.Name.match('FunctionName')){
+            if (dimension.Name.match(dimensionName)){
                 targetName = dimension.Value;
             }
         });
         return targetName;
+    }
+
+    /**
+     * find out the dimension name from the selected namespace
+     * @param namespace the AWS namespace of the alarm
+     * @returns the dimension name
+     */
+    private static getDimensionName(namespace: AwsNamespace): string {
+        switch (namespace) {
+            case AwsNamespace.LAMBDA:
+                return 'FunctionName'
+            case AwsNamespace.APIGATEWAY:
+                return 'ApiName'
+            case AwsNamespace.ELB:
+                return 'LoadBalancer'
+            case AwsNamespace.RDS:
+                return 'DBClusterIdentifier'
+            case AwsNamespace.ECS:
+                return 'ClusterName'
+            default:
+                console.log('CASE ' + namespace + ' not implemented...')
+        }
     }
 
     private static mapTargetTypeToAwsNamespace(targetType: TargetType) {
@@ -248,9 +279,9 @@ export class CwRuleMapper {
      */
      static mapApiToTarget(api: CwApiGateway) {
         var target: Target = {
-            targetName: api.Name,
-            targetId: api.ApiId,
-            targetDescription: api.Description,
+            targetName: api.name,
+            targetId: api.id,
+            targetDescription: api.createdDate,
             targetType: TargetType.AWS_APIGATEWAY
         }
         return target;
