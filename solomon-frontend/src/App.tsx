@@ -9,7 +9,6 @@ import MyAppBar from './components/shared/appbar';
 import Routes from './routes';
 
 export const SELECTED_ENV = DeploymentEnvironment.AWS; // TODO: make this configurable in ui
-export const SELECTED_GROPIUS_PROJECT_ID = "123"; // TODO: make this configurable in ui
 
 function App() {
 

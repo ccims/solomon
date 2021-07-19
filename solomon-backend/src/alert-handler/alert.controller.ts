@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Header, Logger, Post } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Post } from '@nestjs/common';
 import { AlertHandlerService } from './alert-handler.service';
 
 @Controller('alert')
@@ -13,9 +13,9 @@ export class AlertController {
     }
 
     @Post('aws')
-    receiveCwAlert(@Body() alert) {
+    receiveCwAlert(@Body() cwAlert) {
         this.logger.log('called receiveCwAlert')
-        return this.alertService.handleCwAlert(alert);
+        return this.alertService.handleCwAlert(cwAlert);
     }
 
     @Post('kubernetes')

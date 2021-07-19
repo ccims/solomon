@@ -5,21 +5,20 @@ import { SloRule } from "solomon-models";
 import { fetchRules } from "../../../api";
 import { SELECTED_ENV } from "../../../App";
 import { RoutePaths } from "../../../routes";
-import SloItem from "./slo-list-item";
+import RuleItem from "./slo-list-item";
 
 export default function SloListPage() {
 
-    const [slos, setSLOs] = useState<SloRule[]>();
+    const [rules, setRules] = useState<SloRule[]>();
 
-    // TODO:
     useEffect(() => {
-        fetchRules(SELECTED_ENV).then(res => setSLOs(res));
+        fetchRules(SELECTED_ENV).then(res => setRules(res));
     }, [])
 
     return <Container>
-        { slos?.map(sla => <SloItem key={sla.id} sla={sla}></SloItem>) ?? [] }
+        { rules?.map((rule, index) => <RuleItem key={rule.id ?? index} rule={rule}></RuleItem>) ?? [] }
         <Link to={RoutePaths.SLO_EDIT}>
-            <Button variant="contained" color="secondary">Add SLA</Button>
+            <Button variant="contained" color="secondary">Add SLO</Button>
         </Link>
     </Container>
 }

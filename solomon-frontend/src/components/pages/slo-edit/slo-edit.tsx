@@ -3,17 +3,39 @@ import {
   Button,
   Card,
   Container,
+  FormControl,
+  InputLabel,
   ListItem,
   makeStyles,
 } from "@material-ui/core";
 import { Field, Formik } from "formik";
 import { Select, TextField } from "formik-material-ui";
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
-import { SloRule, Target, DeploymentEnvironment, MetricOption, PresetOption, StatisticsOption, ComparisonOperator } from "solomon-models";
-import { fetchGropiusComponents, fetchTargets, postRule } from "../../../api";
-import { SELECTED_ENV, SELECTED_GROPIUS_PROJECT_ID } from "../../../App";
+import { useHistory, useParams } from "react-router-dom";
+import {
+  ComparisonOperator,
+  DeploymentEnvironment,
+  GropiusComponent,
+  GropiusProject,
+  MetricOption,
+  PresetOption,
+  SloRule,
+  StatisticsOption,
+  Target,
+  TargetType,
+} from "solomon-models";
 import * as Yup from "yup";
+import {
+  addRule,
+  deleteRule,
+  fetchAlarmActionList,
+  fetchGropiusComponents,
+  fetchGropiusProjects,
+  fetchRule,
+  fetchTargets,
+  updateRule,
+} from "../../../api";
+import { SELECTED_ENV } from "../../../App";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -26,27 +48,28 @@ const useStyles = makeStyles((theme) => ({
 export default function SloEditPage() {
   const classes = useStyles();
 
-  const [targets, setTargets] = useState<Target[]>(undefined);
-  const [gropiusComponents, setGropiusComponents] = useState<any[]>(undefined);
-  const router = useHistory();
+  const { ruleId } = useParams<any>();
 
-  useEffect(() => {
-    fetchTargets(SELECTED_ENV).then((res) => setTargets(res));
-    fetchGropiusComponents(SELECTED_GROPIUS_PROJECT_ID).then((res) =>
-      setGropiusComponents(res)
-    );
-  }, []);
+  const [rule, setRule] = useState<SloRule>();
+
+  const [targets, setTargets] = useState<Target[]>(undefined);
+  const [gropiusProjects, setGropiusProjects] =
+    useState<GropiusProject[]>(undefined);
+  const [gropiusComponents, setGropiusComponents] =
+    useState<GropiusComponent[]>(undefined);
+  const [alarmActions, setAlarmActions] = useState<string[]>([]);
+  const router = useHistory();
 
   const defaultValues: SloRule = {
     name: "",
     description: "",
 
-    deploymentEnvironment: DeploymentEnvironment.KUBERNETES,
-    targetId: "",
-    gropiusProjectId: "",
-    gropiusComponentId: "",
+    deploymentEnvironment: SELECTED_ENV,
+    targetId: undefined,
+    gropiusProjectId: undefined,
+    gropiusComponentId: undefined,
 
-    preset: PresetOption.AVAILABILITY,
+    preset: PresetOption.CUSTOM,
     metricOption: MetricOption.PROBE_SUCCESS,
     comparisonOperator: ComparisonOperator.LESS,
     statistic: StatisticsOption.AVG,
@@ -55,99 +78,261 @@ export default function SloEditPage() {
     period: undefined,
   };
 
+  useEffect(() => {
+    if (ruleId) {
+      fetchRule(ruleId, SELECTED_ENV).then((res) => setRule(res));
+    } else {
+      setRule(defaultValues);
+    }
+  }, [ruleId]);
+
+  useEffect(() => {
+    if (rule) {
+      fetchTargets(rule.deploymentEnvironment, rule.targetType).then((res) =>
+        setTargets(res)
+      );
+      fetchGropiusProjects().then((res) => {
+        setGropiusProjects(res);
+      });
+      if (rule.gropiusProjectId) {
+        fetchGropiusComponents(rule.gropiusProjectId).then((res) =>
+          setGropiusComponents(res)
+        );
+      }
+      fetchAlarmActionList(rule.deploymentEnvironment).then((res) =>
+        setAlarmActions(res)
+      );
+    }
+  }, [rule]);
+
+  async function onDeleteRule() {
+    if (rule?.id) {
+      await deleteRule(rule.id, rule.deploymentEnvironment);
+      router.push("/");
+    }
+  }
+
   return (
     <Container>
-      <Card>
-        <Box p={2}>
-          <Formik
-            initialValues={defaultValues}
-            validationSchema={Yup.object({
-              // TODO: comprehensive validation
-              name: Yup.string().required("Required"),
-              threshold: Yup.string().required("Required"),
-              period: Yup.string().required("Required"),
-            })}
-            onSubmit={async (values) => {
-              await postRule(values);
-              router.push("/");
-            }}
-          >
-            {({ values, handleSubmit, setFieldValue }) => (
-              <div className={classes.root}>
-                <p>Meta Data</p>
-                <Field
-                  component={TextField}
-                  fullWidth
-                  variant="outlined"
-                  label="Name"
-                  name="name"
-                  type="text"
-                  placeholder="Name"
-                ></Field>
-                <Field
-                  component={TextField}
-                  fullWidth
-                  variant="outlined"
-                  label="Description"
-                  name="description"
-                  type="text"
-                  placeholder="Description"
-                ></Field>
+      {rule ? (
+        <Card>
+          <Box p={2}>
+            <Formik
+              initialValues={rule}
+              enableReinitialize
+              validationSchema={Yup.object({
+                // TODO: comprehensive validation
+                name: Yup.string().required("Required"),
+                threshold: Yup.string().required("Required"),
+                period: Yup.string().required("Required"),
+              })}
+              onSubmit={async (values) => {
+                console.log("Submitting", values);
+                if (values.id) {
+                  await updateRule(values);
+                } else {
+                  await addRule(values);
+                }
+                router.push("/");
+              }}
+            >
+              {({ values, handleSubmit, setFieldValue }) => (
+                <div className={classes.root}>
+                  <p>Meta Data</p>
+                  <Field
+                    component={TextField}
+                    fullWidth
+                    variant="outlined"
+                    label="Name"
+                    name="name"
+                    type="text"
+                    placeholder="Name"
+                  ></Field>
+                  <Field
+                    component={TextField}
+                    fullWidth
+                    variant="outlined"
+                    label="Description"
+                    name="description"
+                    type="text"
+                    placeholder="Description"
+                  ></Field>
 
-                <p>Targets</p>
-                <Field
-                  component={Select}
-                  type="checkbox"
-                  fullWidth
-                  variant="outlined"
-                  label="deploymentEnvironment"
-                  name="deploymentEnvironment"
-                >
-                  {Object.values(DeploymentEnvironment).map((value) => (
-                    <ListItem key={value} value={value}>
-                      {value}
-                    </ListItem>
-                  ))}
-                </Field>
+                  <p>Environment</p>
+                  <FormControl fullWidth>
+                    <InputLabel
+                      style={{ marginLeft: "16px" }}
+                      id="deploymentEnvironment"
+                    >
+                      Deployment Environment
+                    </InputLabel>
+                    <Field
+                      component={Select}
+                      type="checkbox"
+                      fullWidth
+                      variant="outlined"
+                      label="deploymentEnvironment"
+                      name="deploymentEnvironment"
+                      placeholder="Select a deployment environment..."
+                      // defaultValue=""
+                      onChange={(e) => {
+                        setFieldValue("deploymentEnvironment", e.target.value);
+                        fetchTargets(e.target.value, values.targetType).then(
+                          (res) => setTargets(res)
+                        );
+                        fetchAlarmActionList(e.target.value).then((res) =>
+                          setAlarmActions(res)
+                        );
+                      }}
+                    >
+                      {Object.values(DeploymentEnvironment).map((value) => (
+                        <ListItem key={value} value={value}>
+                          {value}
+                        </ListItem>
+                      ))}
+                    </Field>
+                  </FormControl>
 
-                {/* TODO: */}
-                {/* <Field
-                  component={Select}
-                  type="checkbox"
-                  fullWidth
-                  variant="outlined"
-                  label="deploymentEnvironment"
-                  name="deploymentEnvironment"
-                >
-                  {targets?.map((target) => (
-                    <ListItem key={target.targetId} value={target.targetId}>
-                      {target.targetName}
-                    </ListItem>
-                  ))}
-                </Field> */}
+                  {values.deploymentEnvironment ===
+                    DeploymentEnvironment.AWS && (
+                    <FormControl fullWidth>
+                      <InputLabel
+                        style={{ marginLeft: "16px" }}
+                        id="targetType"
+                      >
+                        Target Type
+                      </InputLabel>
+                      <Field
+                        component={Select}
+                        type="checkbox"
+                        fullWidth
+                        variant="outlined"
+                        label="Target Type"
+                        name="targetType"
+                        onChange={(e) => {
+                          setFieldValue("targetType", e.target.value);
+                          fetchTargets(
+                            values.deploymentEnvironment,
+                            e.target.value
+                          ).then((res) => setTargets(res));
+                        }}
+                      >
+                        {Object.values(TargetType).map((value) => (
+                          <ListItem key={value} value={value}>
+                            {value}
+                          </ListItem>
+                        ))}
+                      </Field>
+                    </FormControl>
+                  )}
 
-                <Field
-                  component={TextField}
-                  fullWidth
-                  variant="outlined"
-                  label="gropiusProjectId"
-                  name="gropiusProjectId"
-                  type="number"
-                  placeholder="gropiusProjectId"
-                ></Field>
+                  {targets && (
+                    <FormControl fullWidth>
+                      <InputLabel style={{ marginLeft: "16px" }} id="targetId">
+                        Target
+                      </InputLabel>
+                      <Field
+                        component={Select}
+                        type="checkbox"
+                        fullWidth
+                        variant="outlined"
+                        label="Target"
+                        name="targetId"
+                      >
+                        {targets?.map((target) => (
+                          <ListItem
+                            key={target.targetId}
+                            value={target.targetId}
+                          >
+                            {target.targetName}
+                          </ListItem>
+                        ))}
+                      </Field>
+                    </FormControl>
+                  )}
 
-                <Field
-                  component={TextField}
-                  fullWidth
-                  variant="outlined"
-                  label="gropiusComponentId"
-                  name="gropiusComponentId"
-                  type="number"
-                  placeholder="gropiusComponentId"
-                ></Field>
+                  {values.deploymentEnvironment ===
+                    DeploymentEnvironment.AWS && (
+                    <FormControl fullWidth>
+                      <InputLabel
+                        style={{ marginLeft: "16px" }}
+                        id="alertTopicArn"
+                      >
+                        Alarm Action
+                      </InputLabel>
+                      <Field
+                        component={Select}
+                        type="checkbox"
+                        fullWidth
+                        variant="outlined"
+                        label="Alarm Action"
+                        name="alertTopicArn"
+                      >
+                        {alarmActions?.map((alarm) => (
+                          <ListItem key={alarm} value={alarm}>
+                            {alarm}
+                          </ListItem>
+                        ))}
+                      </Field>
+                    </FormControl>
+                  )}
 
-                <p>Properties</p>
-                <Field
+                  <FormControl fullWidth>
+                    <InputLabel
+                      style={{ marginLeft: "16px" }}
+                      id="gropiusProjectId"
+                    >
+                      Gropius Project
+                    </InputLabel>
+                    <Field
+                      component={Select}
+                      type="checkbox"
+                      fullWidth
+                      variant="outlined"
+                      label="Gropius Project"
+                      name="gropiusProjectId"
+                      onChange={(e) => {
+                        setFieldValue("gropiusProjectId", e.target.value);
+                        fetchGropiusComponents(e.target.value).then((res) =>
+                          setGropiusComponents(res)
+                        );
+                      }}
+                    >
+                      {gropiusProjects?.map((project) => (
+                        <ListItem key={project.id} value={project.id}>
+                          {project.name}
+                        </ListItem>
+                      ))}
+                    </Field>
+                  </FormControl>
+
+                  {gropiusComponents && (
+                    <FormControl fullWidth>
+                      <InputLabel
+                        style={{ marginLeft: "16px" }}
+                        id="gropiusComponentId"
+                      >
+                        Gropius Component
+                      </InputLabel>
+                      <Field
+                        component={Select}
+                        type="checkbox"
+                        fullWidth
+                        variant="outlined"
+                        label="Gropius Component"
+                        name="gropiusComponentId"
+                      >
+                        {gropiusComponents?.map((component) => (
+                          <ListItem key={component.id} value={component.id}>
+                            {component.name}
+                          </ListItem>
+                        ))}
+                      </Field>
+                    </FormControl>
+                  )}
+
+                  <p>Properties</p>
+                  {/* <Field
                   component={Select}
                   type="checkbox"
                   fullWidth
@@ -175,88 +360,124 @@ export default function SloEditPage() {
                       {value}
                     </ListItem>
                   ))}
-                </Field>
+                </Field> */}
 
-                {values.preset === PresetOption.CUSTOM && (
+                  {(!values.preset ||
+                    values.preset === PresetOption.CUSTOM) && (
+                    <FormControl fullWidth>
+                      <InputLabel
+                        style={{ marginLeft: "16px" }}
+                        id="metricOption"
+                      >
+                        Metric Option
+                      </InputLabel>
+                      <Field
+                        component={Select}
+                        type="checkbox"
+                        fullWidth
+                        variant="outlined"
+                        label="Metric"
+                        name="metricOption"
+                      >
+                        {Object.values(MetricOption).map((value) => (
+                          <ListItem key={value} value={value}>
+                            {value}
+                          </ListItem>
+                        ))}
+                      </Field>
+                    </FormControl>
+                  )}
+
+                  {(!values.preset ||
+                    values.preset === PresetOption.CUSTOM) && (
+                    <FormControl fullWidth>
+                      <InputLabel style={{ marginLeft: "16px" }} id="function">
+                        Statistic
+                      </InputLabel>
+                      <Field
+                        component={Select}
+                        type="checkbox"
+                        fullWidth
+                        variant="outlined"
+                        label="Statistic"
+                        name="statistic"
+                      >
+                        {Object.values(StatisticsOption).map((value) => (
+                          <ListItem key={value} value={value}>
+                            {value}
+                          </ListItem>
+                        ))}
+                      </Field>
+                    </FormControl>
+                  )}
+
+                  {(!values.preset ||
+                    values.preset === PresetOption.CUSTOM) && (
+                    <FormControl fullWidth>
+                      <InputLabel style={{ marginLeft: "16px" }} id="operator">
+                        Operator
+                      </InputLabel>
+                      <Field
+                        component={Select}
+                        type="checkbox"
+                        fullWidth
+                        variant="outlined"
+                        label="Operator"
+                        name="comparisonOperator"
+                      >
+                        {Object.values(ComparisonOperator).map((value) => (
+                          <ListItem key={value} value={value}>
+                            {value}
+                          </ListItem>
+                        ))}
+                      </Field>
+                    </FormControl>
+                  )}
+
                   <Field
-                    component={Select}
-                    type="checkbox"
+                    component={TextField}
                     fullWidth
                     variant="outlined"
-                    label="Metric"
-                    name="metricOption"
-                  >
-                    {Object.values(MetricOption).map((value) => (
-                      <ListItem key={value} value={value}>
-                        {value}
-                      </ListItem>
-                    ))}
-                  </Field>
-                )}
+                    label="threshold"
+                    name="threshold"
+                    type="number"
+                    placeholder="Threshold"
+                  ></Field>
 
-                {values.preset === PresetOption.CUSTOM && (
                   <Field
-                    component={Select}
-                    type="checkbox"
+                    component={TextField}
                     fullWidth
                     variant="outlined"
-                    label="Operator"
-                    name="operator"
+                    label="period"
+                    name="period"
+                    type="number"
+                    placeholder="period"
+                  ></Field>
+
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleSubmit()}
                   >
-                    {Object.values(ComparisonOperator).map((value) => (
-                      <ListItem key={value} value={value}>
-                        {value}
-                      </ListItem>
-                    ))}
-                  </Field>
-                )}
-
-                {values.preset === PresetOption.CUSTOM && <Field
-                  component={Select}
-                  type="checkbox"
-                  fullWidth
-                  variant="outlined"
-                  label="Function"
-                  name="function"
-                >
-                  {Object.values(StatisticsOption).map((value) => (
-                    <ListItem key={value} value={value}>
-                      {value}
-                    </ListItem>
-                  ))}
-                </Field>}
-
-                <Field
-                  component={TextField}
-                  fullWidth
-                  variant="outlined"
-                  label="period"
-                  name="period"
-                  type="number"
-                  placeholder="period"
-                ></Field>
-
-                <Field
-                  component={TextField}
-                  fullWidth
-                  variant="outlined"
-                  label="threshold"
-                  name="threshold"
-                  type="number"
-                  placeholder="Threshold"
-                ></Field>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => handleSubmit()}
-                >
-                  Save
-                </Button>
-              </div>
-            )}
-          </Formik>
-        </Box>
-      </Card>
+                    Save
+                  </Button>
+                  {rule?.id && (
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => onDeleteRule()}
+                    >
+                      Delete
+                    </Button>
+                  )}
+                </div>
+              )}
+            </Formik>
+          </Box>
+        </Card>
+      ) : (
+        <div>loading...</div>
+      )}
     </Container>
   );
 }

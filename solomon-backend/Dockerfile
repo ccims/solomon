@@ -1,8 +1,9 @@
 FROM node:14.16.1-alpine
 
+# Env variables
+ENV NODE_ENV aws
 ENV http_proxy http://gateway.zscloud.net:10402
 ENV https_proxy http://gateway.zscloud.net:10402
-
 
 WORKDIR /app/
 

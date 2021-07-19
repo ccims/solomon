@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Logger } from '@nestjs/common';
-import { DeploymentEnvironment, SloRule } from 'solomon-models';
+import { DeploymentEnvironment, SloRule, TargetType } from 'solomon-models';
 import { ForwarderService } from './forwarder/forwarder.service';
 import { GropiusManager } from './gropius-manager/gropius-manager.service';
 
@@ -14,24 +14,28 @@ export class AppController {
     return this.forwarder.getRules(env);
   }
 
+  @Get('rules/:deploymentEnvironment/:id')
+  getRule(@Param('deploymentEnvironment') env: DeploymentEnvironment, @Param('id') ruleId: string) {
+    this.logger.log('called getRule()')
+    return this.forwarder.getRule(ruleId, env);
+  }
+
   @Post('rules')
   addRule(@Body() rule: SloRule) {
-    this.logger.log('called addRule()')
-    // TODO: add or update based on id of rule object
+    this.logger.log('called addRule()');
     return this.forwarder.addRule(rule);
   }
 
-  // TODO: why name paramter? combine with addRule function
-  @Put('rules/:name')
+  @Put('rules')
   updateRule(@Body() rule: SloRule) {
     this.logger.log('called updateRule(id)')
     return this.forwarder.updateRule(rule);
   }
 
-  @Delete('rules/:deploymentEnvironment/:name')
-  deleteRule(@Param('deploymentEnvironment') env: DeploymentEnvironment, @Param('name') ruleName: string) {
+  @Delete('rules/:deploymentEnvironment/:id')
+  deleteRule(@Param('deploymentEnvironment') env: DeploymentEnvironment, @Param('id') ruleId: string) {
     this.logger.log('called deleteRule()')
-    return this.forwarder.deleteRule(ruleName, env);
+    return this.forwarder.deleteRule(ruleId, env);
   }
 
   @Get('gropius/projects')
@@ -46,10 +50,10 @@ export class AppController {
     return this.gropiusManager.getGropiusComponents(gropiusProjectId);
   }
 
-  @Get('targets/:deploymentEnvironment')
-  getTargetList(@Param('deploymentEnvironment') env: DeploymentEnvironment) {
-    this.logger.log('called getTargets()')
-    return this.forwarder.getTargets(env);
+  @Get('targets/:deploymentEnvironment/:targetType?')
+  getTargetList(@Param('deploymentEnvironment') env: DeploymentEnvironment, @Param('targetType') targetType: TargetType) {
+    this.logger.log(`called getTargets() for Env: ${env} and targetType: ${targetType}`)
+    return this.forwarder.getTargets(env, targetType);
   }
 
   @Get('alarm-actions/:deploymentEnvironment')

@@ -1,4 +1,5 @@
 import { DeploymentEnvironment, SloRule, Target } from "solomon-models";
+import { TargetType } from "solomon-models/dist/target.model";
 
 /**
  * The interface to be used by the forwarder as well as all the connectors.
@@ -8,15 +9,16 @@ export interface ConnectorService {
 
     /**
      * returns a list of all SLO rules / alarms that are active 
-     * @param env - (optional) deployment environment for which the rule should be fetched
+     * @param env - (optional) deployment environment for which the rules should be fetched
      */
     getRules(env?: DeploymentEnvironment): Promise<SloRule[]>;
 
     /**
-     * returns a list of all possible monitoring targets
-     * @param env - the environment for which possible targets should be fetched
+     * returns an SLO rule for a specific ID
+     * @param env - deployment environment for which the rule should be fetched
+     * @param ruleId - the ID of the rule that should be fetched
      */
-    getTargets(env?: DeploymentEnvironment): Promise<Target[]>;
+    getRule(ruleId: string, env: DeploymentEnvironment): Promise<SloRule>;
 
     /**
      * returns true if the new rule / alarm was added successfully and false if not
@@ -32,8 +34,14 @@ export interface ConnectorService {
 
     /**
      * returns true if rule was deleted successfully 
-     * @param ruleName - name of the rule that should be deleted
+     * @param ruleId - ID of the rule that should be deleted
      * @param env - (optional) deployment environment for which the rule applies
      */
-    deleteRule(ruleName: string, env?: DeploymentEnvironment): Promise<boolean>;
+    deleteRule(ruleId: string, env?: DeploymentEnvironment): Promise<boolean>;
+
+    /**
+     * returns a list of all possible monitoring targets
+     * @param env - the environment for which possible targets should be fetched
+     */
+    getTargets(env?: DeploymentEnvironment, targetType?: TargetType): Promise<Target[]>;
 }

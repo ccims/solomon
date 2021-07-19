@@ -2,22 +2,25 @@ import { Box, Card } from "@material-ui/core";
 import React from "react";
 import { Link } from "react-router-dom";
 import { SloRule } from "solomon-models";
+import { RoutePaths } from "../../../routes";
 
-type SloItemProps = { sla: SloRule };
-
-export default function SloItem({ sla }: SloItemProps) {
-
-    return (
-        // TODO add edit icon
-        <Box paddingY={1}>
-            <Link to={`/sla/${sla.id}`}>
-                <Card>
-                    <Box p={2}>
-                        <h1>{ sla.name }</h1>
-                        <p>{ sla.description }</p>
-                    </Box>
-                </Card>
-            </Link>
-        </Box>
-    );
+interface RuleItemProps {
+  rule: SloRule;
 }
+
+const RuleItem: React.FunctionComponent<RuleItemProps> = ({ rule }) => {
+  return (
+    <Box paddingY={1}>
+      <Link to={`${RoutePaths.SLO_EDIT}/${rule.id}`}>
+        <Card>
+          <Box p={2}>
+            <h1>{rule.name}</h1>
+            <p>{rule.description}</p>
+          </Box>
+        </Card>
+      </Link>
+    </Box>
+  );
+};
+
+export default RuleItem;

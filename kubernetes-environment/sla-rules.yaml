@@ -1,4 +1,4 @@
-# Example PrometheusRule file, commented out because it is not needed but can be helpful in understanding how SlaRules are being applied
+# # Example PrometheusRule file, commented out because it is not needed but can be helpful in understanding how SlaRules are being applied
 
 # apiVersion: monitoring.coreos.com/v1
 # kind: PrometheusRule

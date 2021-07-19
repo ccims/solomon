@@ -8,12 +8,16 @@ export class SloToolCdkStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+
     const vectorVpc = ec2.Vpc.fromLookup(this, 'vector-vpc', {
-      isDefault: false, vpcId: 'vpc-0d15cde4ec8480548'
+      isDefault: false, 
+      vpcId: 'vpc-0d15cde4ec8480548'    
     });
 
+    const subnetPrivateA = ec2.Subnet.fromSubnetId(this, 'cfs-advanceddevelopment-subnet-private-a', 'subnet-040175b8ef431db4c');
+
     const sloToolCluster = new ecs.Cluster(this, 'slo-tool-cluster', {
-      vpc: vectorVpc
+      vpc: vectorVpc,
     });
 
     const customSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'custom-security-group', 'sg-039ce1164dab874d2')
@@ -57,7 +61,7 @@ export class SloToolCdkStack extends cdk.Stack {
       compatibility: ecs.Compatibility.FARGATE,
       cpu: '256',
       memoryMiB: '512',
-      taskRole: taskrole,
+      taskRole: taskrole
     });
 
     const path = require('path');
@@ -77,7 +81,8 @@ export class SloToolCdkStack extends cdk.Stack {
       cluster: sloToolCluster,
       taskDefinition: taskDefinition,
       securityGroups: [customSecurityGroup],
-      assignPublicIp: true,
+      // assignPublicIp: true,
+      vpcSubnets: { subnets: [subnetPrivateA] }
     });
 
   }

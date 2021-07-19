@@ -1,9 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConnectorService } from 'src/models/connector-service';
 import { CwConnectorService } from 'src/connector-cloudwatch/cw.service';
-import { K8sConnectorService } from 'src/connector-kubernetes/k8s.service';
-import { XmlConverterService } from 'src/xml-converter/xml-converter.service';
 import { DeploymentEnvironment, SloRule, Target } from 'solomon-models';
+import { K8sConnectorService } from 'src/connector-kubernetes/k8s.service';
+import { TargetType } from 'solomon-models/dist/target.model';
+import { XmlConverterService } from 'src/xml-converter/xml-converter.service';
 
 /**
  * The forwarder service contains the logic for **forwarding the requests** (e.g. getRules, addRule) 
@@ -11,11 +12,11 @@ import { DeploymentEnvironment, SloRule, Target } from 'solomon-models';
  * to **different monitoring tools** (e.g. AWS: CloudWatch, Kubernetes: Prometheus).
  */
 @Injectable()
-export class ForwarderService implements ConnectorService{
+export class ForwarderService implements ConnectorService {
     private readonly logger = new Logger(ForwarderService.name);
 
     constructor(private cwConnector: CwConnectorService,
-                private k8sConnector: K8sConnectorService) {}
+        private k8sConnector: K8sConnectorService) { }
 
 
     getRules(deploymentEnvironment: DeploymentEnvironment): Promise<SloRule[]> {
@@ -23,20 +24,27 @@ export class ForwarderService implements ConnectorService{
             case DeploymentEnvironment.AWS:
                 return this.cwConnector.getRules();
             case DeploymentEnvironment.KUBERNETES:
-                this.logger.log('not yet implemented ...')
-                return null;
-                // return this.k8sPluginService.getRules();
+                return this.k8sConnector.getRules();
+            // return this.k8sPluginService.getRules();
         }
     }
 
-    getTargets(deploymentEnvironment: DeploymentEnvironment): Promise<Target[]> {
+    getRule(ruleId: string, deploymentEnvironment: DeploymentEnvironment) {
         switch (deploymentEnvironment) {
             case DeploymentEnvironment.AWS:
-                return this.cwConnector.getTargets();
+                return this.cwConnector.getRule(ruleId);
+            case DeploymentEnvironment.KUBERNETES:
+                return this.k8sConnector.getRule(ruleId);
+        }
+    }
+
+    getTargets(deploymentEnvironment: DeploymentEnvironment, targetType?: TargetType): Promise<Target[]> {
+        switch (deploymentEnvironment) {
+            case DeploymentEnvironment.AWS:
+                return this.cwConnector.getTargets(null, targetType);
             case DeploymentEnvironment.KUBERNETES:
                 this.logger.log('not yet implemented ...')
-                return null;
-                // return this.k8sConnector.getTargets();
+                return this.k8sConnector.getTargets();
         }
     }
 
@@ -47,7 +55,7 @@ export class ForwarderService implements ConnectorService{
             case DeploymentEnvironment.KUBERNETES:
                 this.logger.log('not implemented ...')
                 return null;
-                // probably does not needed for Kubernetes
+            // probably does not needed for Kubernetes
         }
     }
 
@@ -56,8 +64,7 @@ export class ForwarderService implements ConnectorService{
             case DeploymentEnvironment.AWS:
                 return this.cwConnector.addRule(rule);
             case DeploymentEnvironment.KUBERNETES:
-                return null;
-                // return this.k8sPluginService.addRule(rule);
+                return this.k8sConnector.addRule(rule);
         }
     }
 
@@ -66,18 +73,16 @@ export class ForwarderService implements ConnectorService{
             case DeploymentEnvironment.AWS:
                 return this.cwConnector.updateRule(rule);
             case DeploymentEnvironment.KUBERNETES:
-                return null;
-                // return this.k8sPluginService.updateRule(rule);
+                return this.k8sConnector.updateRule(rule);
         }
     }
 
-    deleteRule(name: string, env: DeploymentEnvironment): Promise<boolean> {
+    deleteRule(id: string, env: DeploymentEnvironment): Promise<boolean> {
         switch (env) {
             case DeploymentEnvironment.AWS:
-                return this.cwConnector.deleteRule(name);
+                return this.cwConnector.deleteRule(id);
             case DeploymentEnvironment.KUBERNETES:
-                return null;
-                // return this.k8sPluginService.deleteRule(rule);
+                return this.k8sConnector.deleteRule(id);
         }
     }
 

@@ -1,15 +1,16 @@
 import { Injectable, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { request, gql } from 'graphql-request'
-import { SloRule } from "solomon-models";
-import { Alert } from "src/models/alert.interface";
-import { GropiusIssue, GropiusProject } from "src/models/gropius.model";
+import { SloAlert } from "src/models/alert.interface";
+import { GropiusComponent, GropiusIssue, GropiusProject } from "src/models/gropius.model";
 import { GropiusGqlMapper } from "./gropius.gql-mapper";
 
 @Injectable()
 export class GropiusManager {
     private readonly logger = new Logger(GropiusManager.name);
+    private readonly configService = new ConfigService();
 
-    gropiusUrl = 'http://localhost:8080/api';
+    private gropiusUrl = this.configService.get('GROPIUS_URL');
 
     async getGropiusProjects(): Promise<GropiusProject[]> {
         var projects = [];
@@ -36,7 +37,7 @@ export class GropiusManager {
         return projects;
     }
 
-    async getGropiusComponents(projectId: string): Promise<any[]> {
+    async getGropiusComponents(projectId: string): Promise<GropiusComponent[]> {
         var components = [];
 
         const getComponentsQuery = gql`
@@ -66,11 +67,11 @@ export class GropiusManager {
     }
 
 
-    async createGropiusIssue(sloRule: SloRule, alert: Alert) {
+    async createGropiusIssue(alert: SloAlert) {
         const issue: GropiusIssue = {
-            title: sloRule.name,
-            body: sloRule.description,
-            componentIDs: [ sloRule.targetId ],
+            title: alert.alertName,
+            body: alert.alertDescription,
+            components: [ alert.gropiusComponentId ],
         }
 
         const queryIssue = gql`
@@ -86,10 +87,10 @@ export class GropiusManager {
         try {
             const data = await request(this.gropiusUrl, queryIssue, { input: issue});
             const issueID = data.createIssue.issue.id;
-            this.logger.log("CREATED ISSUE: ", issueID);
+            this.logger.log("CREATED ISSUE: " + issueID);
             return issueID;
         } catch (error) {
-            this.logger.log("ERROR CREATING ISSUE: ", error);
+            this.logger.log("ERROR CREATING ISSUE: " + error);
         }
     }
 }
