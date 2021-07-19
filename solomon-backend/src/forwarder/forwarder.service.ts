@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger} from '@nestjs/common';
 import { ConnectorService } from 'src/models/connector-service';
 import { CwConnectorService } from 'src/connector-cloudwatch/cw.service';
 import { DeploymentEnvironment, SloRule, Target } from 'solomon-models';
@@ -16,7 +16,7 @@ export class ForwarderService implements ConnectorService {
     private readonly logger = new Logger(ForwarderService.name);
 
     constructor(private cwConnector: CwConnectorService,
-        private k8sConnector: K8sConnectorService) { }
+        private k8sConnector: K8sConnectorService, private xmlConverter: XmlConverterService) { }
 
 
     getRules(deploymentEnvironment: DeploymentEnvironment): Promise<SloRule[]> {
@@ -87,7 +87,8 @@ export class ForwarderService implements ConnectorService {
     }
 
     convertXmlToRule(xml: string): Promise<boolean> {
-        return 
+        var rule = this.xmlConverter.convertXml(xml);
+        return this.updateRule(rule);
     }
 
 
