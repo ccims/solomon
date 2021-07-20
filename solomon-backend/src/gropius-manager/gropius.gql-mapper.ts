@@ -4,7 +4,7 @@ import { GropiusComponent, GropiusProject } from "src/models/gropius.model";
 export class GropiusGqlMapper {
     private static readonly logger = new Logger(GropiusGqlMapper.name);
 
-    private static mapGqlProject(gqlResponse: any): GropiusProject {
+    static mapGqlProject(gqlResponse: any): GropiusProject {
         const gropiusProject: GropiusProject = {
             id: gqlResponse.node.id,
             name: gqlResponse.node.name,

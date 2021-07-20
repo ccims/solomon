@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CwAlert } from 'src/connector-cloudwatch/cw.interface';
-import { CwRuleMapper } from 'src/connector-cloudwatch/cw.rule-mapper';
+import { CwMapper } from 'src/connector-cloudwatch/cw.rule-mapper';
 import { GropiusManager } from 'src/gropius-manager/gropius-manager.service';
 import { SloAlert } from '../models/alert.interface';
 
@@ -85,14 +85,14 @@ export class AlertHandlerService {
 
     handleCwAlert(cwAlert: CwAlert) {
         this.logger.debug(cwAlert);
-        const sloAlert = CwRuleMapper.mapCwAlertToSloAlert(cwAlert);
+        const sloAlert = CwMapper.mapCwAlertToSloAlert(cwAlert);
         this.logger.debug(sloAlert);
         this.addAlertToQueue(sloAlert);
         return true;
     }
 
     handlePrometheusAlert(alert: any) {
-        // TODO
+        // TODO Jonas
     }
 
     

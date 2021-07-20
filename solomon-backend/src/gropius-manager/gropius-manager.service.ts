@@ -12,6 +12,10 @@ export class GropiusManager {
 
     private gropiusUrl = this.configService.get('GROPIUS_URL');
 
+    /**
+     * fetches all existing Gropius projects
+     * @returns a list of Gropius projects
+     */
     async getGropiusProjects(): Promise<GropiusProject[]> {
         var projects = [];
 
@@ -37,6 +41,11 @@ export class GropiusManager {
         return projects;
     }
 
+    /**
+     * Fetches all the components of a project in Gropius
+     * @param projectId the ID of the Gropius project of which the components should be fetched
+     * @returns a list of Gropius Components
+     */
     async getGropiusComponents(projectId: string): Promise<GropiusComponent[]> {
         var components = [];
 
@@ -56,7 +65,6 @@ export class GropiusManager {
             }
         `
 
-
          try {
             const response = await request(this.gropiusUrl,getComponentsQuery,{ projectId: projectId});
             components = GropiusGqlMapper.mapGqlComponents(response);
@@ -66,8 +74,12 @@ export class GropiusManager {
         return components;
     }
 
-
-    async createGropiusIssue(alert: SloAlert) {
+    /**
+     * creates a new issues in Gropius which corresponds to the SLO violation indicated by the alert
+     * @param alert alert for which an issue should be created
+     * @returns the issue ID of the created issue
+     */
+    async createGropiusIssue(alert: SloAlert): Promise<string> {
         const issue: GropiusIssue = {
             title: alert.alertName,
             body: alert.alertDescription,

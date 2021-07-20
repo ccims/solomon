@@ -1,6 +1,5 @@
 // CwAlarm modelled after the following description (MetricAlarms): 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html#describeAlarms-property
-
 export interface CwAlarm {
     AlarmName: string;
     AlarmArn?: string;

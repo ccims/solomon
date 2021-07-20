@@ -18,22 +18,22 @@ export class ForwarderService implements ConnectorService {
         private k8sConnector: K8sConnectorService) { }
 
 
-    getRules(deploymentEnvironment: DeploymentEnvironment): Promise<SloRule[]> {
+    getSlos(deploymentEnvironment: DeploymentEnvironment): Promise<SloRule[]> {
         switch (deploymentEnvironment) {
             case DeploymentEnvironment.AWS:
-                return this.cwConnector.getRules();
+                return this.cwConnector.getSlos();
             case DeploymentEnvironment.KUBERNETES:
-                return this.k8sConnector.getRules();
+                return this.k8sConnector.getSlos();
             // return this.k8sPluginService.getRules();
         }
     }
 
-    getRule(ruleId: string, deploymentEnvironment: DeploymentEnvironment) {
+    getSlo(sloId: string, deploymentEnvironment: DeploymentEnvironment) {
         switch (deploymentEnvironment) {
             case DeploymentEnvironment.AWS:
-                return this.cwConnector.getRule(ruleId);
+                return this.cwConnector.getSlo(sloId);
             case DeploymentEnvironment.KUBERNETES:
-                return this.k8sConnector.getRule(ruleId);
+                return this.k8sConnector.getSlo(sloId);
         }
     }
 
@@ -54,34 +54,34 @@ export class ForwarderService implements ConnectorService {
             case DeploymentEnvironment.KUBERNETES:
                 this.logger.log('not implemented ...')
                 return null;
-            // probably does not needed for Kubernetes
+            // probably not needed for Kubernetes
         }
     }
 
-    addRule(rule: SloRule): Promise<boolean> {
-        switch (rule.deploymentEnvironment) {
+    addSLO(slo: SloRule): Promise<boolean> {
+        switch (slo.deploymentEnvironment) {
             case DeploymentEnvironment.AWS:
-                return this.cwConnector.addRule(rule);
+                return this.cwConnector.addSLO(slo);
             case DeploymentEnvironment.KUBERNETES:
-                return this.k8sConnector.addRule(rule);
+                return this.k8sConnector.addSLO(slo);
         }
     }
 
-    updateRule(rule: SloRule): Promise<boolean> {
-        switch (rule.deploymentEnvironment) {
+    updateSlo(slo: SloRule): Promise<boolean> {
+        switch (slo.deploymentEnvironment) {
             case DeploymentEnvironment.AWS:
-                return this.cwConnector.updateRule(rule);
+                return this.cwConnector.updateSlo(slo);
             case DeploymentEnvironment.KUBERNETES:
-                return this.k8sConnector.updateRule(rule);
+                return this.k8sConnector.updateSlo(slo);
         }
     }
 
-    deleteRule(id: string, env: DeploymentEnvironment): Promise<boolean> {
+    deleteSlo(id: string, env: DeploymentEnvironment): Promise<boolean> {
         switch (env) {
             case DeploymentEnvironment.AWS:
-                return this.cwConnector.deleteRule(id);
+                return this.cwConnector.deleteSlo(id);
             case DeploymentEnvironment.KUBERNETES:
-                return this.k8sConnector.deleteRule(id);
+                return this.k8sConnector.deleteSlo(id);
         }
     }
 }

@@ -3,14 +3,14 @@ import { TargetType } from 'solomon-models/dist/target.model';
 import { SloAlert } from 'src/models/alert.interface';
 import { CwAlarm, AwsNamespace, DimensionFilter, CwLambdaFunction, CwMetricName, CwAlert, CwRdsCluster, CwApiGateway, CwElb, CwEcsCluster } from './cw.interface';
 
-export class CwRuleMapper {
+export class CwMapper {
     /**
-     * maps a CloudWatch alarm to an SLO rule object
+     * maps a CloudWatch alarm to an SLO  object
      * @param alarm AWS CloudWatch alarm
-     * @returns SLO rule object corresponding to the CloudWatch alarm
+     * @returns SLO object corresponding to the CloudWatch alarm
      */
-    static mapCwAlarmToSloRule(alarm: CwAlarm): SloRule {
-        var rule: SloRule = {
+    static mapCwAlarmToSlo(alarm: CwAlarm): SloRule {
+        var slo: SloRule = {
             id: alarm.AlarmArn,
             name: alarm.AlarmName,
             description: this.getAlarmDescription(alarm.AlarmDescription),
@@ -26,57 +26,57 @@ export class CwRuleMapper {
             threshold: alarm.Threshold,
             alertTopicArn: alarm.AlarmActions[0]
         }
-        return rule;
+        return slo;
     }
 
     /**
-     * maps multiple CloudWatch alarm definitions to the correspoing representations as SLO rules
+     * maps multiple CloudWatch alarm definitions to the corresponding representations as SLOs
      * @param alarms list containing AWS CloudWatch alarm definitions
-     * @returns list containing SLO rule objects
+     * @returns list containing SLO objects
      */
-    static mapAlarmsToRules(alarms: CwAlarm[]): SloRule[] {
-        var rules: SloRule[] = [];
+    static mapAlarmsToSlos(alarms: CwAlarm[]): SloRule[] {
+        var slos: SloRule[] = [];
         alarms.forEach(alarm => {
-            rules.push(this.mapCwAlarmToSloRule(alarm));
+            slos.push(this.mapCwAlarmToSlo(alarm));
         })
-        return rules;
+        return slos;
     }
 
     // TODO EvaluationPoints and DatapointToAlarm as settings that can be configured
     /**
-     * mapping an SLO rule object onto a CloudWatch alarm specification
-     * @param rule an SLO rule object
+     * mapping an SLO object onto a CloudWatch alarm specification
+     * @param slo an SLO object
      * @returns a CloudWatch alarm
      */
-    static mapRuleToAlarm(rule: SloRule): CwAlarm {
+    static mapAlarmToSlo(slo: SloRule): CwAlarm {
         var alarm: CwAlarm = {
-            AlarmName: rule.name,
-            AlarmDescription: this.generateAlarmDescription(rule),
-            MetricName: rule.metricOption as string as CwMetricName,
-            Namespace: this.mapTargetTypeToAwsNamespace(rule.targetType),
-            Statistic: rule.statistic,
-            Dimensions: [{'Name': this.getDimensionName(this.mapTargetTypeToAwsNamespace(rule.targetType)),'Value':rule.targetId}],
-            Period: rule.period,
+            AlarmName: slo.name,
+            AlarmDescription: this.generateAlarmDescription(slo),
+            MetricName: slo.metricOption as string as CwMetricName,
+            Namespace: this.mapTargetTypeToAwsNamespace(slo.targetType),
+            Statistic: slo.statistic,
+            Dimensions: [{'Name': this.getDimensionName(this.mapTargetTypeToAwsNamespace(slo.targetType)),'Value':slo.targetId}],
+            Period: slo.period,
             EvaluationPeriods: 1,
             DatapointsToAlarm: 1,
-            Threshold: rule.threshold,
-            ComparisonOperator: this.invertOperator(rule.comparisonOperator),
+            Threshold: slo.threshold,
+            ComparisonOperator: this.invertOperator(slo.comparisonOperator),
             ActionsEnabled: true,
-            AlarmActions: [rule.alertTopicArn]
+            AlarmActions: [slo.alertTopicArn]
         }
         return alarm;
     }
 
     /**
      * adds the Gropius project and component ID to the alarm description so that it gets persisted
-     * @param rule rule object containing the Gropius project and component id
-     * @returns the alarm description including the two Gropius related attributes
+     * @param slo SLO object containing the Gropius project and component id
+     * @returns the CloudWatch alarm description including the two Gropius related attributes
      */
-    private static generateAlarmDescription(rule: SloRule): string {
-        var description = rule.description;
+    private static generateAlarmDescription(slo: SloRule): string {
+        var description = slo.description;
         description = description.concat(' //// ');
-        description = description.concat('gropiusProjectId:', rule.gropiusProjectId, ' ');
-        description = description.concat('gropiusComponentId:', rule.gropiusComponentId);
+        description = description.concat('gropiusProjectId:', slo.gropiusProjectId, ' ');
+        description = description.concat('gropiusComponentId:', slo.gropiusComponentId);
 
         return description;
     }
@@ -84,7 +84,7 @@ export class CwRuleMapper {
     /**
      * extracts the Gropius project ID from the alarm description
      * @param alarmDescription Alarm description field of the CloudWatch alarm
-     * @returns Gropius project ID of the rule
+     * @returns Gropius project ID of the SLO
      */
     private static getGropiusProjectId(alarmDescription: string): string {
         if (!alarmDescription) {
@@ -100,7 +100,7 @@ export class CwRuleMapper {
     /**
      * extracts the Gropius component ID from the alarm description
      * @param alarmDescription Alarm description field of the CloudWatch alarm
-     * @returns Gropius component ID of the rule
+     * @returns Gropius component ID of the SLO
      */
     private static getGropiusComponentId(alarmDescription: string): string {
         if (!alarmDescription) {
@@ -116,7 +116,7 @@ export class CwRuleMapper {
     /**
      * extracts the actual description text from the alarm description
      * @param alarmDescription Alarm description field of the CloudWatch alarm
-     * @returns the alarm / rule description
+     * @returns the SLO description
      */
     private static getAlarmDescription(alarmDescription: string): string {
         if (alarmDescription && alarmDescription.includes('////')){
@@ -164,18 +164,33 @@ export class CwRuleMapper {
         }
     }
 
-    private static mapTargetTypeToAwsNamespace(targetType: TargetType) {
+    /**
+     * mapped back to the AWS Namespace in the format known by AWS
+     * @param targetType target type description with "-"
+     * @returns AWS namespace description with "/"
+     */
+    private static mapTargetTypeToAwsNamespace(targetType: TargetType): AwsNamespace {
         var string = targetType as string;
         string = string.replace('-','/');
         return string as AwsNamespace;
     }
 
-    private static mapAwsNamespaceToTagetType(awsNamespace: AwsNamespace) {
+    /**
+     * this has to be mapped as the target type can be part of the URL (see getTargetList()) and is not allowed to contain "/"
+     * @param awsNamespace AWS namespace description with "/"
+     * @returns target type description with "-"
+     */
+    private static mapAwsNamespaceToTagetType(awsNamespace: AwsNamespace): TargetType {
         var string = awsNamespace as string;
         string = string.replace('/','-');
         return string as TargetType;
     }
 
+    /**
+     * Inversion of the comparison operator is needed as SLOs are formulated positively and Alarms negatively
+     * @param operator Comparison operator that should be inverted
+     * @returns Inverted operator
+     */
     private static invertOperator(operator: ComparisonOperator): ComparisonOperator {
         switch (operator) {
             case ComparisonOperator.GREATER:
@@ -196,6 +211,11 @@ export class CwRuleMapper {
         }
     }
 
+    /**
+     * map a CloudWatch alert to the SoLOMON specifc alert format
+     * @param cwAlert Alert in the CloudWatch specific format
+     * @returns Alert in the SoLOMON specific format
+     */
     static mapCwAlertToSloAlert(cwAlert: CwAlert): SloAlert {
         const sloAlert = {
             alertName: cwAlert.AlarmName + '-' 
@@ -209,7 +229,6 @@ export class CwRuleMapper {
             gropiusProjectId: this.getGropiusProjectId(cwAlert.AlarmDescription),
             gropiusComponentId: this.getGropiusComponentId(cwAlert.AlarmDescription)
         }
-
         return sloAlert;
     }
 

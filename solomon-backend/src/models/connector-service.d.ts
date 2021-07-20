@@ -8,36 +8,36 @@ import { TargetType } from "solomon-models/dist/target.model";
 export interface ConnectorService {
 
     /**
-     * returns a list of all SLO rules / alarms that are active 
-     * @param env - (optional) deployment environment for which the rules should be fetched
+     * returns a list of all SLOs that are active 
+     * @param env - (optional) deployment environment for which the SLOs should be fetched
      */
-    getRules(env?: DeploymentEnvironment): Promise<SloRule[]>;
+    getSlos(env?: DeploymentEnvironment): Promise<SloRule[]>;
 
     /**
-     * returns an SLO rule for a specific ID
-     * @param env - deployment environment for which the rule should be fetched
-     * @param ruleId - the ID of the rule that should be fetched
+     * returns an SLO for a specific ID
+     * @param env - deployment environment for which the SLO should be fetched
+     * @param sloId - the ID of the SLO that should be fetched
      */
-    getRule(ruleId: string, env: DeploymentEnvironment): Promise<SloRule>;
+    getSlo(sloId: string, env: DeploymentEnvironment): Promise<SloRule>;
 
     /**
-     * returns true if the new rule / alarm was added successfully and false if not
-     * @param rule - rule that should be added
+     * returns true if the new SLO was added successfully and false if not
+     * @param slo - SLO that should be added
      */
-    addRule(rule: SloRule): Promise<boolean>;
+    addSLO(slo: SloRule): Promise<boolean>;
 
     /**
-     * returns true if an exiting rule was updated successfully
-     * @param rule - rule that should be updated
+     * returns true if an exiting SLO was updated successfully
+     * @param slo - SLO that should be updated
      */
-    updateRule(rule: SloRule): Promise<boolean>;
+    updateSlo(slo: SloRule): Promise<boolean>;
 
     /**
-     * returns true if rule was deleted successfully 
-     * @param ruleId - ID of the rule that should be deleted
-     * @param env - (optional) deployment environment for which the rule applies
+     * returns true if SLO was deleted successfully 
+     * @param sloId - ID of the SLO that should be deleted
+     * @param env - (optional) deployment environment for which the SLO applies
      */
-    deleteRule(ruleId: string, env?: DeploymentEnvironment): Promise<boolean>;
+    deleteSlo(sloId: string, env?: DeploymentEnvironment): Promise<boolean>;
 
     /**
      * returns a list of all possible monitoring targets

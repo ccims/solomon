@@ -23,7 +23,7 @@ export class K8sConnectorService implements ConnectorService {
         this.k8CoreApi = kc.makeApiClient(k8s.CoreV1Api);
     }
 
-    async getRules(): Promise<SloRule[]> {
+    async getSlos(): Promise<SloRule[]> {
         const res = await this.getRuleResource();
         return res.spec.groups[0].rules.map(rule => K8RuleMapper.promRuleToSloRule(rule));
     }
@@ -39,12 +39,12 @@ export class K8sConnectorService implements ConnectorService {
         return res.body as PrometheusRuleCRD;
     }
 
-    async getRule(ruleId: string): Promise<SloRule> {
+    async getSlo(ruleId: string): Promise<SloRule> {
         const res = await this.getRuleResource();
         return res.spec.groups[0].rules.map(rule => K8RuleMapper.promRuleToSloRule(rule)).find(rule => rule.id === ruleId);
     }
 
-    async addRule(rule: SloRule): Promise<boolean> {
+    async addSLO(rule: SloRule): Promise<boolean> {
         rule.id = uuidv4();
         try {
             const res = await this.getRuleResource();
@@ -79,7 +79,7 @@ export class K8sConnectorService implements ConnectorService {
     }
 
 
-    async updateRule(rule: SloRule): Promise<boolean> {
+    async updateSlo(rule: SloRule): Promise<boolean> {
         const res = await this.getRuleResource();
         const index = res.spec.groups[0].rules.findIndex(e => e.annotations.ruleId === rule.id);
         res.spec.groups[0].rules[index] = K8RuleMapper.sloRuleToPromRule(rule);
@@ -93,7 +93,7 @@ export class K8sConnectorService implements ConnectorService {
         }
     }
 
-    async deleteRule(ruleId: string): Promise<boolean> {
+    async deleteSlo(ruleId: string): Promise<boolean> {
         const res = await this.getRuleResource();
         const index = res.spec.groups[0].rules.findIndex(e => e.annotations.ruleId === ruleId);
         res.spec.groups[0].rules.splice(index, 1);
