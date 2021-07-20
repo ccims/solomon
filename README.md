@@ -1,4 +1,20 @@
-## Getting the backend running as HTTPS server
+# SoLOMON
+SoLOMON is a tool for SLO-based monitoring.
+
+**Overview of the architecture:**
+
+![Architecture overview](documentation/images/logical-view.png)
+
+## Get it running (locally)
+1. install dependencies for frontend and backend: `npm install` (in both: `/solomon-backend` and `/solomon-frontend`)
+2. start backend: `npm run start:dev`  (in `/solomon-backend`)
+3. start frontend: `npm run start`  (in `/solomon-frontend`)
+4. for full functionality you also need to run an instance of the [Gropius backend](https://github.com/ccims/ccims-backend-gql) and set the URL where it is running in the SoLOMON env file (`/config/envs/.env.dev.local`).
+
+Hint: _The backend can be started either as HTTP or as HTTPS server.
+To start it as HTTP server just make sure that `HTTPS_ENABLED=false` is set in the env file (`/config/envs/.env.dev.local`).
+If you want to run it as HTTPS server set `HTTPS_ENABLED=true` and follow the following instructions._
+
 
 ### Creating the SSL certificate
 1. Create self-signed SSL certificate, using following commands (in Git Bash):
@@ -30,18 +46,7 @@ A call to the (locally deployed) backend from the browser might thus look like t
 When using tools like Postman, there is an "Authorization" tab where the Basic Auth user can be specified once.
 Postman then takes care of adding the user and password to each request and you don't have to add it to the URL manually.
 
-## Refactoring
-
-This branch contains the refactored version of the backend of the SLO Tool.
-The frontend was not adapted to this yet and won't work with the backend yet.
-
-**Overview of the architecture with focus on the CloudWatch Connector:**
-
-![Architecture overview](documentation/images/detailed-architecture.png)
-
-**The data-flow for the action of adding a new SLO rule in the backend:**
-
-![Add rule dataflow](documentation/images/add-rule-dataflow.png)
+---
 
 ## Foundations/Required Technologies
 
