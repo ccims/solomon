@@ -8,31 +8,31 @@ export class AppController {
     private readonly logger = new Logger(AppController.name);
     constructor(private forwarder: ForwarderService, private gropiusManager: GropiusManager) { }
 
-    @Get('rules/:deploymentEnvironment')
+    @Get('slos/:deploymentEnvironment')
     getSlos(@Param('deploymentEnvironment') env: DeploymentEnvironment) {
         this.logger.log('called getSlos()')
         return this.forwarder.getSlos(env);
     }
 
-    @Get('rules/:deploymentEnvironment/:id')
+    @Get('slos/:deploymentEnvironment/:id')
     getSlo(@Param('deploymentEnvironment') env: DeploymentEnvironment, @Param('id') ruleId: string) {
         this.logger.log('called getSlo()')
         return this.forwarder.getSlo(ruleId, env);
     }
 
-    @Post('rules')
+    @Post('slos')
     addSlo(@Body() slo: SloRule) {
         this.logger.log('called addSlo()');
         return this.forwarder.addSLO(slo);
     }
 
-    @Put('rules')
+    @Put('slos')
     updateSlo(@Body() slo: SloRule) {
         this.logger.log('called updateSlo()')
         return this.forwarder.updateSlo(slo);
     }
 
-    @Delete('rules/:deploymentEnvironment/:id')
+    @Delete('slos/:deploymentEnvironment/:id')
     deleteSlo(@Param('deploymentEnvironment') env: DeploymentEnvironment, @Param('id') sloId: string) {
         this.logger.log('called deleteSlo()')
         return this.forwarder.deleteSlo(sloId, env);

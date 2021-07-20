@@ -5,7 +5,7 @@ import { DeploymentEnvironment, SloRule, Target, GropiusProject, GropiusComponen
 
 // const BACKEND_URL = "https://localhost:443/solomon";
 const BACKEND_URL = "http://localhost:6400/solomon";
-const RULES_API = `${BACKEND_URL}/rules`; // :deploymentEnvironment
+const RULES_API = `${BACKEND_URL}/slos`; // :deploymentEnvironment
 const TARGET_API = `${BACKEND_URL}/targets`; // :deploymentEnvironment
 const GROPIUS_API = `${BACKEND_URL}/gropius`;
 const GROPIUS_PROJECT_API = `${GROPIUS_API}/projects`; 
