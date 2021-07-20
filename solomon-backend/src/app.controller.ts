@@ -9,14 +9,14 @@ export class AppController {
     constructor(private forwarder: ForwarderService, private gropiusManager: GropiusManager) { }
 
     @Get('rules/:deploymentEnvironment')
-    getRules(@Param('deploymentEnvironment') env: DeploymentEnvironment) {
-        this.logger.log('called getRules()')
+    getSlos(@Param('deploymentEnvironment') env: DeploymentEnvironment) {
+        this.logger.log('called getSlos()')
         return this.forwarder.getSlos(env);
     }
 
     @Get('rules/:deploymentEnvironment/:id')
-    getRule(@Param('deploymentEnvironment') env: DeploymentEnvironment, @Param('id') ruleId: string) {
-        this.logger.log('called getRule()')
+    getSlo(@Param('deploymentEnvironment') env: DeploymentEnvironment, @Param('id') ruleId: string) {
+        this.logger.log('called getSlo()')
         return this.forwarder.getSlo(ruleId, env);
     }
 
