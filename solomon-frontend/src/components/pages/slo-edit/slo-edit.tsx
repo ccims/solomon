@@ -10,8 +10,11 @@ import {
 } from "@material-ui/core";
 import { Field, Formik } from "formik";
 import { Select, TextField } from "formik-material-ui";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useHistory, useParams } from "react-router-dom";
+import XmlConverterService from "../../../xml-converter/xml-converter.service";
+
+
 import {
   ComparisonOperator,
   DeploymentEnvironment,
@@ -36,6 +39,7 @@ import {
   updateRule,
 } from "../../../api";
 import { SELECTED_ENV } from "../../../App";
+import { ValuesOfCorrectTypeRule } from "graphql";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -59,6 +63,11 @@ export default function SloEditPage() {
     useState<GropiusComponent[]>(undefined);
   const [alarmActions, setAlarmActions] = useState<string[]>([]);
   const router = useHistory();
+
+  const inputFile = useRef(null);
+  const conv = new XmlConverterService();
+  const reader = new FileReader()
+
 
   const defaultValues: SloRule = {
     name: "",
@@ -86,7 +95,7 @@ export default function SloEditPage() {
     }
   }, [ruleId]);
 
-  useEffect(() => {
+ /* useEffect(() => {
     if (rule) {
       fetchTargets(rule.deploymentEnvironment, rule.targetType).then((res) =>
         setTargets(res)
@@ -103,7 +112,7 @@ export default function SloEditPage() {
         setAlarmActions(res)
       );
     }
-  }, [rule]);
+  }, [rule]);*/
 
   async function onDeleteRule() {
     if (rule?.id) {
@@ -111,6 +120,20 @@ export default function SloEditPage() {
       router.push("/");
     }
   }
+
+  async function onUploadXML() {
+    
+    inputFile.current.click();
+  }
+
+  async function onChangeXML(e) {
+    reader.onload = async (e) => { 
+      const text = (e.target.result);
+      var convertedRule: SloRule = conv.convertXml(text.toString());
+      console.log(convertedRule.name)
+    };
+    reader.readAsText(e.target.files[0]);
+}
 
   return (
     <Container>
@@ -461,6 +484,24 @@ export default function SloEditPage() {
                   >
                     Save
                   </Button>
+
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => onUploadXML()}
+                  >
+                    Upload XML
+                  </Button>
+                  <input type='file' accept='.xml' id='file' style={{display: 'none'} } ref={inputFile} onChange={(e) => 
+                    {reader.onload = async (e) => { 
+                      const text = (e.target.result);
+                      var convertedRule: SloRule = conv.convertXml(text.toString());
+                      setFieldValue("name", convertedRule.name);
+                    };
+                    reader.readAsText(e.target.files[0]);}
+                  }
+                 />
+
                   {rule?.id && (
                     <Button
                       variant="contained"

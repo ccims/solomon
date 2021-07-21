@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { XmlConverterService } from './xml-converter.service';
+import XmlConverterService from './xml-converter.service';
 
 @Module({
     providers: [XmlConverterService],

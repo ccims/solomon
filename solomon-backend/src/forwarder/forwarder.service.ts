@@ -4,7 +4,6 @@ import { CwConnectorService } from 'src/connector-cloudwatch/cw.service';
 import { DeploymentEnvironment, SloRule, Target } from 'solomon-models';
 import { K8sConnectorService } from 'src/connector-kubernetes/k8s.service';
 import { TargetType } from 'solomon-models/dist/target.model';
-import { XmlConverterService } from 'src/xml-converter/xml-converter.service';
 
 /**
  * The forwarder service contains the logic for **forwarding the requests** (e.g. getRules, addRule) 
@@ -16,7 +15,7 @@ export class ForwarderService implements ConnectorService {
     private readonly logger = new Logger(ForwarderService.name);
 
     constructor(private cwConnector: CwConnectorService,
-        private k8sConnector: K8sConnectorService, private xmlConverter: XmlConverterService) { }
+        private k8sConnector: K8sConnectorService) { }
 
 
     getRules(deploymentEnvironment: DeploymentEnvironment): Promise<SloRule[]> {
@@ -85,11 +84,5 @@ export class ForwarderService implements ConnectorService {
                 return this.k8sConnector.deleteRule(id);
         }
     }
-
-    convertXmlToRule(xml: string): Promise<boolean> {
-        var rule = this.xmlConverter.convertXml(xml);
-        return this.updateRule(rule);
-    }
-
 
 }

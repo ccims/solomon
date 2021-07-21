@@ -11,6 +11,7 @@ const GROPIUS_API = `${BACKEND_URL}/gropius`;
 const GROPIUS_PROJECT_API = `${GROPIUS_API}/projects`; 
 const GROPIUS_COMPONENTS_API = `${GROPIUS_API}/components`; // :gropiusProjectId
 const ALARM_ACTION = `${BACKEND_URL}/alarm-actions`; // :deploymentEnvironment
+const XML_CONVERT = `${BACKEND_URL}/sla-lang`
 
 // const https = require('https');
 // const agent = new https.Agent({ 
@@ -78,3 +79,10 @@ export const fetchAlarmActionList = async (env: DeploymentEnvironment): Promise<
     }
     return res.data;
 }
+
+export const convertXml = async (xml: string) => {
+    const res = await Axios.post(`${XML_CONVERT}`, xml, axiosConfig);
+    return res.data;
+}
+
+

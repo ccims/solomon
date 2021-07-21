@@ -62,12 +62,4 @@ export class AppController {
     return this.forwarder.getAlarmActions(env)
   }
 
-  @Post('sla-lang')
-  convertXmlToRule(@Body() xml: string){
-    this.logger.log('called convertXmlToRule()')
-    this.logger.log('The Body is ')
-    this.logger.log(xml)
-    return this.forwarder.convertXmlToRule(xml);
-  }
-
 }
