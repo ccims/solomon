@@ -241,8 +241,8 @@ export default function SloEditPage() {
                       >
                         {targets?.map((target) => (
                           <ListItem
-                            key={target.targetId}
-                            value={target.targetId}
+                            key={target.targetName}
+                            value={target.targetName}
                           >
                             {target.targetName}
                           </ListItem>

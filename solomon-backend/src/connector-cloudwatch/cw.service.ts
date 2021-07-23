@@ -81,14 +81,14 @@ export class CwConnectorService implements ConnectorService {
 
     addSLO(slo: SloRule): Promise<boolean> {
         this.connected ? /*already connected */null : this.connectToAws();
-        var alarm = CwMapper.mapAlarmToSlo(slo);
+        var alarm = CwMapper.mapSloToCwAlarm(slo);
 
         return new Promise((resolve, reject) => {
             this.cw.putMetricAlarm(alarm, (err, data) => {
                 if (err) {
                     reject(new Error(err));
                 } else {
-                    this.logger.log(data)
+                    this.logger.log('Added new SLO:' + alarm.AlarmName)
                     resolve(true);
                 }
             })
@@ -97,14 +97,14 @@ export class CwConnectorService implements ConnectorService {
 
     updateSlo(slo: SloRule): Promise<boolean> {
         this.connected ? /*already connected */null : this.connectToAws();
-        var alarm = CwMapper.mapAlarmToSlo(slo);
+        var alarm = CwMapper.mapSloToCwAlarm(slo);
 
         return new Promise((resolve, reject) => {
             this.cw.putMetricAlarm(alarm, (err, data) => {
                 if (err) {
                     reject(new Error(err));
                 } else {
-                    this.logger.log(data)
+                    this.logger.log('Updated SLO:' + alarm.AlarmName)
                     resolve(true);
                 }
             })
@@ -123,7 +123,7 @@ export class CwConnectorService implements ConnectorService {
                 if (err) {
                     reject(new Error(err));
                 } else {
-                    this.logger.log(data)
+                    this.logger.log('Deleted SLO:' + slo.name)
                     resolve(true);
                 }
             })
@@ -252,6 +252,7 @@ export class CwConnectorService implements ConnectorService {
                 if (err) {
                     reject(new Error(err));
                 } else {
+                    this.logger.debug(data)
                     resolve(CwMapper.mapEcsClustersToTargets(data.clusterArns));
                 }
             })

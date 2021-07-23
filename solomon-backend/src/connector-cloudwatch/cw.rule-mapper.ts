@@ -48,7 +48,7 @@ export class CwMapper {
      * @param slo an SLO object
      * @returns a CloudWatch alarm
      */
-    static mapAlarmToSlo(slo: SloRule): CwAlarm {
+    static mapSloToCwAlarm(slo: SloRule): CwAlarm {
         var alarm: CwAlarm = {
             AlarmName: slo.name,
             AlarmDescription: this.generateAlarmDescription(slo),

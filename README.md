@@ -128,7 +128,14 @@ Now you will see the Alert Rules go to state `Active` (yellow) and the `Fire` (r
 
 
 # Current Issues and TODOs
+## Frontend Related
+- [ ] Errors are not shown in the frontend yet (e.g. "ExpiredToken: The security token included in the request is expired" when connecting to AWS or: "ValidationError: Period must be 10, 30 or a multiple of 60" when setting false period for AWS SLO)
+- [ ] When an SLO is edited, but its name is changed, a new SLO gets created and the old one is not deleted
 
+## AWS related
+- [ ] Network Load Balancer targets for AWS can currently not be loaded, which makes it impossible to create SLOs for AWS Network Load Balancers
+
+## Older
 - [ ] SlaRule Serialization: When shutting down sla-manager, SLA's are not persistent and such not available when restarting service
 - [ ] Blackbox Exporter needs probe targets configured in blackbox-exporter-values.yaml, solution: Probe crd but setup not working yet
 
