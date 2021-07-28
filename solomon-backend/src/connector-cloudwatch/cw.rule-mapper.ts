@@ -1,4 +1,4 @@
-import { ComparisonOperator, DeploymentEnvironment, MetricOption, SloRule, StatisticsOption, Target } from 'solomon-models';
+import { ComparisonOperator, DeploymentEnvironment, MetricOption, Slo, StatisticsOption, Target } from 'solomon-models';
 import { TargetType } from 'solomon-models/dist/target.model';
 import { SloAlert } from 'src/models/alert.interface';
 import { CwAlarm, AwsNamespace, DimensionFilter, CwLambdaFunction, CwMetricName, CwAlert, CwRdsCluster, CwApiGateway, CwElb, CwEcsCluster } from './cw.interface';
@@ -9,8 +9,8 @@ export class CwMapper {
      * @param alarm AWS CloudWatch alarm
      * @returns SLO object corresponding to the CloudWatch alarm
      */
-    static mapCwAlarmToSlo(alarm: CwAlarm): SloRule {
-        var slo: SloRule = {
+    static mapCwAlarmToSlo(alarm: CwAlarm): Slo {
+        var slo: Slo = {
             id: alarm.AlarmArn,
             name: alarm.AlarmName,
             description: this.getAlarmDescription(alarm.AlarmDescription),
@@ -34,8 +34,8 @@ export class CwMapper {
      * @param alarms list containing AWS CloudWatch alarm definitions
      * @returns list containing SLO objects
      */
-    static mapAlarmsToSlos(alarms: CwAlarm[]): SloRule[] {
-        var slos: SloRule[] = [];
+    static mapAlarmsToSlos(alarms: CwAlarm[]): Slo[] {
+        var slos: Slo[] = [];
         alarms.forEach(alarm => {
             slos.push(this.mapCwAlarmToSlo(alarm));
         })
@@ -48,7 +48,7 @@ export class CwMapper {
      * @param slo an SLO object
      * @returns a CloudWatch alarm
      */
-    static mapSloToCwAlarm(slo: SloRule): CwAlarm {
+    static mapSloToCwAlarm(slo: Slo): CwAlarm {
         var alarm: CwAlarm = {
             AlarmName: slo.name,
             AlarmDescription: this.generateAlarmDescription(slo),
@@ -72,7 +72,7 @@ export class CwMapper {
      * @param slo SLO object containing the Gropius project and component id
      * @returns the CloudWatch alarm description including the two Gropius related attributes
      */
-    private static generateAlarmDescription(slo: SloRule): string {
+    private static generateAlarmDescription(slo: Slo): string {
         var description = slo.description;
         description = description.concat(' //// ');
         description = description.concat('gropiusProjectId:', slo.gropiusProjectId, ' ');

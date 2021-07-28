@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SloRule, Target } from 'solomon-models';
+import { Slo, Target } from 'solomon-models';
 import { TargetType } from 'solomon-models/dist/target.model';
 import { ConnectorService } from 'src/models/connector-service';
 import { CwMapper } from './cw.rule-mapper';
@@ -47,7 +47,7 @@ export class CwConnectorService implements ConnectorService {
         return ('successfully connected to AWS...')
     }
 
-    getSlos(): Promise<SloRule[]> {
+    getSlos(): Promise<Slo[]> {
         this.connected ? /*already connected */null : this.connectToAws();
 
         const params = {};
@@ -64,14 +64,14 @@ export class CwConnectorService implements ConnectorService {
         })
     }
 
-    async getSlo(sloId: string): Promise<SloRule> {
+    async getSlo(sloId: string): Promise<Slo> {
         this.connected ? /*already connected */null : this.connectToAws();
 
         const slos = await this.getSlos();
 
         return new Promise((resolve, reject) => {
             try {
-                const slo = slos.find(rule => rule.id === sloId);
+                const slo = slos.find(slo => slo.id === sloId);
                 return resolve(slo);
             } catch (err) {
                 reject(new Error(err));
@@ -79,7 +79,7 @@ export class CwConnectorService implements ConnectorService {
         })
     }
 
-    addSLO(slo: SloRule): Promise<boolean> {
+    addSLO(slo: Slo): Promise<boolean> {
         this.connected ? /*already connected */null : this.connectToAws();
         var alarm = CwMapper.mapSloToCwAlarm(slo);
 
@@ -95,7 +95,7 @@ export class CwConnectorService implements ConnectorService {
         })
     }
 
-    updateSlo(slo: SloRule): Promise<boolean> {
+    updateSlo(slo: Slo): Promise<boolean> {
         this.connected ? /*already connected */null : this.connectToAws();
         var alarm = CwMapper.mapSloToCwAlarm(slo);
 

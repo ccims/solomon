@@ -19,7 +19,7 @@ import {
   GropiusProject,
   MetricOption,
   PresetOption,
-  SloRule,
+  Slo,
   StatisticsOption,
   Target,
   TargetType,
@@ -50,7 +50,7 @@ export default function SloEditPage() {
 
   const { ruleId } = useParams<any>();
 
-  const [rule, setRule] = useState<SloRule>();
+  const [rule, setRule] = useState<Slo>();
 
   const [targets, setTargets] = useState<Target[]>(undefined);
   const [gropiusProjects, setGropiusProjects] =
@@ -60,7 +60,7 @@ export default function SloEditPage() {
   const [alarmActions, setAlarmActions] = useState<string[]>([]);
   const router = useHistory();
 
-  const defaultValues: SloRule = {
+  const defaultValues: Slo = {
     name: "",
     description: "",
 

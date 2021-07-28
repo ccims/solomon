@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Logger } from '@nestjs/common';
-import { DeploymentEnvironment, SloRule, TargetType } from 'solomon-models';
+import { DeploymentEnvironment, Slo, TargetType } from 'solomon-models';
 import { ForwarderService } from './forwarder/forwarder.service';
 import { GropiusManager } from './gropius-manager/gropius-manager.service';
 
@@ -15,19 +15,19 @@ export class AppController {
     }
 
     @Get('slos/:deploymentEnvironment/:id')
-    getSlo(@Param('deploymentEnvironment') env: DeploymentEnvironment, @Param('id') ruleId: string) {
+    getSlo(@Param('deploymentEnvironment') env: DeploymentEnvironment, @Param('id') sloId: string) {
         this.logger.log('called getSlo()')
-        return this.forwarder.getSlo(ruleId, env);
+        return this.forwarder.getSlo(sloId, env);
     }
 
     @Post('slos')
-    addSlo(@Body() slo: SloRule) {
+    addSlo(@Body() slo: Slo) {
         this.logger.log('called addSlo()');
         return this.forwarder.addSLO(slo);
     }
 
     @Put('slos')
-    updateSlo(@Body() slo: SloRule) {
+    updateSlo(@Body() slo: Slo) {
         this.logger.log('called updateSlo()')
         return this.forwarder.updateSlo(slo);
     }

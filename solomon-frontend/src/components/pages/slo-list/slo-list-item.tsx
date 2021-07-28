@@ -1,11 +1,11 @@
 import { Box, Card } from "@material-ui/core";
 import React from "react";
 import { Link } from "react-router-dom";
-import { SloRule } from "solomon-models";
+import { Slo } from "solomon-models";
 import { RoutePaths } from "../../../routes";
 
 interface RuleItemProps {
-  rule: SloRule;
+  rule: Slo;
 }
 
 const RuleItem: React.FunctionComponent<RuleItemProps> = ({ rule }) => {

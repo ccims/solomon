@@ -1,6 +1,6 @@
 import * as k8s from '@kubernetes/client-node';
 import { Injectable, Logger } from "@nestjs/common";
-import { SloRule, Target } from "solomon-models";
+import { Slo, Target } from "solomon-models";
 import { ConnectorService } from "src/models/connector-service";
 import { PrometheusRuleCRD } from "./k8.interface";
 import { K8RuleMapper } from "./k8.rule-mapper";
@@ -23,7 +23,7 @@ export class K8sConnectorService implements ConnectorService {
         this.k8CoreApi = kc.makeApiClient(k8s.CoreV1Api);
     }
 
-    async getSlos(): Promise<SloRule[]> {
+    async getSlos(): Promise<Slo[]> {
         const res = await this.getRuleResource();
         return res.spec.groups[0].rules.map(rule => K8RuleMapper.promRuleToSloRule(rule));
     }
@@ -39,12 +39,12 @@ export class K8sConnectorService implements ConnectorService {
         return res.body as PrometheusRuleCRD;
     }
 
-    async getSlo(ruleId: string): Promise<SloRule> {
+    async getSlo(ruleId: string): Promise<Slo> {
         const res = await this.getRuleResource();
         return res.spec.groups[0].rules.map(rule => K8RuleMapper.promRuleToSloRule(rule)).find(rule => rule.id === ruleId);
     }
 
-    async addSLO(rule: SloRule): Promise<boolean> {
+    async addSLO(rule: Slo): Promise<boolean> {
         rule.id = uuidv4();
         try {
             const res = await this.getRuleResource();
@@ -59,7 +59,7 @@ export class K8sConnectorService implements ConnectorService {
         // TODO: configer Blackbox exporter to probe url
     }
 
-    private async addRuleAndApply(sloRule: SloRule, promRuleCrd: PrometheusRuleCRD, isReplacing: boolean): Promise<boolean> {
+    private async addRuleAndApply(sloRule: Slo, promRuleCrd: PrometheusRuleCRD, isReplacing: boolean): Promise<boolean> {
         const promRule = K8RuleMapper.sloRuleToPromRule(sloRule);
         this.logger.debug(`Applying PrometheusRule with expression ${promRule.expr}`)
         promRuleCrd.spec.groups[0].rules.push(K8RuleMapper.sloRuleToPromRule(sloRule));
@@ -79,7 +79,7 @@ export class K8sConnectorService implements ConnectorService {
     }
 
 
-    async updateSlo(rule: SloRule): Promise<boolean> {
+    async updateSlo(rule: Slo): Promise<boolean> {
         const res = await this.getRuleResource();
         const index = res.spec.groups[0].rules.findIndex(e => e.annotations.ruleId === rule.id);
         res.spec.groups[0].rules[index] = K8RuleMapper.sloRuleToPromRule(rule);

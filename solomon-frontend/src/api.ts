@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { DeploymentEnvironment, SloRule, Target, GropiusProject, GropiusComponent } from "solomon-models";
+import { DeploymentEnvironment, Slo, Target, GropiusProject, GropiusComponent } from "solomon-models";
 
 
 
@@ -25,25 +25,25 @@ const axiosConfig = {
     // httpsAgent: agent
 }
 
-export const fetchRules = async (env: DeploymentEnvironment): Promise<SloRule[]> => {
-    const res = await Axios.get<SloRule[]>(`${RULES_API}/${env}`, axiosConfig);
+export const fetchRules = async (env: DeploymentEnvironment): Promise<Slo[]> => {
+    const res = await Axios.get<Slo[]>(`${RULES_API}/${env}`, axiosConfig);
     if (res.data as any === "") {   // why does api return ""?
         return null;
     }
     return res.data;
 }
 
-export const fetchRule = async (id: string, env: DeploymentEnvironment): Promise<SloRule> => {
-    const res = await Axios.get<SloRule>(`${RULES_API}/${env}/${id}`);
+export const fetchRule = async (id: string, env: DeploymentEnvironment): Promise<Slo> => {
+    const res = await Axios.get<Slo>(`${RULES_API}/${env}/${id}`);
     return res.data;
 }
 
-export const addRule = async (rule: SloRule) => {
+export const addRule = async (rule: Slo) => {
     const res = await Axios.post(`${RULES_API}`, rule, axiosConfig);
     return res.data;
 }
 
-export const updateRule = async (rule: SloRule) => {
+export const updateRule = async (rule: Slo) => {
     const res = await Axios.put(`${RULES_API}`, rule, axiosConfig);
     return res.data;
 }

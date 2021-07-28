@@ -1,4 +1,4 @@
-import { DeploymentEnvironment, SloRule, Target } from "solomon-models";
+import { DeploymentEnvironment, Slo, Target } from "solomon-models";
 import { TargetType } from "solomon-models/dist/target.model";
 
 /**
@@ -11,26 +11,26 @@ export interface ConnectorService {
      * returns a list of all SLOs that are active 
      * @param env - (optional) deployment environment for which the SLOs should be fetched
      */
-    getSlos(env?: DeploymentEnvironment): Promise<SloRule[]>;
+    getSlos(env?: DeploymentEnvironment): Promise<Slo[]>;
 
     /**
      * returns an SLO for a specific ID
      * @param env - deployment environment for which the SLO should be fetched
      * @param sloId - the ID of the SLO that should be fetched
      */
-    getSlo(sloId: string, env: DeploymentEnvironment): Promise<SloRule>;
+    getSlo(sloId: string, env: DeploymentEnvironment): Promise<Slo>;
 
     /**
      * returns true if the new SLO was added successfully and false if not
      * @param slo - SLO that should be added
      */
-    addSLO(slo: SloRule): Promise<boolean>;
+    addSLO(slo: Slo): Promise<boolean>;
 
     /**
      * returns true if an exiting SLO was updated successfully
      * @param slo - SLO that should be updated
      */
-    updateSlo(slo: SloRule): Promise<boolean>;
+    updateSlo(slo: Slo): Promise<boolean>;
 
     /**
      * returns true if SLO was deleted successfully 

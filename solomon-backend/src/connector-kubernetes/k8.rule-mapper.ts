@@ -1,9 +1,9 @@
-import { ComparisonOperator, DeploymentEnvironment, MetricOption, PresetOption, SloRule, StatisticsOption } from "solomon-models";
+import { ComparisonOperator, DeploymentEnvironment, MetricOption, PresetOption, Slo, StatisticsOption } from "solomon-models";
 import { PrometheusRule, PrometheusRuleCRD } from "./k8.interface";
 import { FunctionOptions, OperatorOptions } from "./prometheus-rules-options";
 
 export class K8RuleMapper {
-    static promRuleToSloRule(promRule: PrometheusRule): SloRule {
+    static promRuleToSloRule(promRule: PrometheusRule): Slo {
         return {
             id: promRule.annotations.ruleId,
             name: promRule.alert,
@@ -21,7 +21,7 @@ export class K8RuleMapper {
         }
     }
 
-    static sloRuleToPromRule(rule: SloRule): PrometheusRule {
+    static sloRuleToPromRule(rule: Slo): PrometheusRule {
         return {
             alert: rule.name,
             annotations: {
@@ -53,7 +53,7 @@ export class K8RuleMapper {
         return +forString.split("s")[0];
     }
 
-    private static ruleToPromExpression(rule: SloRule): string {
+    private static ruleToPromExpression(rule: Slo): string {
         if (rule.statistic) {
             return `${K8RuleMapper.statisticOperatorToPrometheusFunction(rule.statistic)}(${rule.metricOption}[${K8RuleMapper.secondsToPromString(rule.period)}]) ${K8RuleMapper.comparisonOperatorToPrometheusFunction(rule.comparisonOperator)} ${rule.threshold}`
         } else {

@@ -1,7 +1,7 @@
 import { Button, Container } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { SloRule } from "solomon-models";
+import { Slo } from "solomon-models";
 import { fetchRules } from "../../../api";
 import { SELECTED_ENV } from "../../../App";
 import { RoutePaths } from "../../../routes";
@@ -9,7 +9,7 @@ import RuleItem from "./slo-list-item";
 
 export default function SloListPage() {
 
-    const [rules, setRules] = useState<SloRule[]>();
+    const [rules, setRules] = useState<Slo[]>();
 
     useEffect(() => {
         fetchRules(SELECTED_ENV).then(res => setRules(res));
