@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Slo, Target } from 'solomon-models';
 import { TargetType } from 'solomon-models/dist/target.model';
 import { ConnectorService } from 'src/models/connector-service';
-import { CwMapper } from './cw.rule-mapper';
+import { CwMapper } from './cw.mapper';
 
 
 @Injectable()

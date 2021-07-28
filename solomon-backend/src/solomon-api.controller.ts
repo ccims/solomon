@@ -4,8 +4,8 @@ import { ForwarderService } from './forwarder/forwarder.service';
 import { GropiusManager } from './gropius-manager/gropius-manager.service';
 
 @Controller('solomon')
-export class AppController {
-    private readonly logger = new Logger(AppController.name);
+export class SolomonApi {
+    private readonly logger = new Logger(SolomonApi.name);
     constructor(private forwarder: ForwarderService, private gropiusManager: GropiusManager) { }
 
     @Get('slos/:deploymentEnvironment')

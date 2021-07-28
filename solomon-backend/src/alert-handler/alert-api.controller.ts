@@ -2,8 +2,8 @@ import { Body, Controller, Logger, Post } from '@nestjs/common';
 import { AlertHandlerService } from './alert-handler.service';
 
 @Controller('alert')
-export class AlertController {
-    private readonly logger = new Logger(AlertController.name);
+export class AlertApi {
+    private readonly logger = new Logger(AlertApi.name);
 
     constructor(private alertService: AlertHandlerService) {}
 

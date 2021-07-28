@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CwAlert } from 'src/connector-cloudwatch/cw.interface';
-import { CwMapper } from 'src/connector-cloudwatch/cw.rule-mapper';
+import { CwMapper } from 'src/connector-cloudwatch/cw.mapper';
 import { GropiusManager } from 'src/gropius-manager/gropius-manager.service';
 import { SloAlert } from '../models/alert.interface';
 

@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { GropiusModule } from 'src/gropius-manager/gropius-manager.module';
 import { AlertHandlerService } from './alert-handler.service';
-import { AlertController } from './alert.controller';
+import { AlertApi } from './alert-api.controller';
 
 @Module({
   imports: [GropiusModule],
   providers: [AlertHandlerService],
   exports: [AlertHandlerService],
-  controllers: [AlertController]
+  controllers: [AlertApi]
 })
 export class AlertHandlerModule {}

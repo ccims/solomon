@@ -1,8 +1,8 @@
 import { ComparisonOperator, DeploymentEnvironment, MetricOption, PresetOption, Slo, StatisticsOption } from "solomon-models";
-import { PrometheusRule, PrometheusRuleCRD } from "./k8.interface";
+import { PrometheusRule, PrometheusRuleCRD } from "./k8s.interface";
 import { FunctionOptions, OperatorOptions } from "./prometheus-rules-options";
 
-export class K8RuleMapper {
+export class K8sMapper {
     static promRuleToSloRule(promRule: PrometheusRule): Slo {
         return {
             id: promRule.annotations.ruleId,
@@ -37,8 +37,8 @@ export class K8RuleMapper {
                 period: rule.period,
                 threshold: rule.threshold
             },
-            expr: K8RuleMapper.ruleToPromExpression(rule),
-            for: K8RuleMapper.secondsToPromString(rule.period),
+            expr: K8sMapper.ruleToPromExpression(rule),
+            for: K8sMapper.secondsToPromString(rule.period),
             labels: {
                 severity: "warning",
             },
@@ -55,9 +55,9 @@ export class K8RuleMapper {
 
     private static ruleToPromExpression(rule: Slo): string {
         if (rule.statistic) {
-            return `${K8RuleMapper.statisticOperatorToPrometheusFunction(rule.statistic)}(${rule.metricOption}[${K8RuleMapper.secondsToPromString(rule.period)}]) ${K8RuleMapper.comparisonOperatorToPrometheusFunction(rule.comparisonOperator)} ${rule.threshold}`
+            return `${K8sMapper.statisticOperatorToPrometheusFunction(rule.statistic)}(${rule.metricOption}[${K8sMapper.secondsToPromString(rule.period)}]) ${K8sMapper.comparisonOperatorToPrometheusFunction(rule.comparisonOperator)} ${rule.threshold}`
         } else {
-            return `${rule.metricOption} ${K8RuleMapper.comparisonOperatorToPrometheusFunction(rule.comparisonOperator)} ${rule.threshold}`
+            return `${rule.metricOption} ${K8sMapper.comparisonOperatorToPrometheusFunction(rule.comparisonOperator)} ${rule.threshold}`
         }
     }
 

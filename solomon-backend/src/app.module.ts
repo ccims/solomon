@@ -1,5 +1,5 @@
 import { HttpModule, Logger, Module } from '@nestjs/common';
-import { AppController } from './app.controller';
+import { SolomonApi } from './solomon-api.controller';
 import { ForwarderModule } from './forwarder/forwarder.module';
 import { ConnectorAzureModule } from './connector-azure/connector-azure.module';
 import { ConnectorCloudwatchModule } from './connector-cloudwatch/connector-cloudwatch.module';
@@ -22,7 +22,7 @@ const ENV = process.env.NODE_ENV;
     AlertHandlerModule,
     GropiusModule,
   ],
-  controllers: [AppController],
+  controllers: [SolomonApi],
   providers: [Logger],
 })
 export class AppModule {}

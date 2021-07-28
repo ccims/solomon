@@ -2,8 +2,8 @@ import * as k8s from '@kubernetes/client-node';
 import { Injectable, Logger } from "@nestjs/common";
 import { Slo, Target } from "solomon-models";
 import { ConnectorService } from "src/models/connector-service";
-import { PrometheusRuleCRD } from "./k8.interface";
-import { K8RuleMapper } from "./k8.rule-mapper";
+import { PrometheusRuleCRD } from "./k8s.interface";
+import { K8sMapper } from "./k8s.mapper";
 import { v4 as uuidv4 } from 'uuid';
 
 const PROM_CRD_RULES_NAME = "solomon-rules";
@@ -25,7 +25,7 @@ export class K8sConnectorService implements ConnectorService {
 
     async getSlos(): Promise<Slo[]> {
         const res = await this.getRuleResource();
-        return res.spec.groups[0].rules.map(rule => K8RuleMapper.promRuleToSloRule(rule));
+        return res.spec.groups[0].rules.map(rule => K8sMapper.promRuleToSloRule(rule));
     }
 
     private async getRuleResource(): Promise<PrometheusRuleCRD> {
@@ -41,7 +41,7 @@ export class K8sConnectorService implements ConnectorService {
 
     async getSlo(ruleId: string): Promise<Slo> {
         const res = await this.getRuleResource();
-        return res.spec.groups[0].rules.map(rule => K8RuleMapper.promRuleToSloRule(rule)).find(rule => rule.id === ruleId);
+        return res.spec.groups[0].rules.map(rule => K8sMapper.promRuleToSloRule(rule)).find(rule => rule.id === ruleId);
     }
 
     async addSLO(rule: Slo): Promise<boolean> {
@@ -53,16 +53,16 @@ export class K8sConnectorService implements ConnectorService {
             }
         } catch (error) {
             if (error.body.code === 404) {
-                return this.addRuleAndApply(rule, K8RuleMapper.createPrometheusRuleCrd(), false);
+                return this.addRuleAndApply(rule, K8sMapper.createPrometheusRuleCrd(), false);
             }
         }
         // TODO: configer Blackbox exporter to probe url
     }
 
     private async addRuleAndApply(sloRule: Slo, promRuleCrd: PrometheusRuleCRD, isReplacing: boolean): Promise<boolean> {
-        const promRule = K8RuleMapper.sloRuleToPromRule(sloRule);
+        const promRule = K8sMapper.sloRuleToPromRule(sloRule);
         this.logger.debug(`Applying PrometheusRule with expression ${promRule.expr}`)
-        promRuleCrd.spec.groups[0].rules.push(K8RuleMapper.sloRuleToPromRule(sloRule));
+        promRuleCrd.spec.groups[0].rules.push(K8sMapper.sloRuleToPromRule(sloRule));
 
         try {
             if (isReplacing) {
@@ -82,7 +82,7 @@ export class K8sConnectorService implements ConnectorService {
     async updateSlo(rule: Slo): Promise<boolean> {
         const res = await this.getRuleResource();
         const index = res.spec.groups[0].rules.findIndex(e => e.annotations.ruleId === rule.id);
-        res.spec.groups[0].rules[index] = K8RuleMapper.sloRuleToPromRule(rule);
+        res.spec.groups[0].rules[index] = K8sMapper.sloRuleToPromRule(rule);
         try {
             await this.k8ClientApi.replace(res);
             this.logger.debug("Updated Prometheus Rule CRD successfully")
