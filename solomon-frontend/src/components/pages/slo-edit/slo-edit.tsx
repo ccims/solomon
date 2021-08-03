@@ -95,7 +95,7 @@ export default function SloEditPage() {
     }
   }, [ruleId]);
 
- /* useEffect(() => {
+  useEffect(() => {
     if (rule) {
       fetchTargets(rule.deploymentEnvironment, rule.targetType).then((res) =>
         setTargets(res)
@@ -112,7 +112,7 @@ export default function SloEditPage() {
         setAlarmActions(res)
       );
     }
-  }, [rule]);*/
+  }, [rule]);
 
   async function onDeleteRule() {
     if (rule?.id) {
@@ -125,15 +125,6 @@ export default function SloEditPage() {
     
     inputFile.current.click();
   }
-
-  async function onChangeXML(e) {
-    reader.onload = async (e) => { 
-      const text = (e.target.result);
-      var convertedRule: SloRule = conv.convertXml(text.toString());
-      console.log(convertedRule.name)
-    };
-    reader.readAsText(e.target.files[0]);
-}
 
   return (
     <Container>
@@ -495,8 +486,36 @@ export default function SloEditPage() {
                   <input type='file' accept='.xml' id='file' style={{display: 'none'} } ref={inputFile} onChange={(e) => 
                     {reader.onload = async (e) => { 
                       const text = (e.target.result);
-                      var convertedRule: SloRule = conv.convertXml(text.toString());
+                      var promiseRule = conv.convertXml(text.toString());
+                      promiseRule.then((convertedRule) => {
+                      console.log("Stating setting values");
                       setFieldValue("name", convertedRule.name);
+                      setFieldValue("description", convertedRule.description);
+                      setFieldValue("targetId", convertedRule.targetId);
+                      setFieldValue("deploymentEnvironment", convertedRule.deploymentEnvironment);
+
+                      if (convertedRule.deploymentEnvironment === DeploymentEnvironment.AWS){
+                        setFieldValue("targetType", convertedRule.targetType);
+                        setFieldValue("alertTopicArn", convertedRule.alertTopicArn);
+                        setFieldValue("name", convertedRule.name);
+
+                      }
+                      /*setFieldValue("gropiusProjectId", convertedRule.gropiusProjectId);
+                      fetchGropiusComponents(convertedRule.gropiusProjectId).then((res) =>
+                        setGropiusComponents(res)
+                      );
+                      setFieldValue("gropiusComponentId", convertedRule.gropiusComponentId);*/
+                      //setFieldValue("preset", convertedRule.preset);
+                      if (convertedRule.preset === PresetOption.CUSTOM){
+                        setFieldValue("metricOption", convertedRule.metricOption);
+                        setFieldValue("statistic", convertedRule.statistic);
+                        setFieldValue("comparisonOperator", convertedRule.comparisonOperator);
+                      }
+                      setFieldValue("threshold", convertedRule.threshold);
+                      setFieldValue("period", convertedRule.period);
+                    }).catch((error) => {
+                      alert(error);
+                    });
                     };
                     reader.readAsText(e.target.files[0]);}
                   }
