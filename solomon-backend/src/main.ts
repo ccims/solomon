@@ -17,7 +17,7 @@ async function bootstrap() {
   const rawData =  fs.readFileSync('./config/credentials/basic-user.json');
   const basicAuthUser = JSON.parse(rawData.toString());
   
-  var app = await NestFactory.create(AppModule, {
+  let app = await NestFactory.create(AppModule, {
     httpsOptions,
   });
 

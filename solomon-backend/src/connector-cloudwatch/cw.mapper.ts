@@ -10,7 +10,7 @@ export class CwMapper {
      * @returns SLO object corresponding to the CloudWatch alarm
      */
     static mapCwAlarmToSlo(alarm: CwAlarm): Slo {
-        var slo: Slo = {
+        const slo: Slo = {
             id: alarm.AlarmArn,
             name: alarm.AlarmName,
             description: this.getAlarmDescription(alarm.AlarmDescription),
@@ -35,7 +35,7 @@ export class CwMapper {
      * @returns list containing SLO objects
      */
     static mapAlarmsToSlos(alarms: CwAlarm[]): Slo[] {
-        var slos: Slo[] = [];
+        const slos: Slo[] = [];
         alarms.forEach(alarm => {
             slos.push(this.mapCwAlarmToSlo(alarm));
         })
@@ -49,7 +49,7 @@ export class CwMapper {
      * @returns a CloudWatch alarm
      */
     static mapSloToCwAlarm(slo: Slo): CwAlarm {
-        var alarm: CwAlarm = {
+        const alarm: CwAlarm = {
             AlarmName: slo.name,
             AlarmDescription: this.generateAlarmDescription(slo),
             MetricName: slo.metricOption as string as CwMetricName,
@@ -73,7 +73,7 @@ export class CwMapper {
      * @returns the CloudWatch alarm description including the two Gropius related attributes
      */
     private static generateAlarmDescription(slo: Slo): string {
-        var description = slo.description;
+        let description = slo.description;
         description = description.concat(' //// ');
         description = description.concat('gropiusProjectId:', slo.gropiusProjectId, ' ');
         description = description.concat('gropiusComponentId:', slo.gropiusComponentId);
@@ -90,7 +90,7 @@ export class CwMapper {
         if (!alarmDescription) {
             return 'undefined';
         }
-        var matchRes = alarmDescription.match(/gropiusProjectId:([^\s])*/);
+        const matchRes = alarmDescription.match(/gropiusProjectId:([^\s])*/);
         if (matchRes == null) {
             return 'undefined'
         }
@@ -106,7 +106,7 @@ export class CwMapper {
         if (!alarmDescription) {
             return 'undefined';
         }
-        var matchRes = alarmDescription.match(/gropiusComponentId:([^\s])*/);
+        const matchRes = alarmDescription.match(/gropiusComponentId:([^\s])*/);
         if (matchRes == null) {
             return 'undefined'
         }
@@ -132,7 +132,7 @@ export class CwMapper {
      * @returns target name
      */
     private static getTargetName(dimensions: DimensionFilter[], namespace: AwsNamespace): string{
-        var targetName = 'unknown';
+        let targetName = 'unknown';
         const dimensionName = this.getDimensionName(namespace);
         dimensions.forEach(dimension => {
             if (dimension.Name.match(dimensionName)){
@@ -170,7 +170,7 @@ export class CwMapper {
      * @returns AWS namespace description with "/"
      */
     private static mapTargetTypeToAwsNamespace(targetType: TargetType): AwsNamespace {
-        var string = targetType as string;
+        let string = targetType as string;
         string = string.replace('-','/');
         return string as AwsNamespace;
     }
@@ -181,7 +181,7 @@ export class CwMapper {
      * @returns target type description with "-"
      */
     private static mapAwsNamespaceToTagetType(awsNamespace: AwsNamespace): TargetType {
-        var string = awsNamespace as string;
+        let string = awsNamespace as string;
         string = string.replace('/','-');
         return string as TargetType;
     }
@@ -240,7 +240,7 @@ export class CwMapper {
      * @returns a generic Target representing the AWS Lambda function
      */
     static mapLambdaToTarget(lambdaFunction: CwLambdaFunction) {
-        var target: Target = {
+        const target: Target = {
             targetName: lambdaFunction.FunctionName,
             targetId: lambdaFunction.FunctionArn,
             targetDescription: lambdaFunction.Description,
@@ -255,7 +255,7 @@ export class CwMapper {
      * @returns list of targets representing the Lambda services
      */
     static mapLambdasToTargets(lambdaFunctions: CwLambdaFunction[]): Target[] {
-        var targets: Target[] = [];
+        const targets: Target[] = [];
         lambdaFunctions.forEach(lambda => {
             targets.push(this.mapLambdaToTarget(lambda));
         })
@@ -269,7 +269,7 @@ export class CwMapper {
      * @returns a generic Target representing the AWS RDS cluster
      */
     static mapRdsToTarget(rdsCluster: CwRdsCluster) {
-        var target: Target = {
+        const target: Target = {
             targetName: rdsCluster.DBClusterIdentifier,
             targetId: rdsCluster.DBClusterArn,
             targetDescription: rdsCluster.DatabaseName,
@@ -284,7 +284,7 @@ export class CwMapper {
      * @returns list of targets representing the RDS clusters
      */
     static mapRdsToTargets(rdsClusters: CwRdsCluster[]): Target[] {
-        var targets: Target[] = [];
+        const targets: Target[] = [];
         rdsClusters.forEach(cluster => {
             targets.push(this.mapRdsToTarget(cluster));
         })
@@ -297,7 +297,7 @@ export class CwMapper {
      * @returns a generic Target representing the AWS API
      */
      static mapApiToTarget(api: CwApiGateway) {
-        var target: Target = {
+        const target: Target = {
             targetName: api.name,
             targetId: api.id,
             targetDescription: api.createdDate,
@@ -312,7 +312,7 @@ export class CwMapper {
      * @returns list of targets representing the APIs
      */
     static mapApisToTargets(apiGateways: CwApiGateway[]): Target[] {
-        var targets: Target[] = [];
+        const targets: Target[] = [];
         apiGateways.forEach(api => {
             targets.push(this.mapApiToTarget(api));
         })
@@ -325,7 +325,7 @@ export class CwMapper {
      * @returns a generic Target representing the AWS ELB
      */
     static mapElbToTarget(elb: CwElb) {
-        var target: Target = {
+        const target: Target = {
             targetName: elb.LoadBalancerName,
             targetId: elb.CanonicalHostedZoneName,
             targetDescription: elb.CreatedTime,
@@ -340,7 +340,7 @@ export class CwMapper {
      * @returns list of targets representing the ELBs
      */
     static mapElbsToTargets(elbs: CwElb[]): Target[] {
-        var targets: Target[] = [];
+        const targets: Target[] = [];
         elbs.forEach(elb => {
             targets.push(this.mapElbToTarget(elb));
         })
@@ -353,7 +353,7 @@ export class CwMapper {
      * @returns a generic Target representing the AWS ECS cluster
      */
     static mapEcsClusterToTarget(clusterArn: string) {
-        var target: Target = {
+        const target: Target = {
             targetName: clusterArn, // cluster attributes such as name have to be fetched with extra call
             targetId: clusterArn,
             targetDescription: '',
@@ -368,7 +368,7 @@ export class CwMapper {
      * @returns list of targets representing the ECS clusters
      */
     static mapEcsClustersToTargets(ecsClusters: string[]): Target[] {
-        var targets: Target[] = [];
+        const targets: Target[] = [];
         ecsClusters.forEach(cluster => {
             targets.push(this.mapEcsClusterToTarget(cluster));
         })

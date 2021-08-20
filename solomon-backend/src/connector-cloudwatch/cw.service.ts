@@ -57,7 +57,7 @@ export class CwConnectorService implements ConnectorService {
                 if (err) {
                     reject(new Error(err));
                 } else {
-                    var slos = CwMapper.mapAlarmsToSlos(data.MetricAlarms)
+                    const slos = CwMapper.mapAlarmsToSlos(data.MetricAlarms)
                     resolve(slos)
                 }
             })
@@ -81,7 +81,7 @@ export class CwConnectorService implements ConnectorService {
 
     addSLO(slo: Slo): Promise<boolean> {
         this.connected ? /*already connected */null : this.connectToAws();
-        var alarm = CwMapper.mapSloToCwAlarm(slo);
+        const alarm = CwMapper.mapSloToCwAlarm(slo);
 
         return new Promise((resolve, reject) => {
             this.cw.putMetricAlarm(alarm, (err, data) => {
@@ -97,7 +97,7 @@ export class CwConnectorService implements ConnectorService {
 
     updateSlo(slo: Slo): Promise<boolean> {
         this.connected ? /*already connected */null : this.connectToAws();
-        var alarm = CwMapper.mapSloToCwAlarm(slo);
+        const alarm = CwMapper.mapSloToCwAlarm(slo);
 
         return new Promise((resolve, reject) => {
             this.cw.putMetricAlarm(alarm, (err, data) => {
@@ -142,7 +142,7 @@ export class CwConnectorService implements ConnectorService {
                 if (err) {
                     reject(new Error(err));
                 } else {
-                    var topicArns = [];
+                    const topicArns = [];
                     data.Topics.forEach(topic => {
                         topicArns.push(topic.TopicArn)
                     });
@@ -156,7 +156,7 @@ export class CwConnectorService implements ConnectorService {
     async getTargets(env, targetType?: TargetType): Promise<Target[]> {
         this.connected ? /*already connected */null : this.connectToAws();
 
-        var targets = [];
+        const targets = [];
 
         // if no specific target type is passed, send all targets
         if (targetType === undefined) {

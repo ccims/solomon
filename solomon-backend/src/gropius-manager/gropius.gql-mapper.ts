@@ -15,7 +15,7 @@ export class GropiusGqlMapper {
     }
 
     static mapGqlProjects(gqlResponse: any): GropiusProject[] {
-        var projects = [];
+        const projects = [];
         gqlResponse.projects.edges.forEach(project => {
             projects.push(this.mapGqlProject(project));
         });
@@ -32,7 +32,7 @@ export class GropiusGqlMapper {
     }
 
     static mapGqlComponents(gqlResponse: any): GropiusComponent[] {
-        var components = [];
+        const components = [];
         gqlResponse.node.components.nodes.forEach(component => {
             components.push(this.mapGqlComponent(component));
         });

@@ -17,7 +17,7 @@ export class GropiusManager {
      * @returns a list of Gropius projects
      */
     async getGropiusProjects(): Promise<GropiusProject[]> {
-        var projects = [];
+        let projects = [];
 
         const getProjectsQuery = gql`
            query GetAllProjects($filter: ProjectFilter) {
@@ -47,7 +47,7 @@ export class GropiusManager {
      * @returns a list of Gropius Components
      */
     async getGropiusComponents(projectId: string): Promise<GropiusComponent[]> {
-        var components = [];
+        let components = [];
 
         const getComponentsQuery = gql`
             query GetComponentsOfProject($projectId: ID!) {
