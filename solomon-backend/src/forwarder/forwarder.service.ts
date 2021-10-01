@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger} from '@nestjs/common';
 import { ConnectorService } from 'src/models/connector-service';
 import { CwConnectorService } from 'src/connector-cloudwatch/cw.service';
 import { DeploymentEnvironment, Slo, Target } from 'solomon-models';
@@ -83,4 +83,5 @@ export class ForwarderService implements ConnectorService {
                 return this.k8sConnector.deleteSlo(id);
         }
     }
+
 }

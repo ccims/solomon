@@ -10,8 +10,11 @@ import {
 } from "@material-ui/core";
 import { Field, Formik } from "formik";
 import { Select, TextField } from "formik-material-ui";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useHistory, useParams } from "react-router-dom";
+import XmlConverterService from "../../../xml-converter/xml-converter.service";
+
+
 import {
   ComparisonOperator,
   DeploymentEnvironment,
@@ -36,6 +39,7 @@ import {
   updateRule,
 } from "../../../api";
 import { SELECTED_ENV } from "../../../App";
+import { ValuesOfCorrectTypeRule } from "graphql";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -59,6 +63,11 @@ export default function SloEditPage() {
     useState<GropiusComponent[]>(undefined);
   const [alarmActions, setAlarmActions] = useState<string[]>([]);
   const router = useHistory();
+
+  const inputFile = useRef(null);
+  const conv = new XmlConverterService();
+  const reader = new FileReader()
+
 
   const defaultValues: Slo = {
     name: "",
@@ -110,6 +119,11 @@ export default function SloEditPage() {
       await deleteRule(rule.id, rule.deploymentEnvironment);
       router.push("/");
     }
+  }
+
+  async function onUploadXML() {
+    
+    inputFile.current.click();
   }
 
   return (
@@ -461,6 +475,53 @@ export default function SloEditPage() {
                   >
                     Save
                   </Button>
+
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => onUploadXML()}
+                  >
+                    Upload XML
+                  </Button>
+                  <input type='file' accept='.xml' id='file' style={{display: 'none'} } ref={inputFile} onChange={(e) => 
+                    {reader.onload = async (e) => { 
+                      const text = (e.target.result);
+                      var promiseRule = conv.convertXml(text.toString());
+                      promiseRule.then((convertedRule) => {
+                      //Fill Fields with Values read from XML
+                      setFieldValue("name", convertedRule.name);
+                      setFieldValue("description", convertedRule.description);
+                      setFieldValue("targetId", convertedRule.targetId);
+                      setFieldValue("deploymentEnvironment", convertedRule.deploymentEnvironment);
+
+                      if (convertedRule.deploymentEnvironment === DeploymentEnvironment.AWS){
+                        setFieldValue("targetType", convertedRule.targetType);
+                        setFieldValue("alertTopicArn", convertedRule.alertTopicArn);
+                        setFieldValue("name", convertedRule.name);
+
+                      }
+                      setFieldValue("gropiusProjectId", convertedRule.gropiusProjectId);
+                      fetchGropiusComponents(convertedRule.gropiusProjectId).then((res) =>
+                        setGropiusComponents(res)
+                      );
+                      setFieldValue("gropiusComponentId", convertedRule.gropiusComponentId);
+                      setFieldValue("preset", convertedRule.preset);
+                      if (convertedRule.preset === PresetOption.CUSTOM){
+                        setFieldValue("metricOption", convertedRule.metricOption);
+                        setFieldValue("statistic", convertedRule.statistic);
+                        setFieldValue("comparisonOperator", convertedRule.comparisonOperator);
+                      }
+                      setFieldValue("threshold", convertedRule.threshold);
+                      setFieldValue("period", convertedRule.period);
+                    }).catch((error) => {
+                      //Alert Invalid XML Inputs
+                      alert(error);
+                    });
+                    };
+                    reader.readAsText(e.target.files[0]);}
+                  }
+                 />
+
                   {rule?.id && (
                     <Button
                       variant="contained"
