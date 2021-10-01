@@ -1,11 +1,11 @@
-import { SloRule, DeploymentEnvironment, MetricOption, PresetOption, StatisticsOption, ComparisonOperator, TargetType } from "solomon-models";
+import { Slo, DeploymentEnvironment, MetricOption, PresetOption, StatisticsOption, ComparisonOperator, TargetType } from "solomon-models";
 
 
 export default class XmlConverterService { 
 
-  async convertXml(xml: string): Promise<SloRule> {
+  async convertXml(xml: string): Promise<Slo> {
     //The Rule-Object to return
-    var defaultRule: SloRule = {
+    var defaultRule: Slo = {
       name: undefined,  
       deploymentEnvironment: DeploymentEnvironment.KUBERNETES,
       targetId: undefined, 
