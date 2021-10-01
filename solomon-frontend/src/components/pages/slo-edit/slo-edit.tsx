@@ -488,7 +488,7 @@ export default function SloEditPage() {
                       const text = (e.target.result);
                       var promiseRule = conv.convertXml(text.toString());
                       promiseRule.then((convertedRule) => {
-                      console.log("Stating setting values");
+                      //Fill Fields with Values read from XML
                       setFieldValue("name", convertedRule.name);
                       setFieldValue("description", convertedRule.description);
                       setFieldValue("targetId", convertedRule.targetId);
@@ -500,12 +500,12 @@ export default function SloEditPage() {
                         setFieldValue("name", convertedRule.name);
 
                       }
-                      /*setFieldValue("gropiusProjectId", convertedRule.gropiusProjectId);
+                      setFieldValue("gropiusProjectId", convertedRule.gropiusProjectId);
                       fetchGropiusComponents(convertedRule.gropiusProjectId).then((res) =>
                         setGropiusComponents(res)
                       );
-                      setFieldValue("gropiusComponentId", convertedRule.gropiusComponentId);*/
-                      //setFieldValue("preset", convertedRule.preset);
+                      setFieldValue("gropiusComponentId", convertedRule.gropiusComponentId);
+                      setFieldValue("preset", convertedRule.preset);
                       if (convertedRule.preset === PresetOption.CUSTOM){
                         setFieldValue("metricOption", convertedRule.metricOption);
                         setFieldValue("statistic", convertedRule.statistic);
@@ -514,6 +514,7 @@ export default function SloEditPage() {
                       setFieldValue("threshold", convertedRule.threshold);
                       setFieldValue("period", convertedRule.period);
                     }).catch((error) => {
+                      //Alert Invalid XML Inputs
                       alert(error);
                     });
                     };
