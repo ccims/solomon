@@ -12,7 +12,9 @@ import { Field, Formik } from "formik";
 import { Select, TextField } from "formik-material-ui";
 import React, { useEffect, useState, useRef } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import XmlConverterService from "../../../xml-converter/xml-converter.service";
+import XmlConverterService from "../../../parsers/xml-converter.service";
+import SLOmlParserSerivce from "../../../parsers/slo-ml-parser.service";
+import OSLOParserSerivce from "../../../parsers/oslo-parser.service";
 
 
 import {
@@ -65,7 +67,9 @@ export default function SloEditPage() {
   const router = useHistory();
 
   const inputFile = useRef(null);
-  const conv = new XmlConverterService();
+  const xmlParser = new XmlConverterService();
+  const jsonParser = new SLOmlParserSerivce();
+  const yamlParser = new OSLOParserSerivce();
   const reader = new FileReader()
 
 
@@ -121,7 +125,7 @@ export default function SloEditPage() {
     }
   }
 
-  async function onUploadXML() {
+  async function onSelectFile() {
     
     inputFile.current.click();
   }
@@ -479,40 +483,24 @@ export default function SloEditPage() {
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => onUploadXML()}
+                    onClick={() => onSelectFile()}
                   >
-                    Upload XML
+                    Import SLO-File
                   </Button>
-                  <input type='file' accept='.xml' id='file' style={{display: 'none'} } ref={inputFile} onChange={(e) => 
-                    {reader.onload = async (e) => { 
-                      const text = (e.target.result);
-                      var promiseRule = conv.convertXml(text.toString());
+                  <input type='file' accept='.xml, .json, .yaml' id='file' style={{display: 'none'} } ref={inputFile} onChange={(e) => 
+                    {reader.onload = async (parsedE) => { 
+                      const text = (parsedE.target.result);
+                      var promiseRule: Promise<Slo>;
+                      if (e.target.files[0].name.endsWith(".xml")){
+                        promiseRule = xmlParser.convertXml(text.toString());
+                      } else if (e.target.files[0].name.endsWith(".json")){
+                        promiseRule = jsonParser.parseSLOml(text.toString());
+                      } else if (e.target.files[0].name.endsWith(".yaml")){
+                        promiseRule = yamlParser.parseOSLO(text.toString());
+                      }
                       promiseRule.then((convertedRule) => {
                       //Fill Fields with Values read from XML
-                      setFieldValue("name", convertedRule.name);
-                      setFieldValue("description", convertedRule.description);
-                      setFieldValue("targetId", convertedRule.targetId);
-                      setFieldValue("deploymentEnvironment", convertedRule.deploymentEnvironment);
-
-                      if (convertedRule.deploymentEnvironment === DeploymentEnvironment.AWS){
-                        setFieldValue("targetType", convertedRule.targetType);
-                        setFieldValue("alertTopicArn", convertedRule.alertTopicArn);
-                        setFieldValue("name", convertedRule.name);
-
-                      }
-                      setFieldValue("gropiusProjectId", convertedRule.gropiusProjectId);
-                      fetchGropiusComponents(convertedRule.gropiusProjectId).then((res) =>
-                        setGropiusComponents(res)
-                      );
-                      setFieldValue("gropiusComponentId", convertedRule.gropiusComponentId);
-                      setFieldValue("preset", convertedRule.preset);
-                      if (convertedRule.preset === PresetOption.CUSTOM){
-                        setFieldValue("metricOption", convertedRule.metricOption);
-                        setFieldValue("statistic", convertedRule.statistic);
-                        setFieldValue("comparisonOperator", convertedRule.comparisonOperator);
-                      }
-                      setFieldValue("threshold", convertedRule.threshold);
-                      setFieldValue("period", convertedRule.period);
+                      fillFields(setFieldValue, convertedRule);
                     }).catch((error) => {
                       //Alert Invalid XML Inputs
                       alert(error);
@@ -542,3 +530,18 @@ export default function SloEditPage() {
     </Container>
   );
 }
+
+function fillFields(setFieldValue: (field: string, value: any, shouldValidate?: boolean) => void, convertedRule: Slo) {
+  setFieldValue("name", convertedRule.name);
+  setFieldValue("description", convertedRule.description);
+  setFieldValue("deploymentEnvironment", convertedRule.deploymentEnvironment);
+  setFieldValue("preset", convertedRule.preset);
+  if (convertedRule.preset === PresetOption.CUSTOM) {
+    setFieldValue("metricOption", convertedRule.metricOption);
+    setFieldValue("statistic", convertedRule.statistic);
+    setFieldValue("comparisonOperator", convertedRule.comparisonOperator);
+  }
+  setFieldValue("threshold", convertedRule.threshold);
+  setFieldValue("period", convertedRule.period);
+}
+
