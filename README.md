@@ -93,6 +93,16 @@ Explanations: You have set up a kubernetes cluster, configures the prometheus op
 
 3. The `sla-manager-frontend` is where you can configure SLA's.
 
+## Installation with Helm
+
+Add the Helm repo:
+
+`helm repo add myrepo https://tobiasrodestock.github.io/Helm-chart`
+
+Install with Helm:
+
+`helm install solomon myrepo/solomon`
+
 
 
 ## How to use the System (provisionally)
