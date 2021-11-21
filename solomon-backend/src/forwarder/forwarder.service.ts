@@ -1,9 +1,11 @@
-import { Injectable, Logger} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConnectorService } from 'src/models/connector-service';
 import { CwConnectorService } from 'src/connector-cloudwatch/cw.service';
 import { DeploymentEnvironment, Slo, Target } from 'solomon-models';
 import { K8sConnectorService } from 'src/connector-kubernetes/k8s.service';
 import { TargetType } from 'solomon-models/dist/target.model';
+import K8sEnvironment, { K8sDeployment } from 'src/connector-kubernetes/k8s-environment.interface';
+import { K8sDeploymentService } from 'src/connector-kubernetes/k8s-deployments.service';
 
 /**
  * The forwarder service contains the logic for **forwarding the requests** (e.g. getSlos, addSlo) 
@@ -15,7 +17,7 @@ export class ForwarderService implements ConnectorService {
     private readonly logger = new Logger(ForwarderService.name);
 
     constructor(private cwConnector: CwConnectorService,
-        private k8sConnector: K8sConnectorService) { }
+        private k8sConnector: K8sConnectorService, private k8sDeployment: K8sDeploymentService) { }
 
 
     getSlos(deploymentEnvironment: DeploymentEnvironment): Promise<Slo[]> {
@@ -82,6 +84,18 @@ export class ForwarderService implements ConnectorService {
             case DeploymentEnvironment.KUBERNETES:
                 return this.k8sConnector.deleteSlo(id);
         }
+    }
+
+    createEnvironment(env: K8sEnvironment) {
+        return this.k8sDeployment.createEnvironment(env);
+    }
+
+    getEnvironments() {
+        return this.k8sDeployment.getEnvironments();
+    }
+
+    toggleDeployment(environment: K8sEnvironment, deployment: K8sDeployment) {
+        return this.k8sDeployment.toggleDeploymentOnOff(environment, deployment);
     }
 
 }

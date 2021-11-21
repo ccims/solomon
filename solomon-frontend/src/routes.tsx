@@ -1,11 +1,13 @@
 import React from "react";
-import { Route, Switch } from "react-router-dom";
+import { Redirect, Route, Switch } from "react-router-dom";
+import DeploymentsPage from "./components/pages/deployments/deployments";
 import SloEditPage from './components/pages/slo-edit/slo-edit';
 import SloListPage from './components/pages/slo-list/slo-list';
 
 export enum RoutePaths {
     SLO_EDIT = "/slo",
-    SLO_LIST = "/"
+    DEPLOYMENTS = "/deployments",
+    SLO_LIST = "/slos"
 } 
 
 export default function Routes() {
@@ -16,7 +18,13 @@ export default function Routes() {
         <Route path={RoutePaths.SLO_EDIT}>
             <SloEditPage></SloEditPage>
         </Route>
-        <Route path={RoutePaths.SLO_LIST} exact>
+        <Route path={RoutePaths.SLO_LIST}>
+            <SloListPage></SloListPage>
+        </Route>
+        <Route path={RoutePaths.DEPLOYMENTS}>
+            <DeploymentsPage></DeploymentsPage>
+        </Route>
+        <Route path="/">
             <SloListPage></SloListPage>
         </Route>
     </Switch>

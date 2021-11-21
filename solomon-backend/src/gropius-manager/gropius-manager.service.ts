@@ -33,10 +33,47 @@ export class GropiusManager {
             }
         `
         try {
-            const response = await request(this.gropiusUrl,getProjectsQuery);
+            const response = await request(this.gropiusUrl, getProjectsQuery);
             projects = GropiusGqlMapper.mapGqlProjects(response);
-        } catch (error){
+        } catch (error) {
             this.logger.error('Could not fetch Gropius projects', error)
+        }
+        return projects;
+    }
+
+    /**
+     * fetches all existing Gropius projects with its components
+     * @returns a list of Gropius projects with its components
+     */
+    async getGropiusProjectsFull(): Promise<GropiusProject[]> {
+        let projects = [];
+
+        const getProjectsQuery = gql`
+            query GetAllProjects($filter: ProjectFilter) {
+                projects(filterBy: $filter) {
+                edges {
+                    node {
+                    id
+                    name
+                    description
+                    components {
+                        edges {
+                        node {
+                            id
+                            name
+                        }
+                        }
+                    }
+                    }
+                }
+                }
+            }        
+        `
+        try {
+            const response = await request(this.gropiusUrl, getProjectsQuery);
+            projects = GropiusGqlMapper.mapGqlProjects(response);
+        } catch (error) {
+            this.logger.error('Could not fetch Gropius projects full', error)
         }
         return projects;
     }
@@ -65,10 +102,10 @@ export class GropiusManager {
             }
         `
 
-         try {
-            const response = await request(this.gropiusUrl,getComponentsQuery,{ projectId: projectId});
+        try {
+            const response = await request(this.gropiusUrl, getComponentsQuery, { projectId: projectId });
             components = GropiusGqlMapper.mapGqlComponents(response);
-        } catch (error){
+        } catch (error) {
             this.logger.error('Could not fetch Gropius components', error)
         }
         return components;
@@ -83,7 +120,7 @@ export class GropiusManager {
         const issue: GropiusIssue = {
             title: alert.alertName,
             body: alert.alertDescription,
-            components: [ alert.gropiusComponentId ],
+            components: [alert.gropiusComponentId],
         }
 
         const queryIssue = gql`
@@ -97,7 +134,7 @@ export class GropiusManager {
         `;
 
         try {
-            const data = await request(this.gropiusUrl, queryIssue, { input: issue});
+            const data = await request(this.gropiusUrl, queryIssue, { input: issue });
             const issueID = data.createIssue.issue.id;
             this.logger.log("CREATED ISSUE: " + issueID);
             return issueID;
