@@ -97,7 +97,7 @@ Explanations: You have set up a kubernetes cluster, configures the prometheus op
 
 Add the Helm repo:
 
-`helm repo add myrepo https://tobiasrodestock.github.io/Helm-chart`
+`helm repo add myrepo https://tobiasrodestock.github.io/helm-chart`
 
 Install with Helm:
 
