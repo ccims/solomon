@@ -1,0 +1,22 @@
+apiVersion: openslo/v1alpha
+kind: SLO
+metadata:
+  name: AverageResponseTime
+spec:
+  description: SLO for average response time
+  service: [Gropius Component] # name of the service to associate this SLO with
+  indicator: # represents the Service Level Indicator (SLI)
+    thresholdMetric: # represents the metric used to inform the Service Level Object in the objectives stanza
+      source: probe_duration_seconds # The metric to monitor
+      queryType: statistic # Data is always queried by a statistic option
+      query: Average # Statistic Option to use
+      metadata: # optional, allows data source specific details to be passed
+        deployment: kubernetes 
+  timeWindows:
+    # time window is monitoring period
+    - unit: Minute
+      count: 3
+      isRolling: true
+  objectives: # see objectives below for details
+    op: GreaterThanThreshold # conditional operator used to compare the SLI against the value. Only needed when using a thresholdMetric
+    value: 1 # optional, value used to compare threshold metrics. Only needed when using a thresholdMetric
