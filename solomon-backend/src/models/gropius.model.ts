@@ -16,6 +16,7 @@ export interface GropiusProject {
   id: string;
   name: string;
   description: string;
+  components: GropiusComponent[];
 }
 
 export interface GropiusComponent {

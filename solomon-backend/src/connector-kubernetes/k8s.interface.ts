@@ -12,6 +12,27 @@ export interface PrometheusRuleCRD {
     }
 }
 
+export interface ProbesCRD {
+    apiVersion: string;
+    kind: string;
+    metadata: {
+        name: string;
+        labels: any
+    };
+    spec: {
+        prober: {
+            url: string;
+        },
+        targets: {
+            staticConfig: {
+                labels: {},
+                static: string[]
+            }
+        },
+        module: string;
+    }
+}
+
 interface PrometheusRuleGroup {
     name: string;
     groupLabels: any;

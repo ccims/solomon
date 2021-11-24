@@ -8,7 +8,11 @@ export class GropiusGqlMapper {
         const gropiusProject: GropiusProject = {
             id: gqlResponse.node.id,
             name: gqlResponse.node.name,
-            description: gqlResponse.node.description
+            description: gqlResponse.node.description,
+            components: gqlResponse.node.components?.edges.map(element => {
+                console.log(element.node, "???")
+                return this.mapGqlComponent(element.node);
+            }),
         }
 
         return gropiusProject;

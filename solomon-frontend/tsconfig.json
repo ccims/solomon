@@ -8,10 +8,9 @@
     ],
     "allowJs": true,
     "skipLibCheck": true,
-    "strictNullChecks": false,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "strict": false,
+    "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "module": "esnext",
@@ -19,8 +18,10 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react",
-    "experimentalDecorators": true
+    "jsx": "react-jsx",
+    "experimentalDecorators": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
   },
   "include": [
     "src"
