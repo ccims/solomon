@@ -1,0 +1,22 @@
+apiVersion: openslo/v1alpha
+kind: SLO
+metadata:
+  name: string
+spec:
+  description: string
+  service: [service name] # name of the service to associate this SLO with
+  indicator: # represents the Service Level Indicator (SLI)
+    thresholdMetric: # represents the metric used to inform the Service Level Object in the objectives stanza
+      source: string # The metric to monitor
+      queryType: statistic # Data is always queried by a statistic option
+      query: string # Statistic Option to use
+      metadata: # optional, allows data source specific details to be passed
+        deployment: kubernetes 
+  timeWindows:
+    # time window is monitoring period
+    - unit: Second
+      count: numeric
+      isRolling: true
+  objectives: # see objectives below for details
+    op: lte | gte | lt | gt # conditional operator used to compare the SLI against the value. Only needed when using a thresholdMetric
+    value: numeric # optional, value used to compare threshold metrics. Only needed when using a thresholdMetric

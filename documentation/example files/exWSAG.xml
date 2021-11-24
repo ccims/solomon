@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Agreement>
+	<Terms>
+		<ServiceDescriptionTerm name="General service description" ServiceName="name">
+			<Deployment>aws</Deployment>
+		</ServiceDescriptionTerm>
+		<ServiceProperties	name="Service monitoring properties" ServiceName="name">
+			<Variable Name="Customizable metric" Metric="probe_duration_seconds"/>
+		</ServiceProperties>	
+		<GuaranteeTerm> 
+			<ServiceScope ServiceName="name"/>
+			<ServiceLevelObjective>    
+				<CustomServiceLevel name="name" description="desc">
+					<ComparisonOperator type="GreaterThanThreshold" value="0.9">
+						<StatisticsOption type="Average">Customizable metric</StatisticsOption>
+					</ComparisonOperator>
+					<MonitoringPeriod>5000</MonitoringPeriod>
+				</CustomServiceLevel> 
+			  </ServiceLevelObjective> 
+		</GuaranteeTerm>
+	</Terms>
+</Agreement>

@@ -1,0 +1,17 @@
+{
+    "component_1": {
+        "SLOs": [
+            { "name": "Average_response_time",
+                "description": "Average response time desc :)",
+                "metric": "probe_duration_seconds",
+                "value": "3",
+                "operator": "GreaterThanThreshold",
+                "statistic": "Average",
+                "period": "3000"
+            }
+        ],
+        "config": {
+            "deployment": "kubernetes"
+        }
+    }
+}
