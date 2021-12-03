@@ -34,7 +34,7 @@ export default function GropiusDeploymentDialog({ projects }) {
   const [project, setProject] = useState(projects[0]);
 
   const classes = useStyles();
-
+  console.log(project)
   return (
     <div>
       <Button variant="contained" onClick={() => setOpen(true)}>
@@ -49,8 +49,7 @@ export default function GropiusDeploymentDialog({ projects }) {
           }),
         }}
         onSubmit={(values) => {
-          console.log(values);
-          //   createEnvironment(values);
+             createEnvironment(values);
         }}
       >
         {(formik) => (
@@ -68,7 +67,7 @@ export default function GropiusDeploymentDialog({ projects }) {
                   fullWidth
                   value={project.id}
                   onChange={(e) => {
-                    setProject(e);
+                    setProject(projects.find(project => project.id === e.target.value));
                   }}
                 >
                   {projects?.map((project) => (
