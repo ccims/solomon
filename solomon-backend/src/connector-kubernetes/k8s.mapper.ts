@@ -1,8 +1,9 @@
 import { ComparisonOperator, DeploymentEnvironment, MetricOption, PresetOption, Slo, StatisticsOption } from "solomon-models";
-import { ProbesCRD, PrometheusRule, PrometheusRuleCRD } from "./k8s.interface";
+import { ProbesCRD, PrometheusAlert, PrometheusRule, PrometheusRuleCRD } from "./k8s.interface";
 import { FunctionOptions, OperatorOptions } from "./prometheus-rules-options";
 import * as k8s from '@kubernetes/client-node';
 import { K8sDeployment } from "./k8s-environment.interface";
+import { SloAlert } from "src/models/alert.interface";
 
 export default class K8sMapper {
     static promRuleToSloRule(promRule: PrometheusRule): Slo {
@@ -159,7 +160,7 @@ export default class K8sMapper {
             apiVersion: "apps/v1",
             kind: "Deployment",
             metadata: {
-                name: `${deployment.name}-deployment`,
+                name: `${deployment.name}`,
                 namespace: namespace ?? "default",
                 labels: {
                     app: `${deployment.name}-app`,
@@ -223,7 +224,7 @@ export default class K8sMapper {
             apiVersion: "v1",
             kind: "Service",
             metadata: {
-                name: `${deployment.name}-service`,
+                name: `${deployment.name}`,
                 namespace: namespace ?? "default",
                 labels: {
                     app: `${deployment.name}-app`,
@@ -257,6 +258,22 @@ export default class K8sMapper {
             port: deployment.metadata.labels.solomonDeployedPort as any,
 
         }
+    }
+
+    static mapPrometheusAlertToSloAlert(alert: PrometheusAlert): SloAlert {
+        const sloAlert = {
+            alertName : alert.commonLabels.alertname + '-'
+                        + new Date(alert.commonLabels.startsAt).toLocaleTimeString('en-GB',) + '-'
+                        + new Date(alert.commonLabels.startsAt).toLocaleDateString('en-GB',),
+            alertDescription: alert.commonAnnotations.description,
+            alertTime: Date.parse(alert.commonLabels.startsAt),
+            sloId: alert.commonAnnotations.ruleId,
+            sloName: alert.commonLabels.alertname,
+            triggeringTargetName: alert.commonAnnotations.targetId,
+            gropiusProjectId: alert.commonAnnotations.gropiusProjectId,
+            gropiusComponentId: alert.commonAnnotations.gropiusComponentId
+        }
+        return sloAlert;
     }
 }
 

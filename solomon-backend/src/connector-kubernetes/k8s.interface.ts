@@ -60,6 +60,19 @@ export interface PrometheusRule {
     labels: any;
 }
 
+export interface PrometheusAlert {
+    commonLabels: {
+        alertname: string;
+        startsAt: string;
+    }
+    commonAnnotations: {
+        gropiusComponentId: string;
+        gropiusProjectId: string;
+        description: string;
+        ruleId: string;
+        targetId: string;
+    }
+}
 
 /*
 Example for an prometheus Rule CRD:

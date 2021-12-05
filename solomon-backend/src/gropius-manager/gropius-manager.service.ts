@@ -120,7 +120,7 @@ export class GropiusManager {
         const issue: GropiusIssue = {
             title: alert.alertName,
             body: alert.alertDescription,
-            components: [alert.gropiusComponentId],
+            componentIDs: [alert.gropiusComponentId],
         }
 
         const queryIssue = gql`
