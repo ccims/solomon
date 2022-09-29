@@ -85,7 +85,7 @@ Install Minikube to run a local Kubernetes cluster. Following steps uses Minikub
 `helm install blackbox-exporter prometheus-community/prometheus-blackbox-exporter -f ./blackbox-exporter-values.yaml`
 
 
-Explanations: You have set up a kubernetes cluster, configures the prometheus operator, that is used to monitor pods of the cluster. You created deployments and services for 
+Explanations: You have set up a kubernetes cluster, configured the prometheus operator, that is used to monitor pods of the cluster. You created deployments and services for 
 
 1. `nodejs-demo-client`, a dummy server to be monitored by prometheus. This server exports metrics that can be monitored by prometheus. This is the common way to monitor applications with prometheus but it requires configuration on the application itself which is not optimal for our system. To solve this, we use the Blackbox Exporter to monitor Applications. This is a "prober" that sends HTTP request to the configured applications to check availability and response times (and more). 
 
